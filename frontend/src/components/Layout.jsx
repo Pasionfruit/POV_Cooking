@@ -1,10 +1,17 @@
 import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Layout({ children }) {
   const location = useLocation()
-  const isAuthenticated = true // TEMP: bypass auth for testing
-  const user = { role: 'admin', id: 1 } // TEMP: mock admin user
+  const navigate = useNavigate()
+  const { isAuthenticated, user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+    alert('Logged out successfully! (simulated)')
+  }
 
   return (
     <div className="app-shell">
@@ -14,18 +21,21 @@ export default function Layout({ children }) {
         </div>
         <nav className="nav">
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
-          <Link to="/pantry" className={`nav-link ${location.pathname === '/pantry' ? 'active' : ''}`}>Pantry</Link>
-          {user?.role === 'admin' && (
+          {isAuthenticated ? (
             <>
-              <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>Admin</Link>
-              <Link to="/role" className={`nav-link ${location.pathname === '/role' ? 'active' : ''}`}>Roles</Link>
+              <Link to="/pantry" className={`nav-link ${location.pathname === '/pantry' ? 'active' : ''}`}>Pantry</Link>
+              {user?.role === 'admin' && (
+                <>
+                  <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>Admin</Link>
+                  <Link to="/role" className={`nav-link ${location.pathname === '/role' ? 'active' : ''}`}>Roles</Link>
+                </>
+              )}
+              <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
+              <span className="nav-link">Role: {user?.role}</span>
+              <button onClick={handleLogout} className="nav-link logout-btn">Logout</button>
             </>
-          )}
-          <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
-          {!isAuthenticated ? (
-            <Link to="/login" className="nav-link">Login</Link>
           ) : (
-            <span className="nav-link">Role: {user?.role}</span>
+            <Link to="/login" className={`nav-link ${location.pathname === '/login' ? 'active' : ''}`}>Login</Link>
           )}
         </nav>
       </header>
