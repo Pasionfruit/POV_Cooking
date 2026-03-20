@@ -10,47 +10,47 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+// const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 
 const ADMIN_CODE = process.env.ADMIN_CODE
 const JWT_SECRET = process.env.JWT_SECRET || 'secret'
 
-async function initDb() {
-  // Create tables if they don't exist
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('admin','user')),
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
+// async function initDb() {
+//   // Create tables if they don't exist
+//   await pool.query(`
+//     CREATE TABLE IF NOT EXISTS users (
+//       id SERIAL PRIMARY KEY,
+//       username TEXT UNIQUE NOT NULL,
+//       password_hash TEXT NOT NULL,
+//       role TEXT NOT NULL CHECK (role IN ('admin','user')),
+//       created_at TIMESTAMPTZ DEFAULT NOW()
+//     );
+//   `)
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS recipes (
-      id SERIAL PRIMARY KEY,
-      title TEXT NOT NULL,
-      ingredients TEXT[] NOT NULL,
-      instructions TEXT NOT NULL,
-      time INTEGER,
-      duration INTEGER,
-      equipment TEXT[],
-      user_id INTEGER REFERENCES users(id),
-      visibility BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
+//   await pool.query(`
+//     CREATE TABLE IF NOT EXISTS recipes (
+//       id SERIAL PRIMARY KEY,
+//       title TEXT NOT NULL,
+//       ingredients TEXT[] NOT NULL,
+//       instructions TEXT NOT NULL,
+//       time INTEGER,
+//       duration INTEGER,
+//       equipment TEXT[],
+//       user_id INTEGER REFERENCES users(id),
+//       visibility BOOLEAN DEFAULT FALSE,
+//       created_at TIMESTAMPTZ DEFAULT NOW(),
+//       updated_at TIMESTAMPTZ DEFAULT NOW()
+//     );
+//   `)
 
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS saved_recipes (
-      user_id INTEGER REFERENCES users(id),
-      recipe_id INTEGER REFERENCES recipes(id),
-      PRIMARY KEY (user_id, recipe_id)
-    );
-  `)
-}
+//   await pool.query(`
+//     CREATE TABLE IF NOT EXISTS saved_recipes (
+//       user_id INTEGER REFERENCES users(id),
+//       recipe_id INTEGER REFERENCES recipes(id),
+//       PRIMARY KEY (user_id, recipe_id)
+//     );
+//   `)
+// }
 
 function generateToken(user) {
   const payload = { sub: user.id, role: user.role }
@@ -257,12 +257,12 @@ app.get('/saved', authMiddleware, async (req, res) => {
   }
 })
 
-initDb().then(() => {
+// initDb().then(() => {
   const port = parseInt(process.env.PORT || '5000', 10)
   app.listen(port, () => {
-    console.log(`Backend listening on port ${port}`)
+    console.log(`Backend listening on port ${port} (DB skipped)`)
   })
-}).catch(err => {
-  console.error('Failed to initialize DB', err)
-  process.exit(1)
-})
+// }).catch(err => {
+//   console.error('Failed to initialize DB', err)
+//   process.exit(1)
+// })
