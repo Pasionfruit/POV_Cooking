@@ -70,3 +70,36 @@ export async function getSaved(token) {
   })
   return res.json()
 }
+
+export async function getPantry(token) {
+  const res = await fetch(`${BASE}/pantry`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}
+
+export async function addPantry(token, payload) {
+  const res = await fetch(`${BASE}/pantry`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  })
+  return res.json()
+}
+
+export async function updatePantry(token, id, payload) {
+  const res = await fetch(`${BASE}/pantry/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  })
+  return res.json()
+}
+
+export async function deletePantry(token, id) {
+  const res = await fetch(`${BASE}/pantry/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}

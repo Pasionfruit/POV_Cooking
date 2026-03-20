@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe } from './api.js'
+import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe, getPantry, addPantry, updatePantry, deletePantry } from './api.js'
 import { useLocation, Link, Navigate, useNavigate } from 'react-router-dom'
 
 // Minimal util to parse JWT payload
@@ -44,6 +44,8 @@ export default function App() {
     }
   ]) // TEMP: mock recipes for testing
   const [saved, setSaved] = useState([])
+  const [pantry, setPantry] = useState([])
+  const [pantryDraft, setPantryDraft] = useState({ name: '', category: 'Grains', expiration_date: '', quantity: 1, unit: 'pcs', unit_system: 'metric', location: 'Pantry', notes: '' })
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -66,6 +68,13 @@ export default function App() {
       // setSaved([])
     }
     // eslint-disable-next-line
+  }, [token])
+
+  // Pantry loading on mount when token exists
+  useEffect(() => {
+    if (token) {
+      getPantry(token).then(setPantry).catch(() => {})
+    }
   }, [token])
 
   useEffect(() => {
@@ -169,7 +178,93 @@ export default function App() {
     }
   }
 
-  // Simple views
+  // Pantry actions
+  async function pantryAdd() {
+    if (!token) { alert('Please login'); return }
+    const payload = {
+      name: pantryDraft.name,
+      category: pantryDraft.category,
+      expiration_date: pantryDraft.expiration_date || null,
+      quantity: pantryDraft.quantity ? Number(pantryDraft.quantity) : 1,
+      unit: pantryDraft.unit,
+      unit_system: pantryDraft.unit_system,
+      location: pantryDraft.location,
+      notes: pantryDraft.notes
+    }
+    const res = await addPantry(token, payload)
+    if (res?.id) {
+      const fresh = await getPantry(token)
+      setPantry(fresh)
+      setPantryDraft({ name: '', category: 'Grains', expiration_date: '', quantity: 1, unit: 'pcs', unit_system: 'metric', location: 'Pantry', notes: '' })
+    } else {
+      alert('Failed to add pantry item')
+    }
+  }
+
+  async function pantryDelete(id) {
+    if (!token) return
+    const res = await deletePantry(token, id)
+    if (res?.ok) {
+      const fresh = await getPantry(token)
+      setPantry(fresh)
+    }
+  }
+
+  function ViewPantryCard({ p }) {
+    const days = p.expiration_date ? Math.ceil((new Date(p.expiration_date) - new Date()) / (1000*60*60*24)) : null
+    const color = days == null ? '' : (days < 0 ? 'expired' : days <=7 ? 'danger' : days <=14 ? 'warn' : 'safe')
+    return (
+      <div className="pantry-card" key={p.id}>
+        <div className="pantry-name">{p.name} <span className={`badge cat-${p.category.replace(/\s+/g, '_')}`}>{p.category}</span></div>
+        <div className="pantry-row">Quantity: {p.quantity} {p.unit} • Location: {p.location}</div>
+        <div className="pantry-row">{p.expiration_date ? `Expires: ${p.expiration_date}` : 'No expiration'}</div>
+        {p.expiration_date && (
+          <div className={`pantry-row expiry ${color}`}>Expiring in {days < 0 ? 'expired' : days + ' days'}</div>
+        )}
+        <div className="pantry-actions">
+          <button onClick={() => pantryDelete(p.id)}>Delete</button>
+        </div>
+      </div>
+    )
+  }
+  const pantryView = (
+    <div className="pantry-panel panel">
+      <h2>Pantry</h2>
+      <div className="pantry-form">
+        <input placeholder="Name" value={pantryDraft.name} onChange={e => setPantryDraft({ ...pantryDraft, name: e.target.value })} />
+        <select value={pantryDraft.category} onChange={e => setPantryDraft({ ...pantryDraft, category: e.target.value })}>
+          {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <input type="date" value={pantryDraft.expiration_date} onChange={e => setPantryDraft({ ...pantryDraft, expiration_date: e.target.value })} />
+        <input type="number" min="0" value={pantryDraft.quantity} onChange={e => setPantryDraft({ ...pantryDraft, quantity: e.target.value })} />
+        <select value={pantryDraft.unit} onChange={e => setPantryDraft({ ...pantryDraft, unit: e.target.value })}>
+          <option value="pcs">pcs</option>
+          <option value="g">g</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="L">L</option>
+          <option value="oz">oz</option>
+          <option value="lb">lb</option>
+        </select>
+        <select value={pantryDraft.unit_system} onChange={e => setPantryDraft({ ...pantryDraft, unit_system: e.target.value })}>
+          <option value="metric">metric</option>
+          <option value="imperial">imperial</option>
+        </select>
+        <select value={pantryDraft.location} onChange={e => setPantryDraft({ ...pantryDraft, location: e.target.value })}>
+          <option value="Fridge">Fridge</option>
+          <option value="Freezer">Freezer</option>
+          <option value="Pantry">Pantry</option>
+          <option value="Misc">Misc</option>
+        </select>
+        <input placeholder="Notes" value={pantryDraft.notes} onChange={e => setPantryDraft({ ...pantryDraft, notes: e.target.value })} />
+        <button onClick={pantryAdd}>Add Pantry Item</button>
+      </div>
+      <div className="pantry-list">
+        {pantry.map(p => <ViewPantryCard p={p} key={p.id} />)}
+      </div>
+    </div>
+  )
+
   const loginView = (
     <div className="auth-page">
       <h2>POV Cooking - Login</h2>
@@ -217,7 +312,7 @@ export default function App() {
         </nav>
       </header>
       <main className="content">
-        {!isAuthenticated ? loginView : (isAdmin ? adminView : explorerView)}
+        {!isAuthenticated ? loginView : (window.location.pathname.startsWith('/pantry') ? pantryView : (isAdmin ? adminView : explorerView))}
       </main>
     </div>
   )
