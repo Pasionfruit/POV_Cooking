@@ -5,6 +5,30 @@ export default function Recipes() {
   const { user } = useAuth()
   const [saved, setSaved] = useState([])
   const [draft, setDraft] = useState({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
+  const [selectedRecipe, setSelectedRecipe] = useState(null)
+
+  const availableRecipes = [
+    {
+      id: 101,
+      title: 'Garlic Chicken Stir Fry',
+      ingredients: ['Chicken breast', 'Garlic', 'Soy sauce', 'Broccoli', 'Carrots'],
+      instructions: '1. Chop the vegetables. 2. Sauté the garlic. 3. Add chicken and cook. 4. Add vegetables and sauce; simmer 8–10 mins. 5. Serve over rice.',
+      time: 20,
+      duration: 25,
+      equipment: ['Wok', 'Spatula', 'Knife'],
+      notes: 'Make extra for meal prep. Add chili flakes if you like heat.'
+    },
+    {
+      id: 102,
+      title: 'Veggie Quinoa Bowl',
+      ingredients: ['Quinoa', 'Avocado', 'Cherry tomatoes', 'Cucumbers', 'Feta', 'Lemon'],
+      instructions: '1. Cook quinoa. 2. Chop veggies. 3. Toss everything with lemon dressing. 4. Sprinkle feta on top.',
+      time: 15,
+      duration: 30,
+      equipment: ['Saucepan', 'Bowl'],
+      notes: 'Use chickpeas for extra protein.'
+    }
+  ]
 
   async function handleCreate() {
     const newRecipe = {
@@ -26,20 +50,19 @@ export default function Recipes() {
 
   async function handleSave(recipeId) {
     // This would normally save from available recipes
-    const mockRecipe = {
-      id: recipeId,
-      title: `Saved Recipe ${recipeId}`,
-      ingredients: ['ingredient 1', 'ingredient 2'],
-      instructions: 'Mix and cook',
-      time: 15,
-      duration: 20,
-      equipment: ['pot', 'pan'],
-      visibility: true,
-      user_id: user?.id || 1
-    }
-    setSaved(prev => [...prev, mockRecipe])
+    const recipe = availableRecipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    setSaved(prev => {
+      if (prev.some(r => r.id === recipe.id)) return prev
+      return [...prev, { ...recipe, user_id: user?.id || 1 }]
+    })
     alert('Recipe saved! (simulated)')
   }
+
+  const handleOpenDetails = (recipe) => setSelectedRecipe(recipe)
+  const handleCloseDetails = () => setSelectedRecipe(null)
+
 
   return (
     <div className="recipes-page">
@@ -70,6 +93,22 @@ export default function Recipes() {
       </section>
 
       <section className="panel">
+        <h3>Available Recipes</h3>
+        <div className="grid">
+          {availableRecipes.map(r => (
+            <div key={r.id} className="card">
+              <div className="card-title">{r.title}</div>
+              <div className="card-meta">Time: {r.time}m • Duration: {r.duration}m</div>
+              <div className="card-actions">
+                <button onClick={() => handleOpenDetails(r)}>View Details</button>
+                <button onClick={() => handleSave(r.id)}>Save</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
         <h3>Saved Recipes</h3>
         <div className="grid">
           {saved.map(r => (
@@ -77,13 +116,39 @@ export default function Recipes() {
               <div className="card-title">{r.title}</div>
               <div className="card-meta">Time: {r.time ?? '-'}m • Duration: {r.duration ?? '-'}m</div>
               <div className="card-actions">
-                <button>View Details</button>
+                <button onClick={() => handleOpenDetails(r)}>View Details</button>
               </div>
             </div>
           ))}
           {saved.length === 0 && <p>No saved recipes yet. Save some recipes to see them here!</p>}
         </div>
       </section>
+
+      {selectedRecipe && (
+        <div className="modal-overlay" onClick={handleCloseDetails}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{selectedRecipe.title}</h3>
+              <button onClick={handleCloseDetails}>Close</button>
+            </div>
+            <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+              <p><strong>Time:</strong> {selectedRecipe.time} min</p>
+              <p><strong>Duration:</strong> {selectedRecipe.duration} min</p>
+              <p><strong>Ingredients:</strong></p>
+              <ul>
+                {selectedRecipe.ingredients.map((ing, idx) => <li key={idx}>{ing}</li>)}
+              </ul>
+              <p><strong>Equipment:</strong></p>
+              <ul>
+                {selectedRecipe.equipment.map((eq, idx) => <li key={idx}>{eq}</li>)}
+              </ul>
+              <p><strong>Instructions:</strong></p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRecipe.instructions}</p>
+              {selectedRecipe.notes && <p><strong>Notes:</strong> {selectedRecipe.notes}</p>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

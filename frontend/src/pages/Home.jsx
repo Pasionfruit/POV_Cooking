@@ -32,7 +32,10 @@ export default function Home() {
   const [editForm, setEditForm] = useState({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '' })
   const [isSpinning, setIsSpinning] = useState(false)
   const [selectedRecipe, setSelectedRecipe] = useState(null)
-  const [isRandomizerExpanded, setIsRandomizerExpanded] = useState(true)
+  const [isRandomizerExpanded, setIsRandomizerExpanded] = useState(false)
+
+  const handleOpenDetails = (recipe) => setSelectedRecipe(recipe)
+  const handleCloseDetails = () => setSelectedRecipe(null)
 
   const handleSpin = () => {
     if (isSpinning || recipes.length === 0) return
@@ -124,7 +127,7 @@ export default function Home() {
                 <div className="recipe-preview">
                   <strong>Ingredients:</strong> {selectedRecipe.ingredients.slice(0, 3).join(', ')}{selectedRecipe.ingredients.length > 3 ? '...' : ''}
                 </div>
-                <button onClick={() => alert('Recipe details would open here!')}>View Full Recipe</button>
+                <button onClick={() => handleOpenDetails(selectedRecipe)}>View Full Recipe</button>
               </div>
             )}
           </>
@@ -186,7 +189,7 @@ export default function Home() {
                   <div className="card-title">{r.title}</div>
                   <div className="card-meta">Time: {r.time ?? '-'}m • Duration: {r.duration ?? '-'}m</div>
                   <div className="card-actions">
-                    <button>View Details</button>
+                    <button onClick={() => handleOpenDetails(r)}>View Details</button>
                     {user?.role === 'admin' && (
                       <>
                         <button onClick={() => handleEdit(r)}>Edit</button>
@@ -200,6 +203,27 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {selectedRecipe && (
+        <div className="modal-overlay" onClick={handleCloseDetails}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{selectedRecipe.title}</h3>
+              <button onClick={handleCloseDetails}>Close</button>
+            </div>
+            <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+              <p><strong>Time:</strong> {selectedRecipe.time} min</p>
+              <p><strong>Duration:</strong> {selectedRecipe.duration} min</p>
+              <p><strong>Ingredients:</strong></p>
+              <ul>{selectedRecipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)}</ul>
+              <p><strong>Equipment:</strong></p>
+              <ul>{selectedRecipe.equipment.map((eq, i) => <li key={i}>{eq}</li>)}</ul>
+              <p><strong>Instructions:</strong></p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRecipe.instructions}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
