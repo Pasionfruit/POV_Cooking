@@ -17,9 +17,32 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const [token, setToken] = useState(localStorage.getItem('pov_token') || null)
-  const [user, setUser] = useState(null)
-  const [view, setView] = useState(location.pathname.replace('/', '') || 'explore')
-  const [recipes, setRecipes] = useState([])
+  const [user, setUser] = useState({ role: 'user', id: 1 }) // TEMP: mock user for testing
+  const [view, setView] = useState(location.pathname.replace('/', '') || 'explore') // TEMP: default to explore
+  const [recipes, setRecipes] = useState([
+    {
+      id: 1,
+      title: "Classic Spaghetti Carbonara",
+      ingredients: ["200g spaghetti", "100g pancetta", "2 eggs", "50g parmesan", "Black pepper"],
+      instructions: "Cook pasta. Fry pancetta. Mix eggs and cheese. Combine everything.",
+      time: 15,
+      duration: 20,
+      equipment: ["pot", "pan", "bowl"],
+      visibility: true,
+      user_id: 1
+    },
+    {
+      id: 2,
+      title: "Chicken Stir Fry",
+      ingredients: ["300g chicken breast", "2 bell peppers", "1 onion", "Soy sauce", "Ginger"],
+      instructions: "Slice chicken and veggies. Stir fry chicken first, then add veggies. Season with soy sauce.",
+      time: 10,
+      duration: 15,
+      equipment: ["wok", "knife"],
+      visibility: true,
+      user_id: 2
+    }
+  ]) // TEMP: mock recipes for testing
   const [saved, setSaved] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -33,12 +56,14 @@ export default function App() {
         setUser({ role: payload.role || 'user', id: payload.sub })
       }
       // fetch recipes for explorer/admin view
-      fetchRecipes(t)
-      fetchSaved(t)
+      // TEMP: skip API calls for testing
+      // fetchRecipes(t)
+      // fetchSaved(t)
     } else {
-      setUser(null)
-      setRecipes([])
-      setSaved([])
+      // TEMP: keep mock user for testing
+      // setUser(null)
+      // setRecipes([])
+      // setSaved([])
     }
     // eslint-disable-next-line
   }, [token])
@@ -90,7 +115,7 @@ export default function App() {
     }
   }
 
-  const isAuthenticated = Boolean(token)
+  const isAuthenticated = Boolean(token) || true // TEMP: bypass auth for testing
   const isAdmin = user?.role === 'admin'
 
   // Simple forms state for recipe creation/editing (shared by admin/explorer)
@@ -98,24 +123,21 @@ export default function App() {
 
   // Create recipe handler (used by both admin and explorer, as appropriate on server)
   async function handleCreate() {
-    if (!token) { alert('Please login'); return }
-    const payload = {
+    // TEMP: simulate creating recipe locally
+    const newRecipe = {
+      id: Date.now(),
       title: draft.title,
       ingredients: draft.ingredients.split(',').map(s => s.trim()).filter(Boolean),
       instructions: draft.instructions,
       time: parseInt(draft.time) || 0,
       duration: parseInt(draft.duration) || 0,
       equipment: draft.equipment.split(',').map(s => s.trim()).filter(Boolean),
-      visibility: draft.visibility
+      visibility: draft.visibility,
+      user_id: user?.id || 1
     }
-    const res = await createRecipe(token, payload)
-    if (res?.id) {
-      // refresh
-      fetchRecipes(token)
-      setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
-    } else {
-      alert('Create failed: ' + (res.error || 'unknown'))
-    }
+    setRecipes(prev => [...prev, newRecipe])
+    setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
+    alert('Recipe created! (simulated)')
   }
 
   async function handleUpdate(id, payload) {
@@ -139,9 +161,12 @@ export default function App() {
   }
 
   async function handleSave(recipeId) {
-    if (!token) return
-    await saveRecipe(token, recipeId)
-    fetchSaved(token)
+    // TEMP: simulate saving recipe locally
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (recipe) {
+      setSaved(prev => [...prev, recipe])
+      alert('Recipe saved! (simulated)')
+    }
   }
 
   // Simple views
