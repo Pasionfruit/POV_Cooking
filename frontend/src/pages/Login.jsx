@@ -12,8 +12,10 @@ export default function Login() {
     // TEMP: Simple mock login - accept any username/password
     if (credentials.username && credentials.password) {
       // Simulate login with mock user data
-      login({ id: 1, username: credentials.username, role: 'admin' })
-      alert(`Welcome back, ${credentials.username}! (simulated login)`)
+      // Special case: "tester" gets user role, others get admin role
+      const userRole = credentials.username.toLowerCase() === 'tester' ? 'user' : 'admin'
+      login({ id: 1, username: credentials.username, role: userRole })
+      alert(`Welcome back, ${credentials.username}! (Role: ${userRole}) (simulated login)`)
       navigate('/')
     } else {
       alert('Please enter both username and password')

@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState } from 'react'
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // TEMP: bypass auth for testing
-  const [user, setUser] = useState({ role: 'admin', id: 1 }) // TEMP: mock admin user
+  const [isAuthenticated, setIsAuthenticated] = useState(false) // Start unauthenticated for proper testing
+  const [user, setUser] = useState(null) // No default user
 
   const login = (userData) => {
     setIsAuthenticated(true)

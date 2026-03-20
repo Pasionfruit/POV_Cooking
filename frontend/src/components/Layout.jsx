@@ -17,21 +17,24 @@ export default function Layout({ children }) {
     <div className="app-shell">
       <header className="topbar">
         <div className="logo">
-          <Link to="/" className="nav-link">POV Cooking</Link>
+          <Link to="/" className="nav-link">{user?.username || 'POV'} Cooking</Link>
         </div>
         <nav className="nav">
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
           {isAuthenticated ? (
             <>
-              <Link to="/pantry" className={`nav-link ${location.pathname === '/pantry' ? 'active' : ''}`}>Pantry</Link>
-              {user?.role === 'admin' && (
+              {user?.role === 'admin' ? (
                 <>
-                  <Link to="/admin" className={`nav-link ${location.pathname === '/admin' ? 'active' : ''}`}>Admin</Link>
                   <Link to="/role" className={`nav-link ${location.pathname === '/role' ? 'active' : ''}`}>Roles</Link>
+                  <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/pantry" className={`nav-link ${location.pathname === '/pantry' ? 'active' : ''}`}>Pantry</Link>
+                  <Link to="/recipes" className={`nav-link ${location.pathname === '/recipes' ? 'active' : ''}`}>Recipes</Link>
+                  <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
                 </>
               )}
-              <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
-              <span className="nav-link">Role: {user?.role}</span>
               <button onClick={handleLogout} className="nav-link logout-btn">Logout</button>
             </>
           ) : (
