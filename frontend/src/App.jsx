@@ -265,78 +265,70 @@ function ViewPantryCard({ p }) {
   const pantryView = (
     <div className="pantry-panel panel">
       <h2>Pantry</h2>
-      <div className="pantry-filter" style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:8}}>
-        <select value={pantryFilter.category} onChange={e => setPantryFilter({ ...pantryFilter, category: e.target.value })}>
-          <option value="All">All Categories</option>
-          {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <select value={pantryFilter.location} onChange={e => setPantryFilter({ ...pantryFilter, location: e.target.value })}>
-          <option value="All">All Locations</option>
-          {['Fridge','Freezer','Pantry','Misc'].map(l => <option key={l} value={l}>{l}</option>)}
-        </select>
-        <select value={pantryFilter.status} onChange={e => setPantryFilter({ ...pantryFilter, status: e.target.value })}>
-          <option value="All">All Status</option>
-          <option value="Expired">Expired</option>
-          <option value="ExpiringSoon">Expiring Soon</option>
-          <option value="NotExpiring">Not Expiring</option>
-        </select>
-        <input placeholder="Search" value={pantryFilter.search} onChange={e => setPantryFilter({ ...pantryFilter, search: e.target.value })} />
-      </div>
-      <div className="pantry-form">
-        <input placeholder="Name" value={pantryDraft.name} onChange={e => setPantryDraft({ ...pantryDraft, name: e.target.value })} />
-        <select value={pantryDraft.category} onChange={e => setPantryDraft({ ...pantryDraft, category: e.target.value })}>
-          {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <input type="date" value={pantryDraft.expiration_date} onChange={e => setPantryDraft({ ...pantryDraft, expiration_date: e.target.value })} />
-        <input type="number" min="0" value={pantryDraft.quantity} onChange={e => setPantryDraft({ ...pantryDraft, quantity: e.target.value })} />
-        <select value={pantryDraft.unit} onChange={e => setPantryDraft({ ...pantryDraft, unit: e.target.value })}>
-          <option value="pcs">pcs</option>
-          <option value="g">g</option>
-          <option value="kg">kg</option>
-          <option value="ml">ml</option>
-          <option value="L">L</option>
-          <option value="oz">oz</option>
-          <option value="lb">lb</option>
-        </select>
-        <select value={pantryDraft.unit_system} onChange={e => setPantryDraft({ ...pantryDraft, unit_system: e.target.value })}>
-          <option value="metric">metric</option>
-          <option value="imperial">imperial</option>
-        </select>
-        <select value={pantryDraft.location} onChange={e => setPantryDraft({ ...pantryDraft, location: e.target.value })}>
-          <option value="Fridge">Fridge</option>
-          <option value="Freezer">Freezer</option>
-          <option value="Pantry">Pantry</option>
-          <option value="Misc">Misc</option>
-        </select>
-        <input placeholder="Notes" value={pantryDraft.notes} onChange={e => setPantryDraft({ ...pantryDraft, notes: e.target.value })} />
-        <button onClick={pantryAdd}>Add Pantry Item</button>
-      </div>
-      <div className="pantry-list">
-        {pantry.filter(p => {
-          // category filter
-          if (pantryFilter.category !== 'All' && p.category !== pantryFilter.category) return false
-          // location filter
-          if (pantryFilter.location !== 'All' && p.location !== pantryFilter.location) return false
-          // search
-          if (pantryFilter.search && !p.name.toLowerCase().includes(pantryFilter.search.toLowerCase())) return false
-          // status filter
-          const daysLeft = p.expiration_date ? Math.ceil((new Date(p.expiration_date) - new Date()) / (1000*60*60*24)) : null
-          if (pantryFilter.status === 'Expired') {
-            if (!p.expiration_date) return false
-            if (daysLeft >= 0) return false
-          } else if (pantryFilter.status === 'ExpiringSoon') {
-            if (!p.expiration_date) return false
-            if (!(daysLeft <= 7 && daysLeft >= 0)) return false
-          } else if (pantryFilter.status === 'NotExpiring') {
-            if (p.expiration_date) {
-              if (daysLeft <= 7) return false
-            }
-          }
-          return true
-        }).map(p => (
-          <ViewPantryCard p={p} key={p.id} />
-        ))}
-      </div>
+      <section className="panel" aria-label="Add Pantry Item">
+        <div className="pantry-form">
+          <input placeholder="Name" value={pantryDraft.name} onChange={e => setPantryDraft({ ...pantryDraft, name: e.target.value })} />
+          <select value={pantryDraft.category} onChange={e => setPantryDraft({ ...pantryDraft, category: e.target.value })}>
+            {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <input type="date" value={pantryDraft.expiration_date} onChange={e => setPantryDraft({ ...pantryDraft, expiration_date: e.target.value })} />
+          <input type="number" min="0" value={pantryDraft.quantity} onChange={e => setPantryDraft({ ...pantryDraft, quantity: e.target.value })} />
+          <select value={pantryDraft.unit} onChange={e => setPantryDraft({ ...pantryDraft, unit: e.target.value })}>
+            <option value="pcs">pcs</option>
+            <option value="g">g</option>
+            <option value="kg">kg</option>
+            <option value="ml">ml</option>
+            <option value="L">L</option>
+            <option value="oz">oz</option>
+            <option value="lb">lb</option>
+          </select>
+          <select value={pantryDraft.unit_system} onChange={e => setPantryDraft({ ...pantryDraft, unit_system: e.target.value })}>
+            <option value="metric">metric</option>
+            <option value="imperial">imperial</option>
+          </select>
+          <select value={pantryDraft.location} onChange={e => setPantryDraft({ ...pantryDraft, location: e.target.value })}>
+            <option value="Fridge">Fridge</option>
+            <option value="Freezer">Freezer</option>
+            <option value="Pantry">Pantry</option>
+            <option value="Misc">Misc</option>
+          </select>
+          <input placeholder="Notes" value={pantryDraft.notes} onChange={e => setPantryDraft({ ...pantryDraft, notes: e.target.value })} />
+          <button onClick={pantryAdd}>Add Pantry Item</button>
+        </div>
+      </section>
+      <section className="panel" aria-label="Pantry Items">
+        <div className="pantry-filter" style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:8}}>
+          <select value={pantryFilter.category} onChange={e => setPantryFilter({ ...pantryFilter, category: e.target.value })}>
+            <option value="All">All Categories</option>
+            {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select value={pantryFilter.location} onChange={e => setPantryFilter({ ...pantryFilter, location: e.target.value })}>
+            <option value="All">All Locations</option>
+            {['Fridge','Freezer','Pantry','Misc'].map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+          <select value={pantryFilter.status} onChange={e => setPantryFilter({ ...pantryFilter, status: e.target.value })}>
+            <option value="All">All Status</option>
+            <option value="Expired">Expired</option>
+            <option value="ExpiringSoon">Expiring Soon</option>
+            <option value="NotExpiring">Not Expiring</option>
+          </select>
+          <input placeholder="Search" value={pantryFilter.search} onChange={e => setPantryFilter({ ...pantryFilter, search: e.target.value })} />
+        </div>
+        <div className="pantry-list">
+          {pantry.filter(p => {
+            if (pantryFilter.category !== 'All' && p.category !== pantryFilter.category) return false
+            if (pantryFilter.location !== 'All' && p.location !== pantryFilter.location) return false
+            if (pantryFilter.search && !p.name.toLowerCase().includes(pantryFilter.search.toLowerCase())) return false
+            const daysLeft = p.expiration_date ? Math.ceil((new Date(p.expiration_date) - new Date()) / (1000*60*60*24)) : null
+            if (pantryFilter.status === 'Expired') { if (!p.expiration_date) return false; if (daysLeft >= 0) return false }
+            else if (pantryFilter.status === 'ExpiringSoon') { if (!p.expiration_date) return false; if (!(daysLeft <= 7 && daysLeft >= 0)) return false }
+            else if (pantryFilter.status === 'NotExpiring') { if (p.expiration_date && daysLeft <= 7) return false }
+            return true
+          }).map(p => (
+            <ViewPantryCard p={p} key={p.id} />
+          ))}
+        </div>
+      </section>
     </div>
   )
 
