@@ -74,3 +74,13 @@ button:hover { filter: brightness(1.05); }
 @media (max-width: 800px) {
   .grid { grid-template-columns: 1fr; }
 }
+
+/* Pantry item preview modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+.modal-content {
+  width: min(90%, 640px); background: #0f1224; color: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,.15); padding-bottom: 8px; margin-bottom: 8px; }
+.modal-body { display: grid; gap: 6px; }

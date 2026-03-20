@@ -16,6 +16,7 @@ const pool = SKIP_DB ? null : new Pool({ connectionString: process.env.DATABASE_
 
 const ADMIN_CODE = process.env.ADMIN_CODE
 const JWT_SECRET = process.env.JWT_SECRET || 'secret'
+const MAX_PANTRY_ITEMS = parseInt(process.env.MAX_PANTRY_ITEMS || '200', 10)
 
 async function initDb() {
   // Create tables if they don't exist
@@ -295,6 +296,12 @@ app.post('/pantry', authMiddleware, async (req, res) => {
   const { name, category, expiration_date, quantity, unit, unit_system, location, notes } = req.body
   if (!name || !category) return res.status(400).json({ error: 'Missing required fields' })
   try {
+    // Enforce per-user pantry item limit
+    const countRes = await pool.query('SELECT COUNT(*) FROM pantry_items WHERE user_id = $1', [req.user.id])
+    const currentCount = parseInt(countRes.rows[0].count, 10) || 0
+    if (currentCount >= MAX_PANTRY_ITEMS) {
+      return res.status(429).json({ error: 'Pantry item limit reached' })
+    }
     const r = await pool.query(
       `INSERT INTO pantry_items (user_id, name, category, expiration_date, quantity, unit, unit_system, location, notes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
       [req.user.id, name, category, expiration_date || null, quantity ?? 1, unit ?? 'pcs', unit_system ?? 'metric', location, notes]

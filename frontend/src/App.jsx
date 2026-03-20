@@ -17,7 +17,7 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const [token, setToken] = useState(localStorage.getItem('pov_token') || null)
-  const [user, setUser] = useState({ role: 'user', id: 1 }) // TEMP: mock user for testing
+  const [user, setUser] = useState(null) // no hard-coded mock user
   const [view, setView] = useState(location.pathname.replace('/', '') || 'explore') // TEMP: default to explore
   const [recipes, setRecipes] = useState([
     {
@@ -46,6 +46,8 @@ export default function App() {
   const [saved, setSaved] = useState([])
   const [pantry, setPantry] = useState([])
   const [pantryDraft, setPantryDraft] = useState({ name: '', category: 'Grains', expiration_date: '', quantity: 1, unit: 'pcs', unit_system: 'metric', location: 'Pantry', notes: '' })
+  const [pantryFilter, setPantryFilter] = useState({ category: 'All', location: 'All', status: 'All', search: '' })
+  const [pantryPreview, setPantryPreview] = useState(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -124,8 +126,16 @@ export default function App() {
     }
   }
 
-  const isAuthenticated = Boolean(token) || true // TEMP: bypass auth for testing
+  const isAuthenticated = Boolean(token)
   const isAdmin = user?.role === 'admin'
+
+  // Logout handler
+  function logout() {
+    setToken(null)
+    localStorage.removeItem('pov_token')
+    setUser(null)
+    navigate('/login')
+  }
 
   // Simple forms state for recipe creation/editing (shared by admin/explorer)
   const [draft, setDraft] = useState({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
@@ -179,6 +189,7 @@ export default function App() {
   }
 
   // Pantry actions
+  // Pantry link in header will navigate to /pantry (pantryView renders when path matches)
   async function pantryAdd() {
     if (!token) { alert('Please login'); return }
     const payload = {
@@ -210,7 +221,7 @@ export default function App() {
     }
   }
 
-  function ViewPantryCard({ p }) {
+function ViewPantryCard({ p }) {
     const days = p.expiration_date ? Math.ceil((new Date(p.expiration_date) - new Date()) / (1000*60*60*24)) : null
     const color = days == null ? '' : (days < 0 ? 'expired' : days <=7 ? 'danger' : days <=14 ? 'warn' : 'safe')
     return (
@@ -222,7 +233,31 @@ export default function App() {
           <div className={`pantry-row expiry ${color}`}>Expiring in {days < 0 ? 'expired' : days + ' days'}</div>
         )}
         <div className="pantry-actions">
+          <button onClick={() => setPantryPreview(p)}>Preview</button>
           <button onClick={() => pantryDelete(p.id)}>Delete</button>
+        </div>
+      </div>
+    )
+  }
+  // Preview modal for a pantry item
+  function PantryPreviewModal({ item, onClose }) {
+    if (!item) return null
+    const daysLeft = item.expiration_date ? Math.ceil((new Date(item.expiration_date) - new Date()) / (1000*60*60*24)) : null
+    const color = daysLeft == null ? '' : (daysLeft < 0 ? 'expired' : daysLeft <= 7 ? 'danger' : daysLeft <= 14 ? 'warn' : 'safe')
+    return (
+      <div className="modal-overlay" onClick={onClose} role="dialog" aria-label="Pantry item preview">
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <strong>{item.name}</strong>
+            <button onClick={onClose}>Close</button>
+          </div>
+          <div className="modal-body">
+            <div>Category: <span className={`badge cat-${item.category.replace(/\s+/g, '_')}`}>{item.category}</span></div>
+            <div>Quantity: {item.quantity} {item.unit} ({item.unit_system})</div>
+            <div>Location: {item.location}</div>
+            <div>Expiration: {item.expiration_date ?? 'N/A'} {item.expiration_date ? `(${daysLeft} days left)` : ''}</div>
+            {item.notes && <div>Notes: {item.notes}</div>}
+          </div>
         </div>
       </div>
     )
@@ -230,6 +265,23 @@ export default function App() {
   const pantryView = (
     <div className="pantry-panel panel">
       <h2>Pantry</h2>
+      <div className="pantry-filter" style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:8}}>
+        <select value={pantryFilter.category} onChange={e => setPantryFilter({ ...pantryFilter, category: e.target.value })}>
+          <option value="All">All Categories</option>
+          {['Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets'].map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select value={pantryFilter.location} onChange={e => setPantryFilter({ ...pantryFilter, location: e.target.value })}>
+          <option value="All">All Locations</option>
+          {['Fridge','Freezer','Pantry','Misc'].map(l => <option key={l} value={l}>{l}</option>)}
+        </select>
+        <select value={pantryFilter.status} onChange={e => setPantryFilter({ ...pantryFilter, status: e.target.value })}>
+          <option value="All">All Status</option>
+          <option value="Expired">Expired</option>
+          <option value="ExpiringSoon">Expiring Soon</option>
+          <option value="NotExpiring">Not Expiring</option>
+        </select>
+        <input placeholder="Search" value={pantryFilter.search} onChange={e => setPantryFilter({ ...pantryFilter, search: e.target.value })} />
+      </div>
       <div className="pantry-form">
         <input placeholder="Name" value={pantryDraft.name} onChange={e => setPantryDraft({ ...pantryDraft, name: e.target.value })} />
         <select value={pantryDraft.category} onChange={e => setPantryDraft({ ...pantryDraft, category: e.target.value })}>
@@ -260,7 +312,30 @@ export default function App() {
         <button onClick={pantryAdd}>Add Pantry Item</button>
       </div>
       <div className="pantry-list">
-        {pantry.map(p => <ViewPantryCard p={p} key={p.id} />)}
+        {pantry.filter(p => {
+          // category filter
+          if (pantryFilter.category !== 'All' && p.category !== pantryFilter.category) return false
+          // location filter
+          if (pantryFilter.location !== 'All' && p.location !== pantryFilter.location) return false
+          // search
+          if (pantryFilter.search && !p.name.toLowerCase().includes(pantryFilter.search.toLowerCase())) return false
+          // status filter
+          const daysLeft = p.expiration_date ? Math.ceil((new Date(p.expiration_date) - new Date()) / (1000*60*60*24)) : null
+          if (pantryFilter.status === 'Expired') {
+            if (!p.expiration_date) return false
+            if (daysLeft >= 0) return false
+          } else if (pantryFilter.status === 'ExpiringSoon') {
+            if (!p.expiration_date) return false
+            if (!(daysLeft <= 7 && daysLeft >= 0)) return false
+          } else if (pantryFilter.status === 'NotExpiring') {
+            if (p.expiration_date) {
+              if (daysLeft <= 7) return false
+            }
+          }
+          return true
+        }).map(p => (
+          <ViewPantryCard p={p} key={p.id} />
+        ))}
       </div>
     </div>
   )
@@ -303,16 +378,21 @@ export default function App() {
         <div className="logo">POV Cooking</div>
         <nav className="nav">
           <Link to="/explore" className="nav-link">Explorer</Link>
+          <Link to="/pantry" className="nav-link">Pantry</Link>
           {isAdmin && <Link to="/admin" className="nav-link">Admin</Link>}
           {!isAuthenticated ? (
             <Link to="/login" className="nav-link">Login</Link>
           ) : (
-            <span className="nav-link">Role: {user?.role}</span>
+            <>
+              <span className="nav-link">Role: {user?.role || 'user'}</span>
+              <button className="nav-link" onClick={logout}>Logout</button>
+            </>
           )}
         </nav>
       </header>
       <main className="content">
         {!isAuthenticated ? loginView : (window.location.pathname.startsWith('/pantry') ? pantryView : (isAdmin ? adminView : explorerView))}
+        {pantryPreview && <PantryPreviewModal item={pantryPreview} onClose={() => setPantryPreview(null)} />}
       </main>
     </div>
   )
@@ -437,7 +517,7 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
   )
 }
 
-function ExplorerDashboard({ recipes, saved, draft, setDraft, onCreate, onSave }) {
+  function ExplorerDashboard({ recipes, saved, draft, setDraft, onCreate, onSave }) {
   const [viewing, setViewing] = useState(null)
   return (
     <div className="explore-dashboard">
