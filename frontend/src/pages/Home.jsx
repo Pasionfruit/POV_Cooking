@@ -30,6 +30,23 @@ export default function Home() {
 
   const [editingRecipe, setEditingRecipe] = useState(null)
   const [editForm, setEditForm] = useState({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '' })
+  const [isSpinning, setIsSpinning] = useState(false)
+  const [selectedRecipe, setSelectedRecipe] = useState(null)
+  const [isRandomizerExpanded, setIsRandomizerExpanded] = useState(true)
+
+  const handleSpin = () => {
+    if (isSpinning || recipes.length === 0) return
+
+    setIsSpinning(true)
+    setSelectedRecipe(null)
+
+    // Select random recipe immediately
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * recipes.length)
+      setSelectedRecipe(recipes[randomIndex])
+      setIsSpinning(false)
+    }, 1000) // Short delay for effect
+  }
 
   const handleEdit = (recipe) => {
     setEditingRecipe(recipe.id)
@@ -79,6 +96,39 @@ export default function Home() {
       <section className="panel">
         <h2>Recipe Explorer</h2>
         <p>Discover and explore recipes from our community.</p>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header" onClick={() => setIsRandomizerExpanded(!isRandomizerExpanded)}>
+          <h3>Randomize Meal</h3>
+          <button className="collapse-btn">
+            {isRandomizerExpanded ? '−' : '+'}
+          </button>
+        </div>
+        {isRandomizerExpanded && (
+          <>
+            <p>Can't decide what to cook? Let us pick a random recipe for you!</p>
+            <div className="randomizer-container">
+              <button
+                onClick={handleSpin}
+                disabled={isSpinning || recipes.length === 0}
+                className="randomize-button"
+              >
+                {isSpinning ? '🎲 Choosing...' : '🎲 Randomize Recipe!'}
+              </button>
+            </div>
+            {selectedRecipe && !isSpinning && (
+              <div className="selected-recipe">
+                <h4>🍽️ Your random recipe: {selectedRecipe.title}</h4>
+                <p>Time: {selectedRecipe.time}m • Duration: {selectedRecipe.duration}m</p>
+                <div className="recipe-preview">
+                  <strong>Ingredients:</strong> {selectedRecipe.ingredients.slice(0, 3).join(', ')}{selectedRecipe.ingredients.length > 3 ? '...' : ''}
+                </div>
+                <button onClick={() => alert('Recipe details would open here!')}>View Full Recipe</button>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       <section className="panel">
