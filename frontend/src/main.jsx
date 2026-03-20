@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Pantry from './pages/Pantry'
 import Recipes from './pages/Recipes'
+import MealPlan from './pages/MealPlan'
 import Admin from './pages/Admin'
 import Role from './pages/Role'
 import Settings from './pages/Settings'
@@ -28,6 +29,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/pantry" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><Pantry /></ProtectedRoute>} />
       <Route path="/recipes" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><Recipes /></ProtectedRoute>} />
+      <Route path="/meal-plan" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><MealPlan /></ProtectedRoute>} />
       <Route path="/role" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role === 'admin'}><Role /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Settings /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" />} />

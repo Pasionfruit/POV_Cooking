@@ -32,6 +32,7 @@ export default function Layout({ children }) {
                 <>
                   <Link to="/pantry" className={`nav-link ${location.pathname === '/pantry' ? 'active' : ''}`}>Pantry</Link>
                   <Link to="/recipes" className={`nav-link ${location.pathname === '/recipes' ? 'active' : ''}`}>Recipes</Link>
+                  <Link to="/meal-plan" className={`nav-link ${location.pathname === '/meal-plan' ? 'active' : ''}`}>Meal Plan</Link>
                   <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>Settings</Link>
                 </>
               )}
