@@ -248,6 +248,7 @@ function LoginForm({ onLogin, onRegister }) {
 
 function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete, isAdmin }) {
   const [editing, setEditing] = useState(null)
+  const [viewing, setViewing] = useState(null)
   const startEdit = (r) => {
     setEditing(r.id)
     setDraft({ title: r.title, ingredients: (r.ingredients || []).join(', '), instructions: r.instructions, time: r.time ?? '', duration: r.duration ?? '', equipment: (r.equipment || []).join(', '), visibility: r.visibility ?? false })
@@ -303,7 +304,36 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
               <div className="card-actions">
                 <button onClick={() => startEdit(r)}>Edit</button>
                 <button onClick={() => onDelete(r.id)}>Delete</button>
+                <button onClick={() => setViewing(viewing === r.id ? null : r.id)}>
+                  {viewing === r.id ? 'Hide' : 'View'}
+                </button>
               </div>
+              {viewing === r.id && (
+                <div className="recipe-view">
+                  <div className="rv-title">{r.title}</div>
+                  <div className="rv-meta">Time: {r.time ?? 0}m • Duration: {r.duration ?? 0}m</div>
+                  <div className="rv-section">
+                    <strong>Ingredients</strong>
+                    <ul>
+                      {(r.ingredients || []).map((ing, idx) => <li key={idx}>{ing}</li>)}
+                    </ul>
+                  </div>
+                  <div className="rv-section">
+                    <strong>Equipment</strong>
+                    <ul>
+                      {(r.equipment || []).map((eq, idx) => <li key={idx}>{eq}</li>)}
+                    </ul>
+                  </div>
+                  <div className="rv-section">
+                    <strong>Instructions</strong>
+                    <ol>
+                      {((typeof r.instructions === 'string') ? r.instructions.split(/\r?\n/).filter(s => s.trim()) : []).map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -313,6 +343,7 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
 }
 
 function ExplorerDashboard({ recipes, saved, draft, setDraft, onCreate, onSave }) {
+  const [viewing, setViewing] = useState(null)
   return (
     <div className="explore-dashboard">
       <section className="panel">
@@ -344,7 +375,36 @@ function ExplorerDashboard({ recipes, saved, draft, setDraft, onCreate, onSave }
               <div className="card-meta">Time: {r.time ?? '-'}m • Owner: {r.user_id}</div>
               <div className="card-actions">
                 <button onClick={() => onSave(r.id)}>Save</button>
+                <button onClick={() => setViewing(viewing === r.id ? null : r.id)}>
+                  {viewing === r.id ? 'Hide' : 'View'}
+                </button>
               </div>
+              {viewing === r.id && (
+                <div className="recipe-view">
+                  <div className="rv-title">{r.title}</div>
+                  <div className="rv-meta">Time: {r.time ?? 0}m • Duration: {r.duration ?? 0}m</div>
+                  <div className="rv-section">
+                    <strong>Ingredients</strong>
+                    <ul>
+                      {(r.ingredients || []).map((ing, idx) => <li key={idx}>{ing}</li>)}
+                    </ul>
+                  </div>
+                  <div className="rv-section">
+                    <strong>Equipment</strong>
+                    <ul>
+                      {(r.equipment || []).map((eq, idx) => <li key={idx}>{eq}</li>)}
+                    </ul>
+                  </div>
+                  <div className="rv-section">
+                    <strong>Instructions</strong>
+                    <ol>
+                      {((typeof r.instructions === 'string') ? r.instructions.split(/\r?\n/).filter(s => s.trim()) : []).map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ol>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -39,6 +39,11 @@ body {
 .card-title { font-weight: 600; margin-bottom: 6px; }
 .card-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
 .card-actions { display: flex; gap: 6px; }
+.recipe-view { margin-top: 8px; padding: 12px; border-radius: 6px; background: rgba(255,255,255,.04); border-left: 3px solid var(--accent); }
+.rv-title { font-weight: 700; margin-bottom: 6px; }
+.rv-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.rv-section { margin-bottom: 8px; }
+.rv-section ul, .rv-section ol { margin: 6px 0 0 18px; }
 input::placeholder, textarea::placeholder { color: #8b92a6; }
 button { padding: 8px 12px; border-radius: 6px; border: none; background: var(--primary); color: white; cursor: pointer; }
 button:hover { filter: brightness(1.05); }
