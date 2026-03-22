@@ -1,10 +1,10 @@
 // Lightweight script to create test users (tester and tester-admin) with bcrypt-hashed passwords.
 // Usage: node backend/scripts/seed_test_users.js
-const { Pool } = require('pg')
-const bcrypt = require('bcrypt')
-require('dotenv').config({ path: require('path').join(__dirname, '../../.env') })
+const bcrypt = require('bcryptjs')
+const { loadEnv, createPool } = require('../db')
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+loadEnv()
+const pool = createPool()
 
 async function seed() {
   const tester = 'tester'
