@@ -84,3 +84,22 @@ button:hover { filter: brightness(1.05); }
 }
 .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,.15); padding-bottom: 8px; margin-bottom: 8px; }
 .modal-body { display: grid; gap: 6px; }
+
+.toast-stack {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1100;
+}
+
+.toast {
+  background: rgba(16, 185, 129, 0.95);
+  color: #052e24;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}

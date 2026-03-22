@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe, getPantry, addPantry, updatePantry, deletePantry } from './api.js'
+import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe, unsaveRecipe, getPantry, addPantry, updatePantry, deletePantry } from './api.js'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
 import MealPlan from './pages/MealPlan'
 import Settings from './pages/Settings'
@@ -29,7 +29,17 @@ export default function App() {
   const [pantryDraft, setPantryDraft] = useState({ name: '', category: 'Grains', expiration_date: '', quantity: 1, unit: 'pcs', unit_system: 'metric', location: 'Pantry', notes: '' })
   const [pantryFilter, setPantryFilter] = useState({ category: 'All', location: 'All', status: 'All', search: '' })
   const [pantryPreview, setPantryPreview] = useState(null)
+  const [recipePreview, setRecipePreview] = useState(null)
+  const [toasts, setToasts] = useState([])
   const [loading, setLoading] = useState(false)
+
+  function pushToast(message) {
+    const id = Date.now() + Math.random()
+    setToasts(prev => [...prev, { id, message }])
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id))
+    }, 2200)
+  }
 
   useEffect(() => {
     const t = token
@@ -162,10 +172,24 @@ export default function App() {
     const res = await saveRecipe(token, recipeId)
     if (res?.ok) {
       fetchSaved(token)
+      pushToast('Recipe saved')
     } else {
       alert('Save failed')
     }
   }
+
+  async function handleUnsave(recipeId) {
+    if (!token) return
+    const res = await unsaveRecipe(token, recipeId)
+    if (res?.ok) {
+      fetchSaved(token)
+      pushToast('Recipe unsaved')
+    } else {
+      alert('Unsave failed')
+    }
+  }
+
+  const savedIds = useMemo(() => new Set(saved.map(r => r.id)), [saved])
 
   // Pantry actions
   // Pantry link in header will navigate to /pantry (pantryView renders when path matches)
@@ -333,7 +357,10 @@ function ViewPantryCard({ p }) {
   const explorerView = (
     <ExplorerDashboard
       recipes={recipes}
+      savedIds={savedIds}
       onSave={handleSave}
+      onUnsave={handleUnsave}
+      onPreview={setRecipePreview}
     />
   )
 
@@ -343,6 +370,8 @@ function ViewPantryCard({ p }) {
       draft={draft}
       setDraft={setDraft}
       onCreate={handleCreate}
+      onUnsave={handleUnsave}
+      onPreview={setRecipePreview}
     />
   )
 
@@ -385,7 +414,11 @@ function ViewPantryCard({ p }) {
                   ? (isAdmin ? adminView : explorerView)
                   : (isAdmin ? adminView : explorerView)}
         {pantryPreview && <PantryPreviewModal item={pantryPreview} onClose={() => setPantryPreview(null)} />}
+        {recipePreview && <RecipePreviewModal item={recipePreview} onClose={() => setRecipePreview(null)} />}
       </main>
+      <div className="toast-stack" aria-live="polite" aria-atomic="true">
+        {toasts.map(t => <div key={t.id} className="toast">{t.message}</div>)}
+      </div>
     </div>
   )
 }
@@ -509,7 +542,7 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
   )
 }
 
-function RecipesDashboard({ saved, draft, setDraft, onCreate }) {
+function RecipesDashboard({ saved, draft, setDraft, onCreate, onUnsave, onPreview }) {
   return (
     <div className="recipes-dashboard">
       <section className="panel">
@@ -539,16 +572,21 @@ function RecipesDashboard({ saved, draft, setDraft, onCreate }) {
           {saved.map(r => (
             <div key={r.id} className="card">
               <div className="card-title">{r.title}</div>
+              <div className="card-meta">Time: {r.time ?? '-'}m • Owner: {r.user_id}</div>
+              <div className="card-actions">
+                <button onClick={() => onPreview(r)}>View</button>
+                <button onClick={() => onUnsave(r.id)}>Unsave</button>
+              </div>
             </div>
           ))}
+          {saved.length === 0 && <p>No saved recipes yet.</p>}
         </div>
       </section>
     </div>
   )
 }
 
-function ExplorerDashboard({ recipes, onSave }) {
-  const [viewing, setViewing] = useState(null)
+function ExplorerDashboard({ recipes, savedIds, onSave, onUnsave, onPreview }) {
   return (
     <div className="explore-dashboard">
       <section className="panel">
@@ -559,41 +597,52 @@ function ExplorerDashboard({ recipes, onSave }) {
               <div className="card-title">{r.title}</div>
               <div className="card-meta">Time: {r.time ?? '-'}m • Owner: {r.user_id}</div>
               <div className="card-actions">
-                <button onClick={() => onSave(r.id)}>Save</button>
-                <button onClick={() => setViewing(viewing === r.id ? null : r.id)}>
-                  {viewing === r.id ? 'Hide' : 'View'}
-                </button>
+                {savedIds.has(r.id)
+                  ? <button onClick={() => onUnsave(r.id)}>Unsave</button>
+                  : <button onClick={() => onSave(r.id)}>Save</button>}
+                <button onClick={() => onPreview(r)}>View</button>
               </div>
-              {viewing === r.id && (
-                <div className="recipe-view">
-                  <div className="rv-title">{r.title}</div>
-                  <div className="rv-meta">Time: {r.time ?? 0}m • Duration: {r.duration ?? 0}m</div>
-                  <div className="rv-section">
-                    <strong>Ingredients</strong>
-                    <ul>
-                      {(r.ingredients || []).map((ing, idx) => <li key={idx}>{ing}</li>)}
-                    </ul>
-                  </div>
-                  <div className="rv-section">
-                    <strong>Equipment</strong>
-                    <ul>
-                      {(r.equipment || []).map((eq, idx) => <li key={idx}>{eq}</li>)}
-                    </ul>
-                  </div>
-                  <div className="rv-section">
-                    <strong>Instructions</strong>
-                    <ol>
-                      {((typeof r.instructions === 'string') ? r.instructions.split(/\r?\n/).filter(s => s.trim()) : []).map((step, idx) => (
-                        <li key={idx}>{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
         </div>
       </section>
+    </div>
+  )
+}
+
+function RecipePreviewModal({ item, onClose }) {
+  if (!item) return null
+  return (
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-label="Recipe preview">
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <strong>{item.title}</strong>
+          <button onClick={onClose}>Close</button>
+        </div>
+        <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          <div>Time: {item.time ?? 0}m • Duration: {item.duration ?? 0}m</div>
+          <div>
+            <strong>Ingredients</strong>
+            <ul>
+              {(item.ingredients || []).map((ing, idx) => <li key={idx}>{ing}</li>)}
+            </ul>
+          </div>
+          <div>
+            <strong>Equipment</strong>
+            <ul>
+              {(item.equipment || []).map((eq, idx) => <li key={idx}>{eq}</li>)}
+            </ul>
+          </div>
+          <div>
+            <strong>Instructions</strong>
+            <ol>
+              {((typeof item.instructions === 'string') ? item.instructions.split(/\r?\n/).filter(s => s.trim()) : []).map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

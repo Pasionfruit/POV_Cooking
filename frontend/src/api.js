@@ -71,6 +71,14 @@ export async function getSaved(token) {
   return res.json()
 }
 
+export async function unsaveRecipe(token, recipeId) {
+  const res = await fetch(`${BASE}/saved/${recipeId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}
+
 export async function getPantry(token) {
   const res = await fetch(`${BASE}/pantry`, {
     headers: { 'Authorization': `Bearer ${token}` }

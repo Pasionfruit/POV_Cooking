@@ -273,6 +273,18 @@ app.get('/saved', authMiddleware, async (req, res) => {
   }
 })
 
+app.delete('/saved/:recipeId', authMiddleware, async (req, res) => {
+  const recipeId = parseInt(req.params.recipeId, 10)
+  if (!recipeId) return res.status(400).json({ error: 'Invalid recipe id' })
+  try {
+    await pool.query('DELETE FROM saved_recipes WHERE user_id = $1 AND recipe_id = $2', [req.user.id, recipeId])
+    res.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to unsave recipe' })
+  }
+})
+
 // Pantry endpoints (per-user pantry management)
 app.get('/pantry', authMiddleware, async (req, res) => {
   try {
