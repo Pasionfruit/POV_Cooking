@@ -27,9 +27,9 @@ export default function MealPlan() {
   const meals = ['breakfast', 'lunch', 'dinner']
 
   const getTodaysMeals = () => {
-    const today = new Date().toLocaleLowerCase('en-US', { weekday: 'long' })
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' })
     return {
-      day: today.charAt(0).toUpperCase() + today.slice(1),
+      day: today,
       meals: mealPlan[today] || { breakfast: '', lunch: '', dinner: '' }
     }
   }
