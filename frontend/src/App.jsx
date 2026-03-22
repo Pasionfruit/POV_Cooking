@@ -587,8 +587,43 @@ function RecipesDashboard({ saved, draft, setDraft, onCreate, onUnsave, onPrevie
 }
 
 function ExplorerDashboard({ recipes, savedIds, onSave, onUnsave, onPreview }) {
+  const [isSpinning, setIsSpinning] = useState(false)
+  const [lastRandomTitle, setLastRandomTitle] = useState('')
+  const [isRandomizerExpanded, setIsRandomizerExpanded] = useState(false)
+
+  function handleRandomize() {
+    if (isSpinning || recipes.length === 0) return
+    setIsSpinning(true)
+    setLastRandomTitle('')
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * recipes.length)
+      const selected = recipes[randomIndex]
+      setLastRandomTitle(selected?.title || '')
+      onPreview(selected)
+      setIsSpinning(false)
+    }, 700)
+  }
+
   return (
     <div className="explore-dashboard">
+      <section className="panel">
+        <div className="panel-header" onClick={() => setIsRandomizerExpanded(!isRandomizerExpanded)}>
+          <h3>Randomize Meal</h3>
+          <button className="collapse-btn" type="button">{isRandomizerExpanded ? '−' : '+'}</button>
+        </div>
+        {isRandomizerExpanded && (
+          <>
+            <p>Need inspiration? Let us pick a random recipe from available recipes.</p>
+            <div className="randomizer-actions">
+              <button onClick={handleRandomize} disabled={isSpinning || recipes.length === 0}>
+                {isSpinning ? 'Choosing...' : 'Randomize Recipe'}
+              </button>
+              {lastRandomTitle && <span className="randomizer-picked">Picked: {lastRandomTitle}</span>}
+            </div>
+          </>
+        )}
+      </section>
+
       <section className="panel">
         <h3>Available Recipes</h3>
         <div className="grid">
