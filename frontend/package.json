@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build"
+    "start": "C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js",
+    "dev": "C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js",
+    "build": "C:\\Progra~1\\nodejs\\node.exe ./node_modules/vite/bin/vite.js build"
   },
   "dependencies": {
     "react": "^18.2.0",
