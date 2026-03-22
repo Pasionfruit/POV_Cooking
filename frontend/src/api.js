@@ -111,3 +111,52 @@ export async function deletePantry(token, id) {
   })
   return res.json()
 }
+
+export async function getMealPlan(token) {
+  const res = await fetch(`${BASE}/meal-plan`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}
+
+export async function saveMealPlan(token, weekMeals) {
+  const res = await fetch(`${BASE}/meal-plan`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ weekMeals })
+  })
+  return res.json()
+}
+
+export async function getGroceryList(token) {
+  const res = await fetch(`${BASE}/grocery-list`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}
+
+export async function addGroceryItem(token, payload) {
+  const res = await fetch(`${BASE}/grocery-list`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  })
+  return res.json()
+}
+
+export async function updateGroceryItem(token, id, payload) {
+  const res = await fetch(`${BASE}/grocery-list/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  })
+  return res.json()
+}
+
+export async function deleteGroceryItem(token, id) {
+  const res = await fetch(`${BASE}/grocery-list/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return res.json()
+}

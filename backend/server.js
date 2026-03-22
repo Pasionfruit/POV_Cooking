@@ -70,7 +70,36 @@ async function initDb() {
       PRIMARY KEY (user_id, recipe_id)
     );
   `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS meal_plan_entries (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) NOT NULL,
+      day_of_week TEXT NOT NULL CHECK (day_of_week IN ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')),
+      breakfast TEXT NOT NULL DEFAULT '',
+      lunch TEXT NOT NULL DEFAULT '',
+      dinner TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE (user_id, day_of_week)
+    );
+  `)
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS grocery_items (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) NOT NULL,
+      name TEXT NOT NULL,
+      quantity NUMERIC(10,2) NOT NULL DEFAULT 1,
+      unit TEXT NOT NULL DEFAULT 'pcs',
+      checked BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `)
 }
+
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 function generateToken(user) {
   const payload = { sub: user.id, role: user.role }
@@ -282,6 +311,152 @@ app.delete('/saved/:recipeId', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to unsave recipe' })
+  }
+})
+
+app.get('/meal-plan', authMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT day_of_week, breakfast, lunch, dinner
+       FROM meal_plan_entries
+       WHERE user_id = $1`,
+      [req.user.id]
+    )
+
+    const weekMeals = WEEK_DAYS.reduce((acc, day) => {
+      acc[day] = { breakfast: '', lunch: '', dinner: '' }
+      return acc
+    }, {})
+
+    for (const row of r.rows) {
+      weekMeals[row.day_of_week] = {
+        breakfast: row.breakfast || '',
+        lunch: row.lunch || '',
+        dinner: row.dinner || ''
+      }
+    }
+
+    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' })
+    res.json({ weekMeals, currentDay, currentMeals: weekMeals[currentDay] || { breakfast: '', lunch: '', dinner: '' } })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch meal plan' })
+  }
+})
+
+app.put('/meal-plan', authMiddleware, async (req, res) => {
+  const { weekMeals } = req.body
+  if (!weekMeals || typeof weekMeals !== 'object') {
+    return res.status(400).json({ error: 'Missing weekMeals object' })
+  }
+
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+
+    for (const day of WEEK_DAYS) {
+      const dayMeals = weekMeals[day] || {}
+      await client.query(
+        `INSERT INTO meal_plan_entries (user_id, day_of_week, breakfast, lunch, dinner)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (user_id, day_of_week)
+         DO UPDATE SET breakfast = EXCLUDED.breakfast,
+                       lunch = EXCLUDED.lunch,
+                       dinner = EXCLUDED.dinner,
+                       updated_at = NOW()`,
+        [
+          req.user.id,
+          day,
+          dayMeals.breakfast || '',
+          dayMeals.lunch || '',
+          dayMeals.dinner || ''
+        ]
+      )
+    }
+
+    await client.query('COMMIT')
+    res.json({ ok: true })
+  } catch (err) {
+    await client.query('ROLLBACK')
+    console.error(err)
+    res.status(500).json({ error: 'Failed to save meal plan' })
+  } finally {
+    client.release()
+  }
+})
+
+app.get('/grocery-list', authMiddleware, async (req, res) => {
+  try {
+    const r = await pool.query(
+      `SELECT id, name, quantity, unit, checked
+       FROM grocery_items
+       WHERE user_id = $1
+       ORDER BY id`,
+      [req.user.id]
+    )
+    res.json(r.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to fetch grocery list' })
+  }
+})
+
+app.post('/grocery-list', authMiddleware, async (req, res) => {
+  const { name, quantity, unit } = req.body
+  if (!name || !name.trim()) return res.status(400).json({ error: 'Missing item name' })
+  try {
+    const r = await pool.query(
+      `INSERT INTO grocery_items (user_id, name, quantity, unit, checked)
+       VALUES ($1, $2, $3, $4, FALSE)
+       RETURNING id, name, quantity, unit, checked`,
+      [req.user.id, name.trim(), quantity ?? 1, unit || 'pcs']
+    )
+    res.json(r.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to add grocery item' })
+  }
+})
+
+app.put('/grocery-list/:id', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id, 10)
+  const { name, quantity, unit, checked } = req.body
+  if (!id) return res.status(400).json({ error: 'Invalid id' })
+  try {
+    const r = await pool.query('SELECT * FROM grocery_items WHERE id = $1 AND user_id = $2', [id, req.user.id])
+    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
+
+    const item = r.rows[0]
+    const up = await pool.query(
+      `UPDATE grocery_items
+       SET name = $1, quantity = $2, unit = $3, checked = $4, updated_at = NOW()
+       WHERE id = $5 AND user_id = $6
+       RETURNING id, name, quantity, unit, checked`,
+      [
+        name !== undefined ? String(name).trim() : item.name,
+        quantity !== undefined ? quantity : item.quantity,
+        unit !== undefined ? unit : item.unit,
+        checked !== undefined ? checked : item.checked,
+        id,
+        req.user.id
+      ]
+    )
+    res.json(up.rows[0])
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to update grocery item' })
+  }
+})
+
+app.delete('/grocery-list/:id', authMiddleware, async (req, res) => {
+  const id = parseInt(req.params.id, 10)
+  if (!id) return res.status(400).json({ error: 'Invalid id' })
+  try {
+    await pool.query('DELETE FROM grocery_items WHERE id = $1 AND user_id = $2', [id, req.user.id])
+    res.json({ ok: true })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to delete grocery item' })
   }
 })
 

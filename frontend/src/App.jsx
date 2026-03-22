@@ -375,7 +375,7 @@ function ViewPantryCard({ p }) {
     />
   )
 
-  const mealPlanView = <MealPlan />
+  const mealPlanView = <MealPlan token={token} />
   const settingsView = <Settings />
 
   // Root layout with header

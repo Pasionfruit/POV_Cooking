@@ -1,11 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import {
+  getMealPlan,
+  saveMealPlan,
+  getGroceryList,
+  addGroceryItem,
+  updateGroceryItem,
+  deleteGroceryItem
+} from '../api'
 
-export default function MealPlan() {
-  const [groceryItems, setGroceryItems] = useState([
-    { id: 1, name: 'Chicken Breast', quantity: 2, unit: 'lbs', checked: false },
-    { id: 2, name: 'Rice', quantity: 5, unit: 'lbs', checked: true },
-    { id: 3, name: 'Broccoli', quantity: 1, unit: 'head', checked: false }
-  ])
+const EMPTY_WEEK = {
+  Monday: { breakfast: '', lunch: '', dinner: '' },
+  Tuesday: { breakfast: '', lunch: '', dinner: '' },
+  Wednesday: { breakfast: '', lunch: '', dinner: '' },
+  Thursday: { breakfast: '', lunch: '', dinner: '' },
+  Friday: { breakfast: '', lunch: '', dinner: '' },
+  Saturday: { breakfast: '', lunch: '', dinner: '' },
+  Sunday: { breakfast: '', lunch: '', dinner: '' }
+}
+
+export default function MealPlan({ token }) {
+  const [groceryItems, setGroceryItems] = useState([])
 
   const [newGroceryItem, setNewGroceryItem] = useState({
     name: '',
@@ -13,18 +27,24 @@ export default function MealPlan() {
     unit: 'pcs'
   })
 
-  const [mealPlan, setMealPlan] = useState({
-    Monday: { breakfast: '', lunch: '', dinner: '' },
-    Tuesday: { breakfast: '', lunch: '', dinner: '' },
-    Wednesday: { breakfast: '', lunch: '', dinner: '' },
-    Thursday: { breakfast: '', lunch: '', dinner: '' },
-    Friday: { breakfast: '', lunch: '', dinner: '' },
-    Saturday: { breakfast: '', lunch: '', dinner: '' },
-    Sunday: { breakfast: '', lunch: '', dinner: '' }
-  })
+  const [mealPlan, setMealPlan] = useState(EMPTY_WEEK)
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
   const meals = ['breakfast', 'lunch', 'dinner']
+
+  useEffect(() => {
+    if (!token) return
+
+    getMealPlan(token).then((data) => {
+      if (data?.weekMeals) {
+        setMealPlan({ ...EMPTY_WEEK, ...data.weekMeals })
+      }
+    }).catch(() => {})
+
+    getGroceryList(token).then((data) => {
+      if (Array.isArray(data)) setGroceryItems(data)
+    }).catch(() => {})
+  }, [token])
 
   const getTodaysMeals = () => {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' })
@@ -37,28 +57,39 @@ export default function MealPlan() {
   const todaysData = getTodaysMeals()
 
   const handleAddGroceryItem = () => {
+    if (!token) return
     if (!newGroceryItem.name.trim()) return
 
-    const item = {
-      id: Date.now(),
-      ...newGroceryItem,
-      checked: false
-    }
-
-    setGroceryItems(prev => [...prev, item])
-    setNewGroceryItem({ name: '', quantity: 1, unit: 'pcs' })
-    alert('Grocery item added! (simulated)')
+    addGroceryItem(token, {
+      name: newGroceryItem.name,
+      quantity: newGroceryItem.quantity,
+      unit: newGroceryItem.unit
+    }).then((item) => {
+      if (item?.id) {
+        setGroceryItems(prev => [...prev, item])
+        setNewGroceryItem({ name: '', quantity: 1, unit: 'pcs' })
+      }
+    }).catch(() => {})
   }
 
   const handleToggleGroceryItem = (id) => {
-    setGroceryItems(prev => prev.map(item =>
-      item.id === id ? { ...item, checked: !item.checked } : item
-    ))
+    if (!token) return
+    const current = groceryItems.find(item => item.id === id)
+    if (!current) return
+    updateGroceryItem(token, id, { checked: !current.checked }).then((updated) => {
+      if (updated?.id) {
+        setGroceryItems(prev => prev.map(item => (item.id === id ? updated : item)))
+      }
+    }).catch(() => {})
   }
 
   const handleDeleteGroceryItem = (id) => {
-    setGroceryItems(prev => prev.filter(item => item.id !== id))
-    alert('Grocery item removed! (simulated)')
+    if (!token) return
+    deleteGroceryItem(token, id).then((res) => {
+      if (res?.ok) {
+        setGroceryItems(prev => prev.filter(item => item.id !== id))
+      }
+    }).catch(() => {})
   }
 
   const handleMealChange = (day, mealType, value) => {
@@ -72,7 +103,10 @@ export default function MealPlan() {
   }
 
   const handleSaveMealPlan = () => {
-    alert('Meal plan saved! (simulated)')
+    if (!token) return
+    saveMealPlan(token, mealPlan).then((res) => {
+      if (res?.ok) alert('Meal plan saved!')
+    }).catch(() => {})
   }
 
   return (
