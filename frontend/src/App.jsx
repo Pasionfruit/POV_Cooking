@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe, getPantry, addPantry, updatePantry, deletePantry } from './api.js'
 import { useLocation, Link, useNavigate } from 'react-router-dom'
+import MealPlan from './pages/MealPlan'
+import Settings from './pages/Settings'
 
 // Minimal util to parse JWT payload
 function parseJwt (token) {
@@ -17,7 +19,10 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const [token, setToken] = useState(localStorage.getItem('pov_token') || null)
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const savedUsername = localStorage.getItem('pov_username')
+    return savedUsername ? { username: savedUsername } : null
+  })
   const [recipes, setRecipes] = useState([])
   const [saved, setSaved] = useState([])
   const [pantry, setPantry] = useState([])
@@ -32,7 +37,7 @@ export default function App() {
       const payload = parseJwt(t)
       // We can't reliably fetch user name from token; we'll keep role in payload if present
       if (payload) {
-        setUser({ role: payload.role || 'user', id: payload.sub })
+        setUser(prev => ({ username: prev?.username, role: payload.role || 'user', id: payload.sub }))
       }
       fetchRecipes(t)
       fetchSaved(t)
@@ -69,8 +74,9 @@ export default function App() {
     if (r.token) {
       setToken(r.token)
       localStorage.setItem('pov_token', r.token)
+      localStorage.setItem('pov_username', creds.username)
       const payload = parseJwt(r.token)
-      setUser({ id: payload?.sub, role: payload?.role || 'user' })
+      setUser({ username: creds.username, id: payload?.sub, role: payload?.role || 'user' })
       navigate('/explore')
     } else {
       alert('Login failed: ' + (r.error || 'unknown'))
@@ -85,8 +91,9 @@ export default function App() {
       if (loginRes.token) {
         setToken(loginRes.token)
         localStorage.setItem('pov_token', loginRes.token)
+        localStorage.setItem('pov_username', data.username)
         const payload = parseJwt(loginRes.token)
-        setUser({ id: payload?.sub, role: payload?.role || 'user' })
+        setUser({ username: data.username, id: payload?.sub, role: payload?.role || 'user' })
         navigate('/explore')
       }
     } else {
@@ -101,6 +108,7 @@ export default function App() {
   function logout() {
     setToken(null)
     localStorage.removeItem('pov_token')
+    localStorage.removeItem('pov_username')
     setUser(null)
     navigate('/login')
   }
@@ -325,35 +333,57 @@ function ViewPantryCard({ p }) {
   const explorerView = (
     <ExplorerDashboard
       recipes={recipes}
+      onSave={handleSave}
+    />
+  )
+
+  const recipesView = (
+    <RecipesDashboard
       saved={saved}
       draft={draft}
       setDraft={setDraft}
       onCreate={handleCreate}
-      onSave={handleSave}
     />
   )
+
+  const mealPlanView = <MealPlan />
+  const settingsView = <Settings />
 
   // Root layout with header
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="logo">POV Cooking</div>
+        <div className="logo">{user?.username || 'POV'} Cooking</div>
         <nav className="nav">
           <Link to="/explore" className="nav-link">Explorer</Link>
-          <Link to="/pantry" className="nav-link">Pantry</Link>
+          {isAuthenticated && <Link to="/recipes" className="nav-link">Recipes</Link>}
+          {isAuthenticated && <Link to="/pantry" className="nav-link">Pantry</Link>}
+          {isAuthenticated && <Link to="/meal-plan" className="nav-link">Meal Prep</Link>}
+          {isAuthenticated && <Link to="/settings" className="nav-link">Settings</Link>}
           {isAdmin && <Link to="/admin" className="nav-link">Admin</Link>}
           {!isAuthenticated ? (
             <Link to="/login" className="nav-link">Login</Link>
           ) : (
             <>
-              <span className="nav-link">Role: {user?.role || 'user'}</span>
               <button className="nav-link" onClick={logout}>Logout</button>
             </>
           )}
         </nav>
       </header>
       <main className="content">
-        {!isAuthenticated ? loginView : (window.location.pathname.startsWith('/pantry') ? pantryView : (isAdmin ? adminView : explorerView))}
+        {!isAuthenticated
+          ? loginView
+          : location.pathname.startsWith('/pantry')
+            ? pantryView
+            : location.pathname.startsWith('/recipes')
+              ? recipesView
+            : location.pathname.startsWith('/meal-plan')
+              ? mealPlanView
+              : location.pathname.startsWith('/settings')
+                ? settingsView
+                : location.pathname.startsWith('/admin')
+                  ? (isAdmin ? adminView : explorerView)
+                  : (isAdmin ? adminView : explorerView)}
         {pantryPreview && <PantryPreviewModal item={pantryPreview} onClose={() => setPantryPreview(null)} />}
       </main>
     </div>
@@ -479,12 +509,11 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
   )
 }
 
-  function ExplorerDashboard({ recipes, saved, draft, setDraft, onCreate, onSave }) {
-  const [viewing, setViewing] = useState(null)
+function RecipesDashboard({ saved, draft, setDraft, onCreate }) {
   return (
-    <div className="explore-dashboard">
+    <div className="recipes-dashboard">
       <section className="panel">
-        <h2>Explorer: Create a Recipe</h2>
+        <h2>Create a Recipe</h2>
         <div className="form-row">
           <input placeholder="Title" value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} />
           <input placeholder="Time (min)" value={draft.time} onChange={e => setDraft({ ...draft, time: e.target.value })} />
@@ -503,6 +532,25 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
           <button onClick={() => onCreate()}>Create Recipe</button>
         </div>
       </section>
+
+      <section className="panel">
+        <h3>Saved for you</h3>
+        <div className="grid">
+          {saved.map(r => (
+            <div key={r.id} className="card">
+              <div className="card-title">{r.title}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function ExplorerDashboard({ recipes, onSave }) {
+  const [viewing, setViewing] = useState(null)
+  return (
+    <div className="explore-dashboard">
       <section className="panel">
         <h3>Available Recipes</h3>
         <div className="grid">
@@ -542,16 +590,6 @@ function AdminDashboard({ recipes, draft, setDraft, onCreate, onUpdate, onDelete
                   </div>
                 </div>
               )}
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="panel">
-        <h3>Saved for you</h3>
-        <div className="grid">
-          {saved.map(r => (
-            <div key={r.id} className="card">
-              <div className="card-title">{r.title}</div>
             </div>
           ))}
         </div>
