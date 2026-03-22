@@ -149,14 +149,10 @@ app.post('/auth/login', async (req, res) => {
 // Recipes CRUD
 app.get('/recipes', authMiddleware, async (req, res) => {
   try {
-    if (req.user.role === 'admin') {
-      const r = await pool.query('SELECT * FROM recipes ORDER BY id')
-      return res.json(r.rows)
-    } else {
-      // Explorer: show public recipes and own recipes
-      const r = await pool.query('SELECT * FROM recipes WHERE visibility = TRUE OR user_id = $1 ORDER BY id', [req.user.id])
-      return res.json(r.rows)
-    }
+    // Return the complete recipe catalog so Explorer "Available Recipes"
+    // matches Admin's recipe list.
+    const r = await pool.query('SELECT * FROM recipes ORDER BY id')
+    return res.json(r.rows)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Failed to fetch recipes' })

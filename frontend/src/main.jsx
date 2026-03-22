@@ -1,50 +1,13 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './contexts/AuthContext'
-import Layout from './components/Layout'
-import ProtectedRoute from './components/ProtectedRoute'
-import Home from './pages/Home'
-import Pantry from './pages/Pantry'
-import Recipes from './pages/Recipes'
-import MealPlan from './pages/MealPlan'
-import Admin from './pages/Admin'
-import Role from './pages/Role'
-import Settings from './pages/Settings'
-import Login from './pages/Login'
-import { worker } from './mocks/browser'
-
-// Start MSW in development for testing API flows
-if (import.meta.env.DEV) {
-  worker.start({ onUnhandledRequest: 'warn' })
-}
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
 import './styles.css'
 
-const AppRoutes = () => {
-  const { isAuthenticated, user } = useAuth()
-
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/pantry" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><Pantry /></ProtectedRoute>} />
-      <Route path="/recipes" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><Recipes /></ProtectedRoute>} />
-      <Route path="/meal-plan" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role !== 'admin'}><MealPlan /></ProtectedRoute>} />
-      <Route path="/role" element={<ProtectedRoute isAuthenticated={isAuthenticated && user?.role === 'admin'}><Role /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Settings /></ProtectedRoute>} />
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
-  )
-}
-
 const Root = () => (
-  <AuthProvider>
-    <BrowserRouter>
-      <Layout>
-        <AppRoutes />
-      </Layout>
-    </BrowserRouter>
-  </AuthProvider>
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 )
 
 createRoot(document.getElementById('root')).render(<Root />)

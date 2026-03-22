@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { getRecipes, createRecipe, updateRecipe, deleteRecipe, login, register, getSaved, saveRecipe, getPantry, addPantry, updatePantry, deletePantry } from './api.js'
-import { useLocation, Link, Navigate, useNavigate } from 'react-router-dom'
+import { useLocation, Link, useNavigate } from 'react-router-dom'
 
 // Minimal util to parse JWT payload
 function parseJwt (token) {
@@ -17,32 +17,8 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const [token, setToken] = useState(localStorage.getItem('pov_token') || null)
-  const [user, setUser] = useState(null) // no hard-coded mock user
-  const [view, setView] = useState(location.pathname.replace('/', '') || 'explore') // TEMP: default to explore
-  const [recipes, setRecipes] = useState([
-    {
-      id: 1,
-      title: "Classic Spaghetti Carbonara",
-      ingredients: ["200g spaghetti", "100g pancetta", "2 eggs", "50g parmesan", "Black pepper"],
-      instructions: "Cook pasta. Fry pancetta. Mix eggs and cheese. Combine everything.",
-      time: 15,
-      duration: 20,
-      equipment: ["pot", "pan", "bowl"],
-      visibility: true,
-      user_id: 1
-    },
-    {
-      id: 2,
-      title: "Chicken Stir Fry",
-      ingredients: ["300g chicken breast", "2 bell peppers", "1 onion", "Soy sauce", "Ginger"],
-      instructions: "Slice chicken and veggies. Stir fry chicken first, then add veggies. Season with soy sauce.",
-      time: 10,
-      duration: 15,
-      equipment: ["wok", "knife"],
-      visibility: true,
-      user_id: 2
-    }
-  ]) // TEMP: mock recipes for testing
+  const [user, setUser] = useState(null)
+  const [recipes, setRecipes] = useState([])
   const [saved, setSaved] = useState([])
   const [pantry, setPantry] = useState([])
   const [pantryDraft, setPantryDraft] = useState({ name: '', category: 'Grains', expiration_date: '', quantity: 1, unit: 'pcs', unit_system: 'metric', location: 'Pantry', notes: '' })
@@ -54,20 +30,16 @@ export default function App() {
     const t = token
     if (t) {
       const payload = parseJwt(t)
-      const u = payload?.sub
       // We can't reliably fetch user name from token; we'll keep role in payload if present
       if (payload) {
         setUser({ role: payload.role || 'user', id: payload.sub })
       }
-      // fetch recipes for explorer/admin view
-      // TEMP: skip API calls for testing
-      // fetchRecipes(t)
-      // fetchSaved(t)
+      fetchRecipes(t)
+      fetchSaved(t)
     } else {
-      // TEMP: keep mock user for testing
-      // setUser(null)
-      // setRecipes([])
-      // setSaved([])
+      setUser(null)
+      setRecipes([])
+      setSaved([])
     }
     // eslint-disable-next-line
   }, [token])
@@ -78,10 +50,6 @@ export default function App() {
       getPantry(token).then(setPantry).catch(() => {})
     }
   }, [token])
-
-  useEffect(() => {
-    if (location.pathname) setView(location.pathname.replace('/', ''))
-  }, [location.pathname])
 
   function fetchRecipes(t) {
     setLoading(true)
@@ -142,21 +110,23 @@ export default function App() {
 
   // Create recipe handler (used by both admin and explorer, as appropriate on server)
   async function handleCreate() {
-    // TEMP: simulate creating recipe locally
-    const newRecipe = {
-      id: Date.now(),
+    if (!token) return
+    const payload = {
       title: draft.title,
       ingredients: draft.ingredients.split(',').map(s => s.trim()).filter(Boolean),
       instructions: draft.instructions,
       time: parseInt(draft.time) || 0,
       duration: parseInt(draft.duration) || 0,
       equipment: draft.equipment.split(',').map(s => s.trim()).filter(Boolean),
-      visibility: draft.visibility,
-      user_id: user?.id || 1
+      visibility: draft.visibility
     }
-    setRecipes(prev => [...prev, newRecipe])
-    setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
-    alert('Recipe created! (simulated)')
+    const res = await createRecipe(token, payload)
+    if (res?.id) {
+      fetchRecipes(token)
+      setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
+    } else {
+      alert('Create failed')
+    }
   }
 
   async function handleUpdate(id, payload) {
@@ -180,11 +150,12 @@ export default function App() {
   }
 
   async function handleSave(recipeId) {
-    // TEMP: simulate saving recipe locally
-    const recipe = recipes.find(r => r.id === recipeId)
-    if (recipe) {
-      setSaved(prev => [...prev, recipe])
-      alert('Recipe saved! (simulated)')
+    if (!token) return
+    const res = await saveRecipe(token, recipeId)
+    if (res?.ok) {
+      fetchSaved(token)
+    } else {
+      alert('Save failed')
     }
   }
 
@@ -335,7 +306,6 @@ function ViewPantryCard({ p }) {
   const loginView = (
     <div className="auth-page">
       <h2>POV Cooking - Login</h2>
-      {/* Inline login form for demo simplicity */}
       <LoginForm onLogin={handleLogin} onRegister={handleRegister} />
     </div>
   )
