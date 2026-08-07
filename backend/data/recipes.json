@@ -1,0 +1,111 @@
+[
+  {
+    "id": "seed-margherita-pizza",
+    "title": "Classic Margherita Pizza",
+    "description": "Neapolitan-style pizza with tomato, fresh mozzarella, and basil. Minimal toppings, maximum flavor.",
+    "image": null,
+    "servings": 2,
+    "prepTimeMinutes": 20,
+    "cookTimeMinutes": 12,
+    "cuisine": "Italian",
+    "tags": [
+      "pizza",
+      "vegetarian",
+      "dinner"
+    ],
+    "ingredients": [
+      "250 g pizza dough",
+      "80 ml tomato passata",
+      "125 g fresh mozzarella, torn",
+      "6 fresh basil leaves",
+      "1 tbsp olive oil",
+      "Pinch of salt"
+    ],
+    "steps": [
+      "Preheat the oven to 250°C (480°F) with a pizza stone or upside-down baking tray inside.",
+      "Stretch the dough into a 30 cm round on floured parchment.",
+      "Spread the passata thinly, leaving a 2 cm border.",
+      "Top with torn mozzarella and a pinch of salt.",
+      "Bake 10–12 minutes until the crust is blistered and the cheese bubbles.",
+      "Finish with basil leaves and a drizzle of olive oil."
+    ],
+    "source": {
+      "name": "Family recipe",
+      "url": null
+    },
+    "nutrition": {
+      "caloriesPerServing": 540,
+      "protein": "22 g"
+    },
+    "createdBy": "seed",
+    "createdAt": "2026-08-07T00:00:00.000Z",
+    "updatedAt": "2026-08-07T00:00:00.000Z"
+  },
+  {
+    "id": "seed-chicken-adobo",
+    "title": "Chicken Adobo",
+    "description": "Filipino braised chicken in soy sauce, vinegar, and garlic — savory, tangy, and better the next day.",
+    "image": null,
+    "servings": 4,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 45,
+    "cuisine": "Filipino",
+    "tags": [
+      "chicken",
+      "dinner",
+      "one-pot"
+    ],
+    "ingredients": [
+      "1 kg chicken thighs, bone-in",
+      "120 ml soy sauce",
+      "120 ml cane or white vinegar",
+      "1 head garlic, smashed",
+      "3 bay leaves",
+      "1 tsp whole black peppercorns",
+      "1 tbsp brown sugar",
+      "1 cup water"
+    ],
+    "steps": [
+      "Combine chicken, soy sauce, and garlic in a bowl; marinate 30 minutes if you have time.",
+      "Sear the chicken skin-side down in a hot pot until browned.",
+      "Add the marinade, vinegar, water, bay leaves, peppercorns, and sugar. Do not stir yet.",
+      "Simmer uncovered 10 minutes, then cover and braise 30 minutes, turning once.",
+      "Uncover and reduce the sauce until glossy. Serve over rice."
+    ],
+    "notes": "Adobo keeps for days and the flavor deepens — make a double batch.",
+    "createdBy": "seed",
+    "createdAt": "2026-08-07T00:00:00.000Z",
+    "updatedAt": "2026-08-07T00:00:00.000Z"
+  },
+  {
+    "id": "seed-overnight-oats",
+    "title": "Peanut Butter Overnight Oats",
+    "description": "No-cook breakfast: assemble a jar the night before, grab it in the morning.",
+    "image": null,
+    "servings": 1,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "tags": [
+      "breakfast",
+      "no-cook",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "50 g rolled oats",
+      "120 ml milk of choice",
+      "1 tbsp peanut butter",
+      "1 tsp honey or maple syrup",
+      "1 tbsp chia seeds",
+      "Banana slices, to top"
+    ],
+    "steps": [
+      "Stir everything except the banana together in a jar.",
+      "Refrigerate overnight (or at least 4 hours).",
+      "Top with banana slices and an extra spoon of peanut butter before eating."
+    ],
+    "createdBy": "seed",
+    "createdAt": "2026-08-07T00:00:00.000Z",
+    "updatedAt": "2026-08-07T00:00:00.000Z"
+  }
+]

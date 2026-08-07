@@ -1,19 +1,17 @@
 {
   "name": "pov-cooking-backend",
-  "version": "1.0.0",
-  "description": "Backend API for POV Cooking with auth and recipe CRUD",
+  "version": "2.0.0",
+  "description": "POV Cooking cookbook API — JSON recipe store, email + Google auth, admin CRUD, recipe import",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "seed:test_users": "node scripts/seed_test_users.js"
+    "dev": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.0",
-    "pg": "^8.9.0"
+    "jsonwebtoken": "^9.0.0"
   }
 }

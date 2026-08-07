@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.DS_Store
+
+# User data lives outside git; recipes.json is the seed cookbook and IS committed
+backend/data/users.json
+backend/data/saved.json

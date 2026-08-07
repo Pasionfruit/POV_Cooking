@@ -1,17 +1,10 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
-export default function ProtectedRoute({ children, isAuthenticated }) {
-  if (!isAuthenticated) {
-    return (
-      <div className="access-denied">
-        <section className="panel" style={{ maxWidth: '400px', margin: '50px auto', textAlign: 'center' }}>
-          <h2>Access Denied</h2>
-          <p>You don't have permission to access this page.</p>
-          <p>Please log in with appropriate credentials or contact an administrator.</p>
-        </section>
-      </div>
-    )
-  }
+export default function ProtectedRoute({ adminOnly = false, children }) {
+  const { user, isAdmin } = useAuth()
+  if (!user) return <Navigate to="/login" replace />
+  if (adminOnly && !isAdmin) return <Navigate to="/" replace />
   return children
 }

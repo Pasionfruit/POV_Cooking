@@ -1,26 +1,109 @@
-# POV_Cooking
+# POV Cooking
 
-## Backend DB Setup (PostgreSQL)
+A personal recipe cookbook for desktop and mobile. Recipes are stored as
+semi-structured JSON documents, ready to move into MongoDB (or any document
+store) later.
 
-1. Create a Postgres database (example name: `pov_cooking`).
-2. Copy `backend/.env.example` to `backend/.env` and fill in DB credentials.
-3. Install backend dependencies:
+## Features
+
+- **Home** — browse and search all recipes
+- **Recipe pages** — ingredients, steps, tags, notes, source
+- **Saved** — logged-in users can save/unsave recipes (♡)
+- **Login** — email + password (emails stored encrypted, passwords bcrypt-hashed) or Google Sign-In
+- **Admin** — create, edit (form or raw JSON), and delete recipes
+- **Import** — upload or paste recipe JSON (single object, array, or `{ "recipes": [...] }`)
+
+## Run it
+
+Backend (API on port **5001**):
 
 ```bash
 cd backend
 npm install
-```
-
-4. Start the backend:
-
-```bash
 npm run dev
 ```
 
-The backend accepts either:
+Frontend (Vite dev server on port 5173):
 
-- `DATABASE_URL` (recommended), or
-- `PGHOST` + `PGPORT` + `PGUSER` + `PGPASSWORD` + `PGDATABASE`
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-To run API without a DB for demos, set `SKIP_DB=true` in `backend/.env`.
+Open http://localhost:5173. To use it from your phone, join the same Wi-Fi and
+open `http://<your-computer-ip>:5173` (Vite prints the address; the frontend
+automatically talks to the API on the same host).
 
+## Accounts & admin
+
+- Create an account on the Login page. To become an **admin**, expand
+  "Have an admin code?" and enter the code from `backend/.env`
+  (`ADMIN_CODE`, default `admin-secret`).
+- `ADMIN_EMAILS` in `backend/.env` makes specific emails admins automatically
+  (works for Google sign-in too).
+
+### Google Sign-In (optional)
+
+1. Create an OAuth **Web application** client ID at
+   https://console.cloud.google.com/apis/credentials with
+   `http://localhost:5173` as an authorized JavaScript origin.
+2. Put it in `backend/.env` as `GOOGLE_CLIENT_ID=...`
+3. Put the same value in `frontend/.env` as `VITE_GOOGLE_CLIENT_ID=...`
+
+Without it, email/password login still works and the Google button is hidden.
+
+## Configuration
+
+Copy `backend/.env.example` to `backend/.env`. Everything has a dev default;
+for real use set `JWT_SECRET` and a 64-char hex `ENCRYPTION_KEY`
+(usernames/emails are encrypted at rest with AES-256-GCM and looked up via an
+HMAC blind index).
+
+## Data & the MongoDB plan
+
+All data lives in JSON files under `backend/data/`:
+
+- `recipes.json` — the cookbook (seeded with 3 recipes; committed to git)
+- `users.json`, `saved.json` — created at runtime, gitignored
+
+[backend/store.js](backend/store.js) is the only module that touches storage.
+To switch to MongoDB, reimplement its small collection interface
+(`all/find/filter/findById/insert/update/remove`) on top of a Mongo collection —
+recipe documents map 1:1.
+
+## Recipe JSON shape
+
+Only `title` is required; unknown fields are preserved (semi-structured).
+
+```json
+{
+  "title": "Garlic Bread",
+  "description": "…",
+  "servings": 4,
+  "prepTimeMinutes": 10,
+  "cookTimeMinutes": 15,
+  "cuisine": "Italian",
+  "tags": ["side"],
+  "ingredients": ["1 baguette", { "item": "butter", "quantity": 50, "unit": "g" }],
+  "steps": ["…"],
+  "notes": "…",
+  "source": { "name": "…", "url": "…" }
+}
+```
+
+Ingredients may be plain strings or `{ item, quantity, unit, note }` objects —
+the UI renders both.
+
+## Testing
+
+No automated test suite yet. Quick manual check:
+
+```bash
+cd backend && npm run dev
+curl http://localhost:5001/health          # {"ok":true}
+curl http://localhost:5001/recipes         # seed recipes
+```
+
+Then exercise the UI: register (with and without the admin code), save a
+recipe, and import one from the Admin page.

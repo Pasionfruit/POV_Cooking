@@ -1,162 +1,38 @@
-const BASE = 'http://localhost:5000'
+// API client. Defaults to the same host the page was loaded from (port 5001),
+// so the app works on desktop (localhost) and phones on your LAN without config.
+const BASE =
+  import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5001`
 
-function authHeaders(token) {
-  return token ? { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } : { 'Content-Type': 'application/json' }
-}
+async function request(path, { method = 'GET', token, body } = {}) {
+  const headers = {}
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  if (token) headers['Authorization'] = `Bearer ${token}`
 
-export async function register({ username, password, adminCode }) {
-  const res = await fetch(`${BASE}/auth/register`, {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ username, password, adminCode })
+  const res = await fetch(`${BASE}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   })
-  return res.json()
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+  return data
 }
 
-export async function login({ username, password }) {
-  const res = await fetch(`${BASE}/auth/login`, {
-    method: 'POST',
-    headers: authHeaders(),
-    body: JSON.stringify({ username, password })
-  })
-  return res.json()
-}
+// auth
+export const register = (payload) => request('/auth/register', { method: 'POST', body: payload })
+export const login = (payload) => request('/auth/login', { method: 'POST', body: payload })
+export const googleLogin = (credential) => request('/auth/google', { method: 'POST', body: { credential } })
+export const me = (token) => request('/auth/me', { token })
 
-export async function getRecipes(token) {
-  const res = await fetch(`${BASE}/recipes`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
+// recipes
+export const getRecipes = () => request('/recipes')
+export const getRecipe = (id) => request(`/recipes/${id}`)
+export const createRecipe = (token, recipe) => request('/recipes', { method: 'POST', token, body: recipe })
+export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { method: 'PUT', token, body: recipe })
+export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
+export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
 
-export async function createRecipe(token, payload) {
-  const res = await fetch(`${BASE}/recipes`, {
-    method: 'POST',
-    headers: { ...authHeaders(token) },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function updateRecipe(token, id, payload) {
-  const res = await fetch(`${BASE}/recipes/${id}`, {
-    method: 'PUT',
-    headers: { ...authHeaders(token) },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function deleteRecipe(token, id) {
-  const res = await fetch(`${BASE}/recipes/${id}`, {
-    method: 'DELETE',
-    headers: { ...authHeaders(token) }
-  })
-  return res.json()
-}
-
-export async function saveRecipe(token, recipeId) {
-  const res = await fetch(`${BASE}/saved`, {
-    method: 'POST',
-    headers: { ...authHeaders(token) },
-    body: JSON.stringify({ recipe_id: recipeId })
-  })
-  return res.json()
-}
-
-export async function getSaved(token) {
-  const res = await fetch(`${BASE}/saved`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function unsaveRecipe(token, recipeId) {
-  const res = await fetch(`${BASE}/saved/${recipeId}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function getPantry(token) {
-  const res = await fetch(`${BASE}/pantry`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function addPantry(token, payload) {
-  const res = await fetch(`${BASE}/pantry`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function updatePantry(token, id, payload) {
-  const res = await fetch(`${BASE}/pantry/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function deletePantry(token, id) {
-  const res = await fetch(`${BASE}/pantry/${id}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function getMealPlan(token) {
-  const res = await fetch(`${BASE}/meal-plan`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function saveMealPlan(token, weekMeals) {
-  const res = await fetch(`${BASE}/meal-plan`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ weekMeals })
-  })
-  return res.json()
-}
-
-export async function getGroceryList(token) {
-  const res = await fetch(`${BASE}/grocery-list`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
-
-export async function addGroceryItem(token, payload) {
-  const res = await fetch(`${BASE}/grocery-list`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function updateGroceryItem(token, id, payload) {
-  const res = await fetch(`${BASE}/grocery-list/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(payload)
-  })
-  return res.json()
-}
-
-export async function deleteGroceryItem(token, id) {
-  const res = await fetch(`${BASE}/grocery-list/${id}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-  return res.json()
-}
+// saved
+export const getSaved = (token) => request('/saved', { token })
+export const saveRecipe = (token, recipeId) => request(`/saved/${recipeId}`, { method: 'POST', token })
+export const unsaveRecipe = (token, recipeId) => request(`/saved/${recipeId}`, { method: 'DELETE', token })

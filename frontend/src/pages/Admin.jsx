@@ -1,172 +1,176 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import * as api from '../api'
+import RecipeForm from '../components/RecipeForm'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Admin() {
-  const [recipes, setRecipes] = useState([
-    {
-      id: 1,
-      title: "Classic Spaghetti Carbonara",
-      ingredients: ["200g spaghetti", "100g pancetta", "2 eggs", "50g parmesan", "Black pepper"],
-      instructions: "Cook pasta. Fry pancetta. Mix eggs and cheese. Combine everything.",
-      time: 15,
-      duration: 20,
-      equipment: ["pot", "pan", "bowl"],
-      visibility: true,
-      user_id: 1
-    },
-    {
-      id: 2,
-      title: "Chicken Stir Fry",
-      ingredients: ["300g chicken breast", "2 bell peppers", "1 onion", "Soy sauce", "Ginger"],
-      instructions: "Slice chicken and veggies. Stir fry chicken first, then add veggies. Season with soy sauce.",
-      time: 10,
-      duration: 15,
-      equipment: ["wok", "knife"],
-      visibility: false,
-      user_id: 2
-    }
-  ])
+  const { token } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [recipes, setRecipes] = useState([])
+  const [editing, setEditing] = useState(null) // 'new' | recipe object | null
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState(null)
+  const [importText, setImportText] = useState('')
+  const [importResult, setImportResult] = useState(null)
+  const fileInputRef = useRef(null)
 
-  const [draft, setDraft] = useState({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
-  const [editing, setEditing] = useState(null)
-
-  const handleCreate = () => {
-    const newRecipe = {
-      id: Date.now(),
-      title: draft.title,
-      ingredients: draft.ingredients.split(',').map(s => s.trim()).filter(Boolean),
-      instructions: draft.instructions,
-      time: parseInt(draft.time) || 0,
-      duration: parseInt(draft.duration) || 0,
-      equipment: draft.equipment.split(',').map(s => s.trim()).filter(Boolean),
-      visibility: draft.visibility,
-      user_id: 1
-    }
-    setRecipes(prev => [...prev, newRecipe])
-    setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
-    alert('Recipe created! (simulated)')
+  function refresh() {
+    return api.getRecipes().then(({ recipes }) => setRecipes(recipes))
   }
 
-  const handleUpdate = (id) => {
-    const updatedRecipe = {
-      ...recipes.find(r => r.id === id),
-      title: draft.title,
-      ingredients: draft.ingredients.split(',').map(s => s.trim()).filter(Boolean),
-      instructions: draft.instructions,
-      time: parseInt(draft.time) || 0,
-      duration: parseInt(draft.duration) || 0,
-      equipment: draft.equipment.split(',').map(s => s.trim()).filter(Boolean),
-      visibility: draft.visibility
+  useEffect(() => {
+    refresh()
+  }, [])
+
+  // Support /admin?edit=<id> deep links from the recipe detail page.
+  useEffect(() => {
+    const editId = searchParams.get('edit')
+    if (editId && recipes.length) {
+      const recipe = recipes.find((r) => r.id === editId)
+      if (recipe) setEditing(recipe)
     }
-    setRecipes(prev => prev.map(r => r.id === id ? updatedRecipe : r))
+  }, [searchParams, recipes])
+
+  function closeForm() {
     setEditing(null)
-    setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false })
-    alert('Recipe updated! (simulated)')
+    if (searchParams.get('edit')) setSearchParams({})
   }
 
-  const handleDelete = (id) => {
-    setRecipes(prev => prev.filter(r => r.id !== id))
-    alert('Recipe deleted! (simulated)')
+  async function handleSubmit(recipe) {
+    setBusy(true)
+    try {
+      if (editing === 'new') {
+        await api.createRecipe(token, recipe)
+        setNotice(`Added “${recipe.title}”`)
+      } else {
+        await api.updateRecipe(token, editing.id, recipe)
+        setNotice(`Updated “${recipe.title}”`)
+      }
+      closeForm()
+      await refresh()
+    } finally {
+      setBusy(false)
+    }
   }
 
-  const startEdit = (recipe) => {
-    setEditing(recipe.id)
-    setDraft({
-      title: recipe.title,
-      ingredients: (recipe.ingredients || []).join(', '),
-      instructions: recipe.instructions,
-      time: recipe.time ?? '',
-      duration: recipe.duration ?? '',
-      equipment: (recipe.equipment || []).join(', '),
-      visibility: recipe.visibility ?? false
-    })
+  async function handleDelete(recipe) {
+    if (!window.confirm(`Delete “${recipe.title}”?`)) return
+    await api.deleteRecipe(token, recipe.id)
+    setNotice(`Deleted “${recipe.title}”`)
+    refresh()
+  }
+
+  function handleFilePick(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setImportText(String(reader.result))
+    reader.readAsText(file)
+  }
+
+  async function handleImport() {
+    setImportResult(null)
+    let payload
+    try {
+      payload = JSON.parse(importText)
+    } catch {
+      setImportResult({ error: 'That is not valid JSON' })
+      return
+    }
+    try {
+      const result = await api.importRecipes(token, payload)
+      setImportResult(result)
+      if (result.importedCount) {
+        setImportText('')
+        if (fileInputRef.current) fileInputRef.current.value = ''
+        refresh()
+      }
+    } catch (err) {
+      setImportResult({ error: err.message })
+    }
   }
 
   return (
-    <div className="admin-page">
-      <section className="panel">
-        <h2>Admin Dashboard</h2>
-        <p>Manage all recipes and user content.</p>
-      </section>
-
-      <section className="panel">
-        <h3>{editing ? 'Edit Recipe' : 'Create New Recipe'}</h3>
-        <div className="form-row">
-          <input
-            placeholder="Title"
-            value={draft.title}
-            onChange={e => setDraft({ ...draft, title: e.target.value })}
-          />
-          <input
-            placeholder="Time (min)"
-            value={draft.time}
-            onChange={e => setDraft({ ...draft, time: e.target.value })}
-          />
-          <input
-            placeholder="Duration (min)"
-            value={draft.duration}
-            onChange={e => setDraft({ ...draft, duration: e.target.value })}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            placeholder="Ingredients (comma separated)"
-            value={draft.ingredients}
-            onChange={e => setDraft({ ...draft, ingredients: e.target.value })}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            placeholder="Equipment (comma separated)"
-            value={draft.equipment}
-            onChange={e => setDraft({ ...draft, equipment: e.target.value })}
-          />
-        </div>
-        <div className="form-row">
-          <textarea
-            placeholder="Instructions"
-            value={draft.instructions}
-            onChange={e => setDraft({ ...draft, instructions: e.target.value })}
-          />
-        </div>
-        <div className="checkbox-row">
-          <label>
-            <input
-              type="checkbox"
-              checked={draft.visibility}
-              onChange={e => setDraft({ ...draft, visibility: e.target.checked })}
-            />
-            Public visibility
-          </label>
-        </div>
-        <div className="row">
-          <button onClick={() => editing ? handleUpdate(editing) : handleCreate()}>
-            {editing ? 'Update Recipe' : 'Create Recipe'}
+    <section>
+      <div className="page-header">
+        <h1>Admin</h1>
+        {!editing && (
+          <button className="primary" onClick={() => setEditing('new')}>
+            + New recipe
           </button>
-          {editing && (
-            <button onClick={() => { setEditing(null); setDraft({ title: '', ingredients: '', instructions: '', time: '', duration: '', equipment: '', visibility: false }) }}>
-              Cancel
-            </button>
-          )}
-        </div>
-      </section>
+        )}
+      </div>
+      {notice && <p className="notice">{notice}</p>}
 
-      <section className="panel">
-        <h3>All Recipes</h3>
-        <div className="grid">
-          {recipes.map(recipe => (
-            <div key={recipe.id} className="card">
-              <div className="card-title">{recipe.title}</div>
-              <div className="card-meta">
-                Time: {recipe.time ?? '-'}m • Owner: {recipe.user_id} • {recipe.visibility ? 'Public' : 'Private'}
-              </div>
-              <div className="card-actions">
-                <button onClick={() => startEdit(recipe)}>Edit</button>
-                <button onClick={() => handleDelete(recipe.id)}>Delete</button>
-              </div>
-            </div>
-          ))}
+      {editing ? (
+        <div className="panel">
+          <h2>{editing === 'new' ? 'New recipe' : `Edit: ${editing.title}`}</h2>
+          <RecipeForm
+            initial={editing === 'new' ? null : editing}
+            onSubmit={handleSubmit}
+            onCancel={closeForm}
+            busy={busy}
+          />
         </div>
-      </section>
-    </div>
+      ) : (
+        <>
+          <div className="panel">
+            <h2>Recipes ({recipes.length})</h2>
+            <ul className="admin-list">
+              {recipes.map((recipe) => (
+                <li key={recipe.id}>
+                  <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+                  <span className="admin-actions">
+                    <button onClick={() => setEditing(recipe)}>Edit</button>
+                    <button className="danger" onClick={() => handleDelete(recipe)}>
+                      Delete
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="panel">
+            <h2>Import recipes</h2>
+            <p className="muted small">
+              Upload or paste JSON: a single recipe object, an array of recipes, or {'{ "recipes": [...] }'}. Only{' '}
+              <code>title</code> is required — extra fields are kept as-is.
+            </p>
+            <input ref={fileInputRef} type="file" accept=".json,application/json" onChange={handleFilePick} />
+            <textarea
+              className="json-editor"
+              rows={8}
+              placeholder='[{"title": "My recipe", "ingredients": ["…"], "steps": ["…"]}]'
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+              spellCheck={false}
+            />
+            <div className="form-actions">
+              <button className="primary" onClick={handleImport} disabled={!importText.trim()}>
+                Import
+              </button>
+            </div>
+            {importResult?.error && <p className="error">{importResult.error}</p>}
+            {importResult && !importResult.error && (
+              <div className="notice">
+                Imported {importResult.importedCount} recipe{importResult.importedCount === 1 ? '' : 's'}.
+                {importResult.skipped?.length > 0 && (
+                  <ul>
+                    {importResult.skipped.map((s) => (
+                      <li key={s.index}>
+                        Item {s.index + 1}
+                        {s.title ? ` (“${s.title}”)` : ''}: {s.reason}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </section>
   )
 }

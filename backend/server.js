@@ -1,578 +1,256 @@
+require('dotenv').config()
 const express = require('express')
+const cors = require('cors')
+const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const cors = require('cors')
-const { loadEnv, createPool } = require('./db')
 
-loadEnv()
+const { recipes, users, saved } = require('./store')
+const { encryptField, decryptField, blindIndex } = require('./crypto')
 
 const app = express()
-app.use(express.json())
+app.use(express.json({ limit: '2mb' }))
 app.use(cors())
 
-// Skip DB connection for local mock/demo mode
-const SKIP_DB = process.env.SKIP_DB === 'true' || process.env.SKIP_DB === '1'
-const pool = SKIP_DB ? null : createPool()
+// 5001 because macOS AirPlay occupies port 5000
+const PORT = process.env.PORT || 5001
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+const ADMIN_CODE = process.env.ADMIN_CODE || 'admin-secret'
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
 
-const ADMIN_CODE = process.env.ADMIN_CODE
-const JWT_SECRET = process.env.JWT_SECRET || 'secret'
-const MAX_PANTRY_ITEMS = parseInt(process.env.MAX_PANTRY_ITEMS || '200', 10)
+// ---------------------------------------------------------------- auth helpers
 
-async function initDb() {
-  // Create tables if they don't exist
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('admin','user')),
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS recipes (
-      id SERIAL PRIMARY KEY,
-      title TEXT NOT NULL,
-      ingredients TEXT[] NOT NULL,
-      instructions TEXT NOT NULL,
-      time INTEGER,
-      duration INTEGER,
-      equipment TEXT[],
-      user_id INTEGER REFERENCES users(id),
-      visibility BOOLEAN DEFAULT FALSE,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS pantry_items (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id) NOT NULL,
-      name TEXT NOT NULL,
-      category TEXT NOT NULL CHECK (category IN ('Grains','Vegetables','Fruits','Dairy','Protein','Fats and Oils','Sugars and Sweets')),
-      expiration_date DATE,
-      quantity NUMERIC(10,2) NOT NULL DEFAULT 1,
-      unit TEXT NOT NULL DEFAULT 'pcs',
-      unit_system TEXT NOT NULL DEFAULT 'metric' CHECK (unit_system IN ('metric','imperial')),
-      location TEXT NOT NULL CHECK (location IN ('Fridge','Freezer','Pantry','Misc')),
-      notes TEXT,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS saved_recipes (
-      user_id INTEGER REFERENCES users(id),
-      recipe_id INTEGER REFERENCES recipes(id),
-      PRIMARY KEY (user_id, recipe_id)
-    );
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS meal_plan_entries (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id) NOT NULL,
-      day_of_week TEXT NOT NULL CHECK (day_of_week IN ('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')),
-      breakfast TEXT NOT NULL DEFAULT '',
-      lunch TEXT NOT NULL DEFAULT '',
-      dinner TEXT NOT NULL DEFAULT '',
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW(),
-      UNIQUE (user_id, day_of_week)
-    );
-  `)
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS grocery_items (
-      id SERIAL PRIMARY KEY,
-      user_id INTEGER REFERENCES users(id) NOT NULL,
-      name TEXT NOT NULL,
-      quantity NUMERIC(10,2) NOT NULL DEFAULT 1,
-      unit TEXT NOT NULL DEFAULT 'pcs',
-      checked BOOLEAN NOT NULL DEFAULT FALSE,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      updated_at TIMESTAMPTZ DEFAULT NOW()
-    );
-  `)
-}
-
-const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-
-function generateToken(user) {
-  const payload = { sub: user.id, role: user.role }
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
-}
-
-async function getUserByUsername(username) {
-  const res = await pool.query('SELECT * FROM users WHERE username = $1', [username])
-  return res.rows[0]
-}
-
-async function getUserById(id) {
-  const res = await pool.query('SELECT * FROM users WHERE id = $1', [id])
-  return res.rows[0]
-}
-
-// Auth middleware
-async function authMiddleware(req, res, next) {
-  const authHeader = req.headers['authorization'] || ''
-  const token = authHeader.split(' ')[1]
-  if (!token) return res.status(401).json({ error: 'Missing token' })
-  try {
-    const payload = jwt.verify(token, JWT_SECRET)
-    const user = await getUserById(payload.sub)
-    if (!user) return res.status(401).json({ error: 'Invalid user' })
-    req.user = { id: user.id, username: user.username, role: user.role }
-    next()
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid token' })
+function publicUser(user) {
+  return {
+    id: user.id,
+    email: decryptField(user.email),
+    name: user.name ? decryptField(user.name) : null,
+    role: user.role,
+    provider: user.provider,
   }
 }
 
-function adminOnly(req, res, next) {
-  if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin only' })
+function signToken(user) {
+  return jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
+}
+
+function authMiddleware(req, res, next) {
+  const header = req.headers.authorization || ''
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null
+  if (!token) return res.status(401).json({ error: 'Not logged in' })
+  try {
+    const payload = jwt.verify(token, JWT_SECRET)
+    const user = users.findById(payload.sub)
+    if (!user) return res.status(401).json({ error: 'Account no longer exists' })
+    req.user = user
+    next()
+  } catch {
+    return res.status(401).json({ error: 'Session expired — log in again' })
+  }
+}
+
+function adminMiddleware(req, res, next) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' })
   next()
 }
 
-function ownsRecipe(req, recipeOwnerId) {
-  return req.user?.id === recipeOwnerId
+function createUser({ email, name, passwordHash, provider, adminCode }) {
+  const normalizedEmail = email.trim().toLowerCase()
+  const isAdmin = adminCode === ADMIN_CODE || ADMIN_EMAILS.includes(normalizedEmail)
+  return users.insert({
+    id: crypto.randomUUID(),
+    email: encryptField(normalizedEmail),
+    emailIndex: blindIndex(normalizedEmail),
+    name: name ? encryptField(name.trim()) : null,
+    passwordHash: passwordHash || null,
+    provider,
+    role: isAdmin ? 'admin' : 'user',
+    createdAt: new Date().toISOString(),
+  })
 }
 
-app.post('/auth/register', async (req, res) => {
-  const { username, password, adminCode } = req.body
-  if (!username || !password) return res.status(400).json({ error: 'Missing username or password' })
-  try {
-    const existing = await pool.query('SELECT id FROM users WHERE username = $1', [username])
-    if (existing.rows.length) return res.status(400).json({ error: 'User exists' })
+// ------------------------------------------------------------------ auth routes
 
-    const hash = await bcrypt.hash(password, 10)
-    let role = 'user'
-    if (adminCode && adminCode === ADMIN_CODE) role = 'admin'
-    const r = await pool.query('INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) RETURNING id', [username, hash, role])
-    res.json({ id: r.rows[0].id, username, role })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Registration failed' })
+app.post('/auth/register', async (req, res) => {
+  const { email, password, name, adminCode } = req.body || {}
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) return res.status(400).json({ error: 'Valid email required' })
+  if (!password || password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' })
+  if (users.find((u) => u.emailIndex === blindIndex(email))) {
+    return res.status(409).json({ error: 'An account with that email already exists' })
   }
+  const user = createUser({
+    email,
+    name,
+    passwordHash: await bcrypt.hash(password, 10),
+    provider: 'email',
+    adminCode,
+  })
+  res.status(201).json({ token: signToken(user), user: publicUser(user) })
 })
 
 app.post('/auth/login', async (req, res) => {
-  const { username, password } = req.body
-  if (!username || !password) return res.status(400).json({ error: 'Missing username or password' })
-  try {
-    const user = await getUserByUsername(username)
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' })
-    const ok = await bcrypt.compare(password, user.password_hash)
-    if (!ok) return res.status(401).json({ error: 'Invalid credentials' })
-    const token = generateToken(user)
-    res.json({ token })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Login failed' })
+  const { email, password } = req.body || {}
+  if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
+  const user = users.find((u) => u.emailIndex === blindIndex(email))
+  if (!user || !user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
+    return res.status(401).json({ error: 'Invalid email or password' })
   }
+  res.json({ token: signToken(user), user: publicUser(user) })
 })
 
-// Recipes CRUD
-app.get('/recipes', authMiddleware, async (req, res) => {
+// Verifies a Google Identity Services ID token, then creates/finds the account.
+app.post('/auth/google', async (req, res) => {
+  if (!GOOGLE_CLIENT_ID) return res.status(503).json({ error: 'Google login is not configured on this server' })
+  const { credential } = req.body || {}
+  if (!credential) return res.status(400).json({ error: 'Missing Google credential' })
   try {
-    // Return the complete recipe catalog so Explorer "Available Recipes"
-    // matches Admin's recipe list.
-    const r = await pool.query('SELECT * FROM recipes ORDER BY id')
-    return res.json(r.rows)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch recipes' })
-  }
-})
-
-app.get('/recipes/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  try {
-    const r = await pool.query('SELECT * FROM recipes WHERE id = $1', [id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const recipe = r.rows[0]
-    if (req.user.role === 'admin' || recipe.user_id === req.user.id || recipe.visibility === true) {
-      return res.json(recipe)
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`)
+    if (!response.ok) return res.status(401).json({ error: 'Invalid Google token' })
+    const info = await response.json()
+    if (info.aud !== GOOGLE_CLIENT_ID) return res.status(401).json({ error: 'Google token is for a different app' })
+    if (info.email_verified !== 'true' && info.email_verified !== true) {
+      return res.status(401).json({ error: 'Google email is not verified' })
     }
-    return res.status(403).json({ error: 'Access denied' })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch recipe' })
-  }
-})
-
-app.post('/recipes', authMiddleware, async (req, res) => {
-  const { title, ingredients, instructions, time, duration, equipment, visibility } = req.body
-  if (!title || !ingredients || !instructions) return res.status(400).json({ error: 'Missing required fields' })
-  try {
-    const r = await pool.query(
-      `INSERT INTO recipes (title, ingredients, instructions, time, duration, equipment, user_id, visibility) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`, 
-      [title, ingredients, instructions, time, duration, equipment, req.user.id, visibility ?? false]
-    )
-    res.json(r.rows[0])
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to create recipe' })
-  }
-})
-
-app.put('/recipes/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  const { title, ingredients, instructions, time, duration, equipment, visibility } = req.body
-  try {
-    // fetch to check ownership or admin
-    const rr = await pool.query('SELECT * FROM recipes WHERE id = $1', [id])
-    if (rr.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const recipe = rr.rows[0]
-    if (req.user.role !== 'admin' && recipe.user_id !== req.user.id) return res.status(403).json({ error: 'Forbidden' })
-
-    // Build update query dynamically
-    const fields = []
-    const values = []
-    let idx = 1
-    if (title !== undefined) { fields.push('title = $' + idx++); values.push(title) }
-    if (ingredients !== undefined) { fields.push('ingredients = $' + idx++); values.push(ingredients) }
-    if (instructions !== undefined) { fields.push('instructions = $' + idx++); values.push(instructions) }
-    if (time !== undefined) { fields.push('time = $' + idx++); values.push(time) }
-    if (duration !== undefined) { fields.push('duration = $' + idx++); values.push(duration) }
-    if (equipment !== undefined) { fields.push('equipment = $' + idx++); values.push(equipment) }
-    if (visibility !== undefined) {
-      if (req.user.role !== 'admin') return res.status(403).json({ error: 'Only admin can change visibility' })
-      fields.push('visibility = $' + idx++); values.push(visibility)
+    let user = users.find((u) => u.emailIndex === blindIndex(info.email))
+    if (!user) {
+      user = createUser({ email: info.email, name: info.name, provider: 'google' })
     }
-    if (fields.length === 0) return res.status(400).json({ error: 'Nothing to update' })
-    fields.push('updated_at = NOW()')
-    const sql = `UPDATE recipes SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *`
-    values.push(id)
-    const up = await pool.query(sql, values)
-    res.json(up.rows[0])
+    res.json({ token: signToken(user), user: publicUser(user) })
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to update recipe' })
+    console.error('Google auth failed:', err.message)
+    res.status(502).json({ error: 'Could not verify Google login' })
   }
 })
 
-app.delete('/recipes/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  try {
-    const rr = await pool.query('SELECT * FROM recipes WHERE id = $1', [id])
-    if (rr.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const recipe = rr.rows[0]
-    if (req.user.role !== 'admin' && recipe.user_id !== req.user.id) return res.status(403).json({ error: 'Forbidden' })
-    await pool.query('DELETE FROM saved_recipes WHERE recipe_id = $1', [id])
-    await pool.query('DELETE FROM recipes WHERE id = $1', [id])
-    res.json({ ok: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to delete recipe' })
-  }
+app.get('/auth/me', authMiddleware, (req, res) => {
+  res.json({ user: publicUser(req.user) })
 })
 
-// Saved recipes (favorites) for current user
-app.post('/saved', authMiddleware, async (req, res) => {
-  const { recipe_id } = req.body
-  if (!recipe_id) return res.status(400).json({ error: 'Missing recipe_id' })
-  try {
-    // Ensure recipe exists
-    const r = await pool.query('SELECT id FROM recipes WHERE id = $1', [recipe_id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Recipe not found' })
-    await pool.query('INSERT INTO saved_recipes (user_id, recipe_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [req.user.id, recipe_id])
-    res.json({ ok: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to save recipe' })
-  }
-})
+// ----------------------------------------------------------------- recipe rules
 
-app.get('/saved', authMiddleware, async (req, res) => {
-  try {
-    const s = await pool.query(
-      `SELECT r.* FROM saved_recipes s
-       JOIN recipes r ON r.id = s.recipe_id
-       WHERE s.user_id = $1`,
-      [req.user.id]
-    )
-    res.json(s.rows)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch saved recipes' })
-  }
-})
+// Recipes are semi-structured: a few required/normalized fields, everything else
+// (nutrition, source, custom fields) passes through untouched.
+function normalizeRecipe(input, userId, existing) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Recipe must be a JSON object')
+  const title = String(input.title || '').trim()
+  if (!title) throw new Error('Recipe needs a title')
 
-app.delete('/saved/:recipeId', authMiddleware, async (req, res) => {
-  const recipeId = parseInt(req.params.recipeId, 10)
-  if (!recipeId) return res.status(400).json({ error: 'Invalid recipe id' })
-  try {
-    await pool.query('DELETE FROM saved_recipes WHERE user_id = $1 AND recipe_id = $2', [req.user.id, recipeId])
-    res.json({ ok: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to unsave recipe' })
-  }
-})
-
-app.get('/meal-plan', authMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query(
-      `SELECT day_of_week, breakfast, lunch, dinner
-       FROM meal_plan_entries
-       WHERE user_id = $1`,
-      [req.user.id]
-    )
-
-    const weekMeals = WEEK_DAYS.reduce((acc, day) => {
-      acc[day] = { breakfast: '', lunch: '', dinner: '' }
-      return acc
-    }, {})
-
-    for (const row of r.rows) {
-      weekMeals[row.day_of_week] = {
-        breakfast: row.breakfast || '',
-        lunch: row.lunch || '',
-        dinner: row.dinner || ''
-      }
-    }
-
-    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' })
-    res.json({ weekMeals, currentDay, currentMeals: weekMeals[currentDay] || { breakfast: '', lunch: '', dinner: '' } })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch meal plan' })
-  }
-})
-
-app.put('/meal-plan', authMiddleware, async (req, res) => {
-  const { weekMeals } = req.body
-  if (!weekMeals || typeof weekMeals !== 'object') {
-    return res.status(400).json({ error: 'Missing weekMeals object' })
+  const asStringArray = (value) =>
+    Array.isArray(value) ? value.map((v) => (typeof v === 'string' ? v.trim() : v)).filter((v) => v !== '' && v != null) : []
+  const asNumberOrNull = (value) => {
+    const n = Number(value)
+    return Number.isFinite(n) && n >= 0 ? n : null
   }
 
-  const client = await pool.connect()
-  try {
-    await client.query('BEGIN')
-
-    for (const day of WEEK_DAYS) {
-      const dayMeals = weekMeals[day] || {}
-      await client.query(
-        `INSERT INTO meal_plan_entries (user_id, day_of_week, breakfast, lunch, dinner)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT (user_id, day_of_week)
-         DO UPDATE SET breakfast = EXCLUDED.breakfast,
-                       lunch = EXCLUDED.lunch,
-                       dinner = EXCLUDED.dinner,
-                       updated_at = NOW()`,
-        [
-          req.user.id,
-          day,
-          dayMeals.breakfast || '',
-          dayMeals.lunch || '',
-          dayMeals.dinner || ''
-        ]
-      )
-    }
-
-    await client.query('COMMIT')
-    res.json({ ok: true })
-  } catch (err) {
-    await client.query('ROLLBACK')
-    console.error(err)
-    res.status(500).json({ error: 'Failed to save meal plan' })
-  } finally {
-    client.release()
+  return {
+    ...(existing || {}),
+    ...input,
+    id: existing ? existing.id : crypto.randomUUID(),
+    title,
+    description: String(input.description || '').trim(),
+    image: input.image ? String(input.image) : null,
+    servings: asNumberOrNull(input.servings),
+    prepTimeMinutes: asNumberOrNull(input.prepTimeMinutes),
+    cookTimeMinutes: asNumberOrNull(input.cookTimeMinutes),
+    cuisine: input.cuisine ? String(input.cuisine).trim() : null,
+    tags: asStringArray(input.tags).map(String),
+    ingredients: asStringArray(input.ingredients),
+    steps: asStringArray(input.steps).map(String),
+    createdBy: existing ? existing.createdBy : userId,
+    createdAt: existing ? existing.createdAt : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
-})
-
-app.get('/grocery-list', authMiddleware, async (req, res) => {
-  try {
-    const r = await pool.query(
-      `SELECT id, name, quantity, unit, checked
-       FROM grocery_items
-       WHERE user_id = $1
-       ORDER BY id`,
-      [req.user.id]
-    )
-    res.json(r.rows)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch grocery list' })
-  }
-})
-
-app.post('/grocery-list', authMiddleware, async (req, res) => {
-  const { name, quantity, unit } = req.body
-  if (!name || !name.trim()) return res.status(400).json({ error: 'Missing item name' })
-  try {
-    const r = await pool.query(
-      `INSERT INTO grocery_items (user_id, name, quantity, unit, checked)
-       VALUES ($1, $2, $3, $4, FALSE)
-       RETURNING id, name, quantity, unit, checked`,
-      [req.user.id, name.trim(), quantity ?? 1, unit || 'pcs']
-    )
-    res.json(r.rows[0])
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to add grocery item' })
-  }
-})
-
-app.put('/grocery-list/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  const { name, quantity, unit, checked } = req.body
-  if (!id) return res.status(400).json({ error: 'Invalid id' })
-  try {
-    const r = await pool.query('SELECT * FROM grocery_items WHERE id = $1 AND user_id = $2', [id, req.user.id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-
-    const item = r.rows[0]
-    const up = await pool.query(
-      `UPDATE grocery_items
-       SET name = $1, quantity = $2, unit = $3, checked = $4, updated_at = NOW()
-       WHERE id = $5 AND user_id = $6
-       RETURNING id, name, quantity, unit, checked`,
-      [
-        name !== undefined ? String(name).trim() : item.name,
-        quantity !== undefined ? quantity : item.quantity,
-        unit !== undefined ? unit : item.unit,
-        checked !== undefined ? checked : item.checked,
-        id,
-        req.user.id
-      ]
-    )
-    res.json(up.rows[0])
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to update grocery item' })
-  }
-})
-
-app.delete('/grocery-list/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  if (!id) return res.status(400).json({ error: 'Invalid id' })
-  try {
-    await pool.query('DELETE FROM grocery_items WHERE id = $1 AND user_id = $2', [id, req.user.id])
-    res.json({ ok: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to delete grocery item' })
-  }
-})
-
-// Pantry endpoints (per-user pantry management)
-app.get('/pantry', authMiddleware, async (req, res) => {
-  try {
-    const q = `SELECT id, user_id, name, category, expiration_date, quantity, unit, unit_system, location, notes, created_at, updated_at,
-      (expiration_date IS NOT NULL AND expiration_date <= CURRENT_DATE + INTERVAL '7 days') AS expiring_soon,
-      (CASE WHEN expiration_date IS NULL THEN NULL ELSE (expiration_date - CURRENT_DATE) END) AS days_left
-      FROM pantry_items WHERE user_id = $1 ORDER BY id`
-    const r = await pool.query(q, [req.user.id])
-    res.json(r.rows)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch pantry' })
-  }
-})
-
-app.post('/pantry', authMiddleware, async (req, res) => {
-  const { name, category, expiration_date, quantity, unit, unit_system, location, notes } = req.body
-  if (!name || !category) return res.status(400).json({ error: 'Missing required fields' })
-  try {
-    // Enforce per-user pantry item limit
-    const countRes = await pool.query('SELECT COUNT(*) FROM pantry_items WHERE user_id = $1', [req.user.id])
-    const currentCount = parseInt(countRes.rows[0].count, 10) || 0
-    if (currentCount >= MAX_PANTRY_ITEMS) {
-      return res.status(429).json({ error: 'Pantry item limit reached' })
-    }
-    const r = await pool.query(
-      `INSERT INTO pantry_items (user_id, name, category, expiration_date, quantity, unit, unit_system, location, notes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [req.user.id, name, category, expiration_date || null, quantity ?? 1, unit ?? 'pcs', unit_system ?? 'metric', location, notes]
-    )
-    res.json(r.rows[0])
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to create pantry item' })
-  }
-})
-
-app.get('/pantry/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  try {
-    const r = await pool.query('SELECT * FROM pantry_items WHERE id = $1', [id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const item = r.rows[0]
-    if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' })
-    // Attach expiring_soon and days_left like list
-    const daysLeft = item.expiration_date ? (item.expiration_date - new Date().setHours(0,0,0,0)) / (1000*60*60*24) : null
-    item.expiring_soon = item.expiration_date && item.expiration_date <= new Date().toISOString().slice(0,10) // approximate
-    item.days_left = daysLeft
-    res.json(item)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch pantry item' })
-  }
-})
-
-app.put('/pantry/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  const { name, category, expiration_date, quantity, unit, unit_system, location, notes } = req.body
-  try {
-    const r = await pool.query('SELECT * FROM pantry_items WHERE id = $1', [id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const item = r.rows[0]
-    if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' })
-    const updates = []
-    const values = []
-    let idx = 1
-    if (name !== undefined) { updates.push('name = $' + idx); values.push(name); idx++ }
-    if (category !== undefined) { updates.push('category = $' + idx); values.push(category); idx++ }
-    if (expiration_date !== undefined) { updates.push('expiration_date = $' + idx); values.push(expiration_date); idx++ }
-    if (quantity !== undefined) { updates.push('quantity = $' + idx); values.push(quantity); idx++ }
-    if (unit !== undefined) { updates.push('unit = $' + idx); values.push(unit); idx++ }
-    if (unit_system !== undefined) { updates.push('unit_system = $' + idx); values.push(unit_system); idx++ }
-    if (location !== undefined) { updates.push('location = $' + idx); values.push(location); idx++ }
-    if (notes !== undefined) { updates.push('notes = $' + idx); values.push(notes); idx++ }
-    if (updates.length === 0) return res.status(400).json({ error: 'Nothing to update' })
-    updates.push('updated_at = NOW()')
-    const sql = `UPDATE pantry_items SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`
-    values.push(id)
-    const up = await pool.query(sql, values)
-    res.json(up.rows[0])
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to update pantry item' })
-  }
-})
-
-app.delete('/pantry/:id', authMiddleware, async (req, res) => {
-  const id = parseInt(req.params.id, 10)
-  try {
-    const r = await pool.query('SELECT * FROM pantry_items WHERE id = $1', [id])
-    if (r.rows.length === 0) return res.status(404).json({ error: 'Not found' })
-    const item = r.rows[0]
-    if (item.user_id !== req.user.id && req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' })
-    await pool.query('DELETE FROM pantry_items WHERE id = $1', [id])
-    res.json({ ok: true })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to delete pantry item' })
-  }
-})
-
-if (SKIP_DB) {
-  const port = parseInt(process.env.PORT || '5000', 10)
-  app.listen(port, () => {
-    console.log(`Backend listening on port ${port} (DB skipped)`)
-  })
-} else {
-  initDb().then(() => {
-    const port = parseInt(process.env.PORT || '5000', 10)
-    app.listen(port, () => {
-      console.log(`Backend listening on port ${port}`)
-    })
-  }).catch(err => {
-    console.error('Failed to initialize DB', err)
-    process.exit(1)
-  })
 }
+
+// ---------------------------------------------------------------- recipe routes
+
+app.get('/recipes', (req, res) => {
+  res.json({ recipes: recipes.all() })
+})
+
+app.get('/recipes/:id', (req, res) => {
+  const recipe = recipes.findById(req.params.id)
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found' })
+  res.json({ recipe })
+})
+
+app.post('/recipes', authMiddleware, adminMiddleware, (req, res) => {
+  try {
+    const recipe = recipes.insert(normalizeRecipe(req.body, req.user.id))
+    res.status(201).json({ recipe })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.put('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const existing = recipes.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Recipe not found' })
+  try {
+    const updated = recipes.update(existing.id, normalizeRecipe(req.body, req.user.id, existing))
+    res.json({ recipe: updated })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const removed = recipes.remove((r) => r.id === req.params.id)
+  if (!removed) return res.status(404).json({ error: 'Recipe not found' })
+  saved.remove((s) => s.recipeId === req.params.id)
+  res.json({ ok: true })
+})
+
+// Bulk import: accepts a raw array, { recipes: [...] }, or a single recipe object.
+app.post('/recipes/import', authMiddleware, adminMiddleware, (req, res) => {
+  const body = req.body
+  const list = Array.isArray(body) ? body : Array.isArray(body?.recipes) ? body.recipes : [body]
+  const imported = []
+  const skipped = []
+  list.forEach((item, index) => {
+    try {
+      imported.push(recipes.insert(normalizeRecipe(item, req.user.id)))
+    } catch (err) {
+      skipped.push({ index, title: item?.title || null, reason: err.message })
+    }
+  })
+  res.status(imported.length ? 201 : 400).json({ importedCount: imported.length, imported, skipped })
+})
+
+// ----------------------------------------------------------------- saved routes
+
+app.get('/saved', authMiddleware, (req, res) => {
+  const entries = saved.filter((s) => s.userId === req.user.id)
+  const items = entries.map((s) => recipes.findById(s.recipeId)).filter(Boolean)
+  res.json({ recipes: items })
+})
+
+app.post('/saved/:recipeId', authMiddleware, (req, res) => {
+  const recipe = recipes.findById(req.params.recipeId)
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found' })
+  const exists = saved.find((s) => s.userId === req.user.id && s.recipeId === recipe.id)
+  if (!exists) {
+    saved.insert({ id: crypto.randomUUID(), userId: req.user.id, recipeId: recipe.id, savedAt: new Date().toISOString() })
+  }
+  res.status(201).json({ ok: true })
+})
+
+app.delete('/saved/:recipeId', authMiddleware, (req, res) => {
+  saved.remove((s) => s.userId === req.user.id && s.recipeId === req.params.recipeId)
+  res.json({ ok: true })
+})
+
+// ----------------------------------------------------------------------- misc
+
+app.get('/health', (req, res) => res.json({ ok: true }))
+
+app.use((req, res) => res.status(404).json({ error: 'Not found' }))
+
+app.listen(PORT, () => {
+  console.log(`POV Cooking API running on http://localhost:${PORT}`)
+  if (!GOOGLE_CLIENT_ID) console.log('Google login disabled (set GOOGLE_CLIENT_ID to enable)')
+})

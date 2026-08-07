@@ -1,28 +1,47 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import * as api from '../api'
 
-const AuthContext = createContext()
+const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false) // Start unauthenticated for proper testing
-  const [user, setUser] = useState(null) // No default user
+  const [token, setToken] = useState(() => localStorage.getItem('pov_token'))
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('pov_user')) || null
+    } catch {
+      return null
+    }
+  })
 
-  const login = (userData) => {
-    setIsAuthenticated(true)
-    setUser(userData)
-    localStorage.setItem('pov_token', 'mock-token')
+  // Re-validate the stored session on load; drop it if the token is stale.
+  useEffect(() => {
+    if (!token) return
+    api
+      .me(token)
+      .then(({ user }) => {
+        setUser(user)
+        localStorage.setItem('pov_user', JSON.stringify(user))
+      })
+      .catch(() => logout())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function login(newToken, newUser) {
+    setToken(newToken)
+    setUser(newUser)
+    localStorage.setItem('pov_token', newToken)
+    localStorage.setItem('pov_user', JSON.stringify(newUser))
   }
 
-  const logout = () => {
-    setIsAuthenticated(false)
+  function logout() {
+    setToken(null)
     setUser(null)
     localStorage.removeItem('pov_token')
+    localStorage.removeItem('pov_user')
   }
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  const value = { token, user, isAdmin: user?.role === 'admin', login, logout }
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
