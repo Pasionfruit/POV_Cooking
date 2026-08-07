@@ -36,6 +36,7 @@ function arcDash(angle, radius) {
 // seconds (5s steps). Uses an end-timestamp so it stays accurate when the tab
 // is backgrounded.
 export default function Timer({ presets = [] }) {
+  const [open, setOpen] = useState(false)
   const [minutes, setMinutes] = useState(presets[0] ? Math.min(presets[0].minutes, 59) : 10)
   const [seconds, setSeconds] = useState(0)
   const [remaining, setRemaining] = useState(() => (presets[0] ? Math.min(presets[0].minutes, 59) : 10) * 60)
@@ -132,21 +133,32 @@ export default function Timer({ presets = [] }) {
   return (
     <div className={`timer ${done ? 'timer-done' : ''}`}>
       <div className="timer-top">
-        <span className="timer-label">Timer</span>
-        <div className="timer-presets">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              className="chip"
-              disabled={running}
-              onClick={() => applyDial(Math.min(p.minutes, 59), 0)}
-            >
-              {p.label} {p.minutes} min
-            </button>
-          ))}
-        </div>
+        <button type="button" className="timer-toggle" onClick={() => setOpen(!open)} aria-expanded={open}>
+          <span className={`caret ${open ? 'open' : ''}`} aria-hidden>
+            ›
+          </span>
+          <span className="timer-label">Timer</span>
+          {!open && (running || paused || done) && (
+            <span className="timer-mini">{done ? 'Done' : `${mm}:${ss}`}</span>
+          )}
+        </button>
+        {open && (
+          <div className="timer-presets">
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                className="chip"
+                disabled={running}
+                onClick={() => applyDial(Math.min(p.minutes, 59), 0)}
+              >
+                {p.label} {p.minutes} min
+              </button>
+            ))}
+          </div>
+        )}
       </div>
+      {open && (
       <div className="dial-wrap">
         <svg
           ref={svgRef}
@@ -208,6 +220,7 @@ export default function Timer({ presets = [] }) {
           </button>
         </div>
       </div>
+      )}
     </div>
   )
 }

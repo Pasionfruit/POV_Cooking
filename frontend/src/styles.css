@@ -410,8 +410,36 @@ code {
 .card-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
   margin-top: 2px;
+}
+
+.heart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 5px;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.heart-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.heart-button.saved {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.heart-button.large {
+  padding: 8px;
 }
 
 .tried-badge {
@@ -562,6 +590,35 @@ code {
 
 .timer-label {
   font-weight: 700;
+}
+
+.timer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.caret {
+  display: inline-block;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.caret.open {
+  transform: rotate(90deg);
+}
+
+.timer-mini {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .timer-presets {
@@ -888,10 +945,79 @@ code {
   color: var(--danger);
 }
 
-.day-panel select {
-  font-size: 0.85rem;
-  padding: 6px 8px;
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slot-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--muted);
+}
+
+.slot-add {
+  font-size: 0.82rem;
+  padding: 4px 8px;
+  color: var(--muted);
+  border-style: dashed;
+}
+
+.slot-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ------------------------------------------------------- build-a-meal roller */
+.randomizer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.randomizer-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px;
+  text-align: left;
+  background: var(--accent-soft);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+}
+
+.randomizer-cell:hover {
+  border-color: var(--accent);
+}
+
+.randomizer-cell.rolling .randomizer-value {
+  opacity: 0.55;
+}
+
+.randomizer-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.randomizer-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.randomizer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 /* --------------------------------------------------------------- spin wheel */

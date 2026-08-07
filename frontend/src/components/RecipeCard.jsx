@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { totalTimeText } from '../lib/recipeUtils'
 import { useAuth } from '../contexts/AuthContext'
+import HeartIcon from './HeartIcon'
 
 export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onToggleTried }) {
   const { user } = useAuth()
@@ -40,8 +41,14 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
         {user && (
           <div className="card-actions">
             {onToggleSave && (
-              <button className={`pill ${isSaved ? 'active' : ''}`} onClick={() => onToggleSave(recipe)}>
-                {isSaved ? 'Saved' : 'Save'}
+              <button
+                className={`heart-button ${isSaved ? 'saved' : ''}`}
+                onClick={() => onToggleSave(recipe)}
+                title={isSaved ? 'Remove from saved' : 'Save recipe'}
+                aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
+                aria-pressed={isSaved}
+              >
+                <HeartIcon filled={isSaved} />
               </button>
             )}
             {onToggleTried && (

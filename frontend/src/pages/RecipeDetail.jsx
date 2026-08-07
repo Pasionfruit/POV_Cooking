@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import * as api from '../api'
+import HeartIcon from '../components/HeartIcon'
 import Timer from '../components/Timer'
 import { useAuth } from '../contexts/AuthContext'
 import { ingredientToText } from '../lib/recipeUtils'
@@ -77,8 +78,14 @@ export default function RecipeDetail() {
         <div className="detail-actions">
           {user && (
             <>
-              <button className={`pill large ${isSaved ? 'active' : ''}`} onClick={() => toggleSave(recipe)}>
-                {isSaved ? 'Saved' : 'Save'}
+              <button
+                className={`heart-button large ${isSaved ? 'saved' : ''}`}
+                onClick={() => toggleSave(recipe)}
+                title={isSaved ? 'Remove from saved' : 'Save recipe'}
+                aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
+                aria-pressed={isSaved}
+              >
+                <HeartIcon filled={isSaved} size={20} />
               </button>
               <button
                 className={`pill large ${triedIds.has(recipe.id) ? 'active' : ''}`}

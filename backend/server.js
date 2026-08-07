@@ -253,9 +253,15 @@ app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
   mealplans.all().forEach((plan) => {
     const days = {}
     let changed = false
-    for (const [day, ids] of Object.entries(plan.days || {})) {
-      days[day] = ids.filter((id) => id !== req.params.id)
-      if (days[day].length !== ids.length) changed = true
+    for (const [day, value] of Object.entries(plan.days || {})) {
+      const slots = Array.isArray(value) ? { dinner: value } : value || {}
+      const daySlots = {}
+      for (const [slot, ids] of Object.entries(slots)) {
+        const kept = (Array.isArray(ids) ? ids : []).filter((id) => id !== req.params.id)
+        if (kept.length !== (ids || []).length) changed = true
+        if (kept.length) daySlots[slot] = kept
+      }
+      if (Object.keys(daySlots).length) days[day] = daySlots
     }
     if (changed) mealplans.update(plan.id, { days })
   })
@@ -346,17 +352,25 @@ app.put('/featured', authMiddleware, adminMiddleware, (req, res) => {
 // ------------------------------------------------------------- meal plan routes
 
 // One plan per user per week. `weekStart` is the Monday as YYYY-MM-DD;
-// `days` maps day index 0-6 (Mon-Sun) to a list of recipe ids.
+// `days` maps day index 0-6 (Mon-Sun) to meal slots, each holding recipe ids:
+//   { "0": { breakfast: [id], dinner: [id, id] } }
 const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/
+const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack']
 
 function sanitizeDays(days) {
   const clean = {}
   for (const [key, value] of Object.entries(days || {})) {
     if (!/^[0-6]$/.test(key)) continue
-    const ids = (Array.isArray(value) ? value : [])
-      .filter((id) => typeof id === 'string' && recipes.findById(id))
-      .slice(0, 20)
-    if (ids.length) clean[key] = ids
+    // Plans written before meal slots existed stored a flat array — treat those as dinner.
+    const slots = Array.isArray(value) ? { dinner: value } : value || {}
+    const daySlots = {}
+    for (const slot of MEAL_SLOTS) {
+      const ids = (Array.isArray(slots[slot]) ? slots[slot] : [])
+        .filter((id) => typeof id === 'string' && recipes.findById(id))
+        .slice(0, 10)
+      if (ids.length) daySlots[slot] = ids
+    }
+    if (Object.keys(daySlots).length) clean[key] = daySlots
   }
   return clean
 }

@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
+import ComponentRandomizer from '../components/ComponentRandomizer'
 import SpinWheel from '../components/SpinWheel'
 import { useAuth } from '../contexts/AuthContext'
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+// key = stored slot name, mealType = the recipe meal type suggested for it
+const SLOTS = [
+  { key: 'breakfast', label: 'Breakfast', mealType: 'Breakfast' },
+  { key: 'lunch', label: 'Lunch', mealType: 'Lunch' },
+  { key: 'dinner', label: 'Dinner', mealType: 'Dinner' },
+  { key: 'snack', label: 'Snack', mealType: 'Snack' },
+]
 
 function toKey(date) {
   const y = date.getFullYear()
@@ -30,6 +38,34 @@ function shortDate(date) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
+// Recipes whose meal type matches the slot come first, under their own group.
+function RecipeOptions({ recipes, mealType }) {
+  const matching = recipes.filter((r) => r.mealType === mealType)
+  const others = recipes.filter((r) => r.mealType !== mealType)
+  return (
+    <>
+      {matching.length > 0 && (
+        <optgroup label={`${mealType} recipes`}>
+          {matching.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.title}
+            </option>
+          ))}
+        </optgroup>
+      )}
+      {others.length > 0 && (
+        <optgroup label={matching.length ? 'Other recipes' : 'All recipes'}>
+          {others.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.title}
+            </option>
+          ))}
+        </optgroup>
+      )}
+    </>
+  )
+}
+
 export default function MealPlan() {
   const { token } = useAuth()
   const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()))
@@ -38,6 +74,8 @@ export default function MealPlan() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [wheelPick, setWheelPick] = useState(null)
+  const [wheelDay, setWheelDay] = useState('')
+  const [wheelSlot, setWheelSlot] = useState('dinner')
 
   const weekKey = toKey(weekStart)
   const todayKey = toKey(new Date())
@@ -61,18 +99,34 @@ export default function MealPlan() {
     api.saveMealPlan(token, { weekStart: weekKey, days: nextDays }).catch((err) => setError(err.message))
   }
 
-  function addToDay(dayIndex, recipeId) {
+  function slotIds(dayIndex, slotKey) {
+    return days[dayIndex]?.[slotKey] || []
+  }
+
+  function addToSlot(dayIndex, slotKey, recipeId) {
     if (!recipeId) return
-    const current = days[dayIndex] || []
+    const current = slotIds(dayIndex, slotKey)
     if (current.includes(recipeId)) return
-    persist({ ...days, [dayIndex]: [...current, recipeId] })
+    persist({
+      ...days,
+      [dayIndex]: { ...(days[dayIndex] || {}), [slotKey]: [...current, recipeId] },
+    })
   }
 
-  function removeFromDay(dayIndex, recipeId) {
-    persist({ ...days, [dayIndex]: (days[dayIndex] || []).filter((id) => id !== recipeId) })
+  function removeFromSlot(dayIndex, slotKey, recipeId) {
+    persist({
+      ...days,
+      [dayIndex]: {
+        ...(days[dayIndex] || {}),
+        [slotKey]: slotIds(dayIndex, slotKey).filter((id) => id !== recipeId),
+      },
+    })
   }
 
-  const plannedCount = Object.values(days).reduce((n, ids) => n + ids.length, 0)
+  const plannedCount = Object.values(days).reduce(
+    (total, slots) => total + Object.values(slots || {}).reduce((n, ids) => n + (ids?.length || 0), 0),
+    0
+  )
 
   return (
     <section>
@@ -103,72 +157,101 @@ export default function MealPlan() {
         <>
           <p className="muted small">
             {plannedCount === 0
-              ? 'Nothing planned this week yet — pick recipes below or spin the wheel for ideas.'
+              ? 'Nothing planned this week yet — fill in a meal below or use a randomizer for ideas.'
               : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
           </p>
           <div className="week-grid">
-            {DAY_NAMES.map((name, i) => {
-              const date = addDays(weekStart, i)
+            {DAY_NAMES.map((name, dayIndex) => {
+              const date = addDays(weekStart, dayIndex)
               const isToday = toKey(date) === todayKey
               return (
                 <div key={name} className={`day-panel ${isToday ? 'today' : ''}`}>
                   <div className="day-title">
                     {name} <span className="muted small">{shortDate(date)}</span>
                   </div>
-                  <ul className="day-list">
-                    {(days[i] || []).map((id) => (
-                      <li key={id}>
-                        {recipeById[id] ? (
-                          <Link to={`/recipes/${id}`}>{recipeById[id].title}</Link>
-                        ) : (
-                          <span className="muted">Removed recipe</span>
+                  {SLOTS.map((slot) => {
+                    const ids = slotIds(dayIndex, slot.key)
+                    return (
+                      <div key={slot.key} className="slot">
+                        <div className="slot-label">{slot.label}</div>
+                        {ids.length > 0 && (
+                          <ul className="day-list">
+                            {ids.map((id) => (
+                              <li key={id}>
+                                {recipeById[id] ? (
+                                  <Link to={`/recipes/${id}`}>{recipeById[id].title}</Link>
+                                ) : (
+                                  <span className="muted">Removed recipe</span>
+                                )}
+                                <button
+                                  type="button"
+                                  className="remove-button"
+                                  onClick={() => removeFromSlot(dayIndex, slot.key, id)}
+                                  aria-label={`Remove from ${name} ${slot.label}`}
+                                >
+                                  ×
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
                         )}
-                        <button
-                          type="button"
-                          className="remove-button"
-                          onClick={() => removeFromDay(i, id)}
-                          aria-label={`Remove from ${name}`}
+                        <select
+                          className="slot-add"
+                          value=""
+                          onChange={(e) => addToSlot(dayIndex, slot.key, e.target.value)}
+                          aria-label={`Add a recipe to ${name} ${slot.label}`}
                         >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <select value="" onChange={(e) => addToDay(i, e.target.value)} aria-label={`Add recipe to ${name}`}>
-                    <option value="">+ Add recipe…</option>
-                    {recipes.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.title}
-                      </option>
-                    ))}
-                  </select>
+                          <option value="">+ Add</option>
+                          <RecipeOptions recipes={recipes} mealType={slot.mealType} />
+                        </select>
+                      </div>
+                    )
+                  })}
                 </div>
               )
             })}
           </div>
 
+          <div className="panel">
+            <h2>Build a meal</h2>
+            <p className="muted small">Roll a combination of components when you want to improvise.</p>
+            <ComponentRandomizer />
+          </div>
+
           <div className="panel wheel-panel">
-            <h2>Need ideas? Spin the wheel</h2>
+            <h2>Pick a recipe at random</h2>
             <SpinWheel recipes={recipes} onResult={setWheelPick} />
             {wheelPick && (
               <div className="wheel-result">
                 <span>
                   Result: <Link to={`/recipes/${wheelPick.id}`}>{wheelPick.title}</Link>
                 </span>
-                <select
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value !== '') addToDay(Number(e.target.value), wheelPick.id)
-                  }}
-                  aria-label="Add wheel result to a day"
-                >
-                  <option value="">Add to day…</option>
+                <select value={wheelDay} onChange={(e) => setWheelDay(e.target.value)} aria-label="Day to add to">
+                  <option value="">Day…</option>
                   {DAY_NAMES.map((name, i) => (
                     <option key={name} value={i}>
                       {name}
                     </option>
                   ))}
                 </select>
+                <select value={wheelSlot} onChange={(e) => setWheelSlot(e.target.value)} aria-label="Meal to add to">
+                  {SLOTS.map((slot) => (
+                    <option key={slot.key} value={slot.key}>
+                      {slot.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="primary"
+                  disabled={wheelDay === ''}
+                  onClick={() => {
+                    addToSlot(Number(wheelDay), wheelSlot, wheelPick.id)
+                    setWheelDay('')
+                  }}
+                >
+                  Add
+                </button>
               </div>
             )}
           </div>
