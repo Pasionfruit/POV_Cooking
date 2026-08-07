@@ -618,6 +618,181 @@ code {
   font-size: 0.85rem;
 }
 
+/* --------------------------------------------------------------- dark theme */
+:root[data-theme='dark'] {
+  --bg: #1b1917;
+  --surface: #262320;
+  --text: #f0ece6;
+  --muted: #a89e92;
+  --border: #3a352f;
+  --accent: #e0703f;
+  --accent-soft: #3b2a20;
+}
+
+:root[data-theme='dark'] .error {
+  background: #3d2422;
+  color: #ffb4ab;
+}
+
+:root[data-theme='dark'] .notice {
+  background: #22372a;
+  color: #9fd9ae;
+}
+
+.theme-toggle {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  padding: 6px 8px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------------- meal plan */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.week-nav button {
+  padding: 6px 12px;
+}
+
+.week-label {
+  font-weight: 600;
+  min-width: 130px;
+  text-align: center;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.day-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.day-panel.today {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.day-title {
+  font-weight: 700;
+}
+
+.day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  font-size: 0.9rem;
+}
+
+.day-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.day-list a:hover {
+  color: var(--accent);
+}
+
+.remove-button {
+  border: none;
+  background: none;
+  padding: 0 4px;
+  font-size: 1rem;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  color: var(--danger);
+}
+
+.day-panel select {
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------- spin wheel */
+.wheel-panel h2 {
+  margin-bottom: 12px;
+}
+
+.wheel-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.wheel-pointer {
+  font-size: 1.4rem;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: -6px;
+  z-index: 1;
+}
+
+.wheel {
+  width: min(320px, 80vw);
+  height: auto;
+  will-change: transform;
+}
+
+.wheel-label {
+  font-size: 9px;
+  font-weight: 600;
+  fill: #2b2723;
+}
+
+.wheel-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.wheel-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 1.05rem;
+}
+
+.wheel-result select {
+  width: auto;
+  font-size: 0.9rem;
+}
+
 /* Comfortable tap targets on small screens */
 @media (max-width: 480px) {
   .page {
@@ -630,5 +805,9 @@ code {
 
   .card-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .week-grid {
+    grid-template-columns: 1fr;
   }
 }

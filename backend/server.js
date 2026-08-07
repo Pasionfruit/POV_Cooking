@@ -5,7 +5,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved } = require('./store')
+const { recipes, users, saved, mealplans } = require('./store')
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 
 const app = express()
@@ -202,6 +202,16 @@ app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
   const removed = recipes.remove((r) => r.id === req.params.id)
   if (!removed) return res.status(404).json({ error: 'Recipe not found' })
   saved.remove((s) => s.recipeId === req.params.id)
+  // scrub the recipe from every meal plan
+  mealplans.all().forEach((plan) => {
+    const days = {}
+    let changed = false
+    for (const [day, ids] of Object.entries(plan.days || {})) {
+      days[day] = ids.filter((id) => id !== req.params.id)
+      if (days[day].length !== ids.length) changed = true
+    }
+    if (changed) mealplans.update(plan.id, { days })
+  })
   res.json({ ok: true })
 })
 
@@ -242,6 +252,49 @@ app.post('/saved/:recipeId', authMiddleware, (req, res) => {
 app.delete('/saved/:recipeId', authMiddleware, (req, res) => {
   saved.remove((s) => s.userId === req.user.id && s.recipeId === req.params.recipeId)
   res.json({ ok: true })
+})
+
+// ------------------------------------------------------------- meal plan routes
+
+// One plan per user per week. `weekStart` is the Monday as YYYY-MM-DD;
+// `days` maps day index 0-6 (Mon-Sun) to a list of recipe ids.
+const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/
+
+function sanitizeDays(days) {
+  const clean = {}
+  for (const [key, value] of Object.entries(days || {})) {
+    if (!/^[0-6]$/.test(key)) continue
+    const ids = (Array.isArray(value) ? value : [])
+      .filter((id) => typeof id === 'string' && recipes.findById(id))
+      .slice(0, 20)
+    if (ids.length) clean[key] = ids
+  }
+  return clean
+}
+
+app.get('/meal-plan', authMiddleware, (req, res) => {
+  const { weekStart } = req.query
+  if (!WEEK_START_RE.test(weekStart || '')) return res.status(400).json({ error: 'weekStart (YYYY-MM-DD) required' })
+  const plan = mealplans.find((p) => p.userId === req.user.id && p.weekStart === weekStart)
+  res.json({ plan: plan || null })
+})
+
+app.put('/meal-plan', authMiddleware, (req, res) => {
+  const { weekStart, days } = req.body || {}
+  if (!WEEK_START_RE.test(weekStart || '')) return res.status(400).json({ error: 'weekStart (YYYY-MM-DD) required' })
+  const clean = sanitizeDays(days)
+  const existing = mealplans.find((p) => p.userId === req.user.id && p.weekStart === weekStart)
+  const plan = existing
+    ? mealplans.update(existing.id, { days: clean, updatedAt: new Date().toISOString() })
+    : mealplans.insert({
+        id: crypto.randomUUID(),
+        userId: req.user.id,
+        weekStart,
+        days: clean,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+  res.json({ plan })
 })
 
 // ----------------------------------------------------------------------- misc

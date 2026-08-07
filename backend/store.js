@@ -70,4 +70,5 @@ module.exports = {
   recipes: collection('recipes'),
   users: collection('users'),
   saved: collection('saved'),
+  mealplans: collection('mealplans'),
 }

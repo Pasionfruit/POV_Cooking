@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import RecipeCard from '../components/RecipeCard'
+import { useAuth } from '../contexts/AuthContext'
 import { matchesQuery, totalMinutes } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
 
@@ -14,11 +15,13 @@ const DURATIONS = [
 ]
 
 export default function Home() {
+  const { user } = useAuth()
   const [recipes, setRecipes] = useState(null)
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
   const [cuisine, setCuisine] = useState('')
   const [maxTime, setMaxTime] = useState('')
+  const [savedOnly, setSavedOnly] = useState(false)
   const { savedIds, toggleSave } = useSaved()
 
   useEffect(() => {
@@ -34,6 +37,7 @@ export default function Home() {
   const cuisines = [...new Set(recipes.map((r) => r.cuisine).filter(Boolean))].sort()
 
   const visible = recipes.filter((r) => {
+    if (savedOnly && !savedIds.has(r.id)) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
     if (maxTime) {
@@ -43,7 +47,7 @@ export default function Home() {
     return true
   })
 
-  const filtersActive = query || cuisine || maxTime
+  const filtersActive = query || cuisine || maxTime || savedOnly
 
   return (
     <section>
@@ -76,6 +80,16 @@ export default function Home() {
             </option>
           ))}
         </select>
+        {user && (
+          <button
+            type="button"
+            className={`chip ${savedOnly ? 'active' : ''}`}
+            onClick={() => setSavedOnly(!savedOnly)}
+            title="Show only recipes you saved"
+          >
+            ♥ Saved
+          </button>
+        )}
         {filtersActive && (
           <button
             type="button"

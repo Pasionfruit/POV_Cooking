@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import RecipeDetail from './pages/RecipeDetail'
 import Saved from './pages/Saved'
+import MealPlan from './pages/MealPlan'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
 
@@ -22,6 +23,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Saved />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/meal-plan"
+            element={
+              <ProtectedRoute>
+                <MealPlan />
               </ProtectedRoute>
             }
           />

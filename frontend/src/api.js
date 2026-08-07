@@ -32,6 +32,10 @@ export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { m
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
 export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
 
+// meal plan (weekStart = Monday as YYYY-MM-DD)
+export const getMealPlan = (token, weekStart) => request(`/meal-plan?weekStart=${weekStart}`, { token })
+export const saveMealPlan = (token, payload) => request('/meal-plan', { method: 'PUT', token, body: payload })
+
 // saved
 export const getSaved = (token) => request('/saved', { token })
 export const saveRecipe = (token, recipeId) => request(`/saved/${recipeId}`, { method: 'POST', token })
