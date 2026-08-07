@@ -16,7 +16,7 @@ export default function NavBar() {
   return (
     <header className="navbar">
       <Link to="/" className="brand">
-        🍳 POV Cooking
+        POV Cooking
       </Link>
       <nav className="nav-links">
         <NavLink to="/" end>
@@ -32,13 +32,8 @@ export default function NavBar() {
         ) : (
           <NavLink to="/login">Log in</NavLink>
         )}
-        <button
-          className="theme-toggle"
-          onClick={() => setTheme(toggleTheme())}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
+        <button className="theme-toggle" onClick={() => setTheme(toggleTheme())}>
+          {theme === 'dark' ? 'Light' : 'Dark'}
         </button>
       </nav>
     </header>

@@ -146,6 +146,9 @@ export default function Login() {
           <code>GOOGLE_CLIENT_ID</code> (backend) to enable it.
         </p>
       )}
+      <p className="muted small">
+        Demo login: <code>demo@povcooking.com</code> / <code>demo1234</code>
+      </p>
       <p className="muted small">Your email is stored encrypted; passwords are hashed with bcrypt.</p>
     </section>
   )

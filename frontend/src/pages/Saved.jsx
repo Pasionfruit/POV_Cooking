@@ -13,7 +13,7 @@ export default function Saved() {
       </div>
       {savedRecipes.length === 0 ? (
         <p className="muted">
-          Nothing saved yet — browse the <Link to="/">cookbook</Link> and tap the ♡ on recipes you like.
+          Nothing saved yet — browse the <Link to="/">cookbook</Link> and use Save on recipes you like.
         </p>
       ) : (
         <div className="card-grid">

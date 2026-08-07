@@ -3,14 +3,6 @@ import { Link } from 'react-router-dom'
 import { totalTimeText } from '../lib/recipeUtils'
 import { useAuth } from '../contexts/AuthContext'
 
-const PLACEHOLDER_EMOJI = ['🍝', '🍲', '🥘', '🍜', '🥗', '🍛', '🍳', '🥧']
-
-function placeholderFor(recipe) {
-  let hash = 0
-  for (const ch of recipe.id) hash = (hash + ch.charCodeAt(0)) % PLACEHOLDER_EMOJI.length
-  return PLACEHOLDER_EMOJI[hash]
-}
-
 export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
   const { user } = useAuth()
   const time = totalTimeText(recipe)
@@ -21,8 +13,8 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
         {recipe.image ? (
           <img src={recipe.image} alt={recipe.title} loading="lazy" />
         ) : (
-          <span className="card-emoji" aria-hidden>
-            {placeholderFor(recipe)}
+          <span className="card-letter" aria-hidden>
+            {recipe.title.charAt(0).toUpperCase()}
           </span>
         )}
       </Link>
@@ -32,19 +24,14 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
             {recipe.title}
           </Link>
           {user && onToggleSave && (
-            <button
-              className={`save-button ${isSaved ? 'saved' : ''}`}
-              onClick={() => onToggleSave(recipe)}
-              title={isSaved ? 'Remove from saved' : 'Save recipe'}
-              aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
-            >
-              {isSaved ? '♥' : '♡'}
+            <button className={`save-button ${isSaved ? 'saved' : ''}`} onClick={() => onToggleSave(recipe)}>
+              {isSaved ? 'Saved' : 'Save'}
             </button>
           )}
         </div>
         <div className="card-meta">
-          {time && <span>⏱ {time}</span>}
-          {recipe.servings && <span>🍽 {recipe.servings}</span>}
+          {time && <span>{time}</span>}
+          {recipe.servings && <span>Serves {recipe.servings}</span>}
           {recipe.cuisine && <span>{recipe.cuisine}</span>}
         </div>
         {recipe.tags?.length > 0 && (

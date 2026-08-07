@@ -6,16 +6,19 @@ store) later.
 
 ## Features
 
-- **Home** — browse all recipes; filter by text, cuisine, total time, or ♥ saved-only
-- **Recipe pages** — checkable ingredients/steps (remembered per device), a configurable
-  kitchen timer with prep/cook presets, tags, notes, source
-- **Saved** — logged-in users can save/unsave recipes (♡)
+- **Home** — browse all recipes; filter by text, cuisine, total time, or saved-only
+- **Recipe pages** — checkable ingredients/steps (remembered per device), a dial
+  kitchen timer (drag to set minutes and seconds, prep/cook presets), tags, notes, source
+- **Saved** — logged-in users can save/unsave recipes
 - **Meal Plan** — plan recipes per day, week by week, with a spinning-wheel
   randomizer for ideas
 - **Login** — email + password (emails stored encrypted, passwords bcrypt-hashed) or Google Sign-In
 - **Light/dark mode** — follows your system by default, toggle in the navbar
 - **Admin** — create, edit (form or raw JSON), and delete recipes
 - **Import** — upload or paste recipe JSON (single object, array, or `{ "recipes": [...] }`)
+- **Input standardization** — on create/edit/import, titles, ingredients, steps,
+  descriptions, and notes get their first word capitalized and quantity words
+  become digits ("two cups flour" becomes "2 cups flour")
 
 ## Run it
 
@@ -41,7 +44,14 @@ automatically talks to the API on the same host).
 
 ## Accounts & admin
 
-- Create an account on the Login page. To become an **admin**, expand
+Two demo accounts are created automatically the first time the server starts:
+
+| Role  | Email                  | Password    |
+| ----- | ---------------------- | ----------- |
+| User  | `demo@povcooking.com`  | `demo1234`  |
+| Admin | `admin@povcooking.com` | `admin1234` |
+
+- Or create your own account on the Login page. To become an **admin**, expand
   "Have an admin code?" and enter the code from `backend/.env`
   (`ADMIN_CODE`, default `admin-secret`).
 - `ADMIN_EMAILS` in `backend/.env` makes specific emails admins automatically

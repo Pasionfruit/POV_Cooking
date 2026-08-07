@@ -153,7 +153,7 @@ export default function MealPlan() {
             {wheelPick && (
               <div className="wheel-result">
                 <span>
-                  🎉 <Link to={`/recipes/${wheelPick.id}`}>{wheelPick.title}</Link>
+                  Result: <Link to={`/recipes/${wheelPick.id}`}>{wheelPick.title}</Link>
                 </span>
                 <select
                   value=""

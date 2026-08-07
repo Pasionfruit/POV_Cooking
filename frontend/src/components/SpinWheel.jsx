@@ -110,7 +110,7 @@ export default function SpinWheel({ recipes, onResult }) {
             disabled={spinning}
             title="Shuffle which recipes are on the wheel"
           >
-            ↻ Shuffle
+            Shuffle
           </button>
         )}
       </div>

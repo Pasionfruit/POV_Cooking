@@ -75,7 +75,7 @@ export default function RecipeDetail() {
         <div className="detail-actions">
           {user && (
             <button className={`save-button large ${isSaved ? 'saved' : ''}`} onClick={() => toggleSave(recipe)}>
-              {isSaved ? '♥ Saved' : '♡ Save'}
+              {isSaved ? 'Saved' : 'Save'}
             </button>
           )}
           {isAdmin && (

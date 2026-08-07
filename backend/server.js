@@ -132,6 +132,33 @@ app.get('/auth/me', authMiddleware, (req, res) => {
 
 // ----------------------------------------------------------------- recipe rules
 
+// Input standardization: first word capitalized, quantity words as digits
+// ("two cups flour" -> "2 cups flour"). Applied to titles, ingredients, steps,
+// descriptions, and notes on every create/update/import.
+const NUMBER_WORDS = {
+  one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7',
+  eight: '8', nine: '9', ten: '10', eleven: '11', twelve: '12', fifteen: '15',
+  twenty: '20', thirty: '30', forty: '40', fifty: '50', sixty: '60', hundred: '100',
+  half: '1/2', quarter: '1/4',
+}
+const NUMBER_WORD_RE = new RegExp(`\\b(${Object.keys(NUMBER_WORDS).join('|')})\\b`, 'gi')
+
+function standardizeText(value) {
+  const text = String(value).trim().replace(NUMBER_WORD_RE, (word) => NUMBER_WORDS[word.toLowerCase()])
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+function standardizeIngredient(ing) {
+  if (typeof ing === 'string') return standardizeText(ing)
+  if (ing && typeof ing === 'object') {
+    const out = { ...ing }
+    if (typeof out.item === 'string') out.item = out.item.trim().toLowerCase()
+    if (typeof out.quantity === 'string') out.quantity = out.quantity.replace(NUMBER_WORD_RE, (w) => NUMBER_WORDS[w.toLowerCase()])
+    return out
+  }
+  return ing
+}
+
 // Recipes are semi-structured: a few required/normalized fields, everything else
 // (nutrition, source, custom fields) passes through untouched.
 function normalizeRecipe(input, userId, existing) {
@@ -146,20 +173,24 @@ function normalizeRecipe(input, userId, existing) {
     return Number.isFinite(n) && n >= 0 ? n : null
   }
 
+  const description = String(input.description || '').trim()
+  const notes = typeof input.notes === 'string' ? input.notes.trim() : input.notes
+
   return {
     ...(existing || {}),
     ...input,
     id: existing ? existing.id : crypto.randomUUID(),
-    title,
-    description: String(input.description || '').trim(),
+    title: standardizeText(title),
+    description: description ? standardizeText(description) : '',
+    ...(typeof notes === 'string' && notes ? { notes: standardizeText(notes) } : {}),
     image: input.image ? String(input.image) : null,
     servings: asNumberOrNull(input.servings),
     prepTimeMinutes: asNumberOrNull(input.prepTimeMinutes),
     cookTimeMinutes: asNumberOrNull(input.cookTimeMinutes),
-    cuisine: input.cuisine ? String(input.cuisine).trim() : null,
-    tags: asStringArray(input.tags).map(String),
-    ingredients: asStringArray(input.ingredients),
-    steps: asStringArray(input.steps).map(String),
+    cuisine: input.cuisine ? standardizeText(input.cuisine) : null,
+    tags: asStringArray(input.tags).map((t) => String(t).toLowerCase()),
+    ingredients: asStringArray(input.ingredients).map(standardizeIngredient),
+    steps: asStringArray(input.steps).map(standardizeText),
     createdBy: existing ? existing.createdBy : userId,
     createdAt: existing ? existing.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -303,7 +334,29 @@ app.get('/health', (req, res) => res.json({ ok: true }))
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }))
 
-app.listen(PORT, () => {
-  console.log(`POV Cooking API running on http://localhost:${PORT}`)
-  if (!GOOGLE_CLIENT_ID) console.log('Google login disabled (set GOOGLE_CLIENT_ID to enable)')
+// Demo accounts so the app is usable straight after cloning.
+const DEMO_ACCOUNTS = [
+  { email: 'demo@povcooking.com', password: 'demo1234', name: 'Demo', adminCode: null },
+  { email: 'admin@povcooking.com', password: 'admin1234', name: 'Demo Admin', adminCode: ADMIN_CODE },
+]
+
+async function ensureDemoUsers() {
+  for (const account of DEMO_ACCOUNTS) {
+    if (users.find((u) => u.emailIndex === blindIndex(account.email))) continue
+    createUser({
+      email: account.email,
+      name: account.name,
+      passwordHash: await bcrypt.hash(account.password, 10),
+      provider: 'email',
+      adminCode: account.adminCode,
+    })
+    console.log(`Seeded demo account: ${account.email} / ${account.password}`)
+  }
+}
+
+ensureDemoUsers().then(() => {
+  app.listen(PORT, () => {
+    console.log(`POV Cooking API running on http://localhost:${PORT}`)
+    if (!GOOGLE_CLIENT_ID) console.log('Google login disabled (set GOOGLE_CLIENT_ID to enable)')
+  })
 })

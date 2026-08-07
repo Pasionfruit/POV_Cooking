@@ -87,7 +87,7 @@ export default function Home() {
             onClick={() => setSavedOnly(!savedOnly)}
             title="Show only recipes you saved"
           >
-            ♥ Saved
+            Saved only
           </button>
         )}
         {filtersActive && (
