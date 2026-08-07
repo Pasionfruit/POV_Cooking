@@ -334,6 +334,7 @@ code {
 }
 
 .card-media {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,13 +362,6 @@ code {
   gap: 6px;
 }
 
-.card-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
-
 .card-title {
   font-weight: 600;
   color: var(--text);
@@ -386,31 +380,50 @@ code {
   color: var(--muted);
 }
 
-.save-button {
+.pill {
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
   padding: 3px 12px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted);
   cursor: pointer;
   flex-shrink: 0;
 }
 
-.save-button:hover {
+.pill:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.save-button.saved {
+.pill.active {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
 }
 
-.save-button.large {
+.pill.large {
   font-size: 0.95rem;
   padding: 8px 16px;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tried-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
 }
 
 .tag-row {
@@ -771,14 +784,16 @@ code {
 }
 
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: none;
-  font-size: 0.8rem;
-  padding: 5px 12px;
+  padding: 7px;
   color: var(--muted);
   cursor: pointer;
-  line-height: 1;
+  line-height: 0;
 }
 
 .theme-toggle:hover {
@@ -931,8 +946,8 @@ code {
   font-size: 0.9rem;
 }
 
-/* Calmer, two-column layout on small screens */
-@media (max-width: 480px) {
+/* Calmer, always-two-column layout on small screens */
+@media (max-width: 600px) {
   .page {
     padding: 12px;
   }
@@ -942,7 +957,7 @@ code {
   }
 
   .card-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -958,9 +973,26 @@ code {
     display: none;
   }
 
+  .card-body {
+    padding: 10px;
+  }
+
   .card-meta {
     font-size: 0.78rem;
     gap: 6px;
+  }
+
+  .card-actions .pill {
+    font-size: 0.72rem;
+    padding: 3px 9px;
+  }
+
+  .filters .search {
+    flex-basis: 100%;
+  }
+
+  .filters select {
+    flex: 1 1 45%;
   }
 
   .featured-media {

@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import * as api from '../api'
 import RecipeCard from '../components/RecipeCard'
 import { useAuth } from '../contexts/AuthContext'
-import { matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
+import { MEAL_TYPES, matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
+import { useTried } from '../lib/useTried'
 
 const DURATIONS = [
   { value: '', label: 'Any time' },
@@ -17,9 +18,9 @@ const DURATIONS = [
 
 // 6 recipes per page on phones, 12 on larger screens.
 function usePageSize() {
-  const [small, setSmall] = useState(() => window.matchMedia('(max-width: 480px)').matches)
+  const [small, setSmall] = useState(() => window.matchMedia('(max-width: 600px)').matches)
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 480px)')
+    const mq = window.matchMedia('(max-width: 600px)')
     const onChange = (e) => setSmall(e.matches)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
@@ -40,8 +41,8 @@ function FeaturedBanner({ recipe }) {
           <span className="featured-title">{recipe.title}</span>
           {recipe.description && <span className="featured-description">{recipe.description}</span>}
           <span className="card-meta">
+            {recipe.mealType && <span>{recipe.mealType}</span>}
             {time && <span>{time}</span>}
-            {recipe.servings && <span>Serves {recipe.servings}</span>}
             {recipe.cuisine && <span>{recipe.cuisine}</span>}
           </span>
         </span>
@@ -57,11 +58,14 @@ export default function Home() {
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
   const [cuisine, setCuisine] = useState('')
+  const [mealType, setMealType] = useState('')
   const [maxTime, setMaxTime] = useState('')
   const [savedOnly, setSavedOnly] = useState(false)
+  const [neverCooked, setNeverCooked] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
+  const { triedIds, toggleTried } = useTried()
 
   useEffect(() => {
     api
@@ -76,7 +80,7 @@ export default function Home() {
 
   useEffect(() => {
     setPage(1)
-  }, [query, cuisine, maxTime, savedOnly, pageSize])
+  }, [query, cuisine, mealType, maxTime, savedOnly, neverCooked, pageSize])
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
@@ -85,6 +89,8 @@ export default function Home() {
 
   const matching = recipes.filter((r) => {
     if (savedOnly && !savedIds.has(r.id)) return false
+    if (neverCooked && triedIds.has(r.id)) return false
+    if (mealType && r.mealType !== mealType) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
     if (maxTime) {
@@ -97,7 +103,7 @@ export default function Home() {
   const totalPages = Math.max(1, Math.ceil(matching.length / pageSize))
   const currentPage = Math.min(page, totalPages)
   const visible = matching.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  const filtersActive = query || cuisine || maxTime || savedOnly
+  const filtersActive = query || cuisine || mealType || maxTime || savedOnly || neverCooked
 
   return (
     <section>
@@ -116,6 +122,14 @@ export default function Home() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <select value={mealType} onChange={(e) => setMealType(e.target.value)} aria-label="Filter by meal type">
+          <option value="">All meal types</option>
+          {MEAL_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
         <select value={cuisine} onChange={(e) => setCuisine(e.target.value)} aria-label="Filter by cuisine">
           <option value="">All cuisines</option>
           {cuisines.map((c) => (
@@ -132,14 +146,24 @@ export default function Home() {
           ))}
         </select>
         {user && (
-          <button
-            type="button"
-            className={`chip ${savedOnly ? 'active' : ''}`}
-            onClick={() => setSavedOnly(!savedOnly)}
-            title="Show only recipes you saved"
-          >
-            Saved only
-          </button>
+          <>
+            <button
+              type="button"
+              className={`chip ${savedOnly ? 'active' : ''}`}
+              onClick={() => setSavedOnly(!savedOnly)}
+              title="Show only recipes you saved"
+            >
+              Saved only
+            </button>
+            <button
+              type="button"
+              className={`chip ${neverCooked ? 'active' : ''}`}
+              onClick={() => setNeverCooked(!neverCooked)}
+              title="Show only recipes you have never cooked"
+            >
+              Never cooked
+            </button>
+          </>
         )}
         {filtersActive && (
           <button
@@ -148,8 +172,10 @@ export default function Home() {
             onClick={() => {
               setQuery('')
               setCuisine('')
+              setMealType('')
               setMaxTime('')
               setSavedOnly(false)
+              setNeverCooked(false)
             }}
           >
             Clear
@@ -161,7 +187,14 @@ export default function Home() {
       ) : (
         <div className="card-grid">
           {visible.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} isSaved={savedIds.has(recipe.id)} onToggleSave={toggleSave} />
+            <RecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              isSaved={savedIds.has(recipe.id)}
+              onToggleSave={toggleSave}
+              isTried={triedIds.has(recipe.id)}
+              onToggleTried={toggleTried}
+            />
           ))}
         </div>
       )}

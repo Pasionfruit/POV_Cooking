@@ -6,5 +6,6 @@ dist/
 # User data lives outside git; recipes.json is the seed cookbook and IS committed
 backend/data/users.json
 backend/data/saved.json
+backend/data/tried.json
 backend/data/mealplans.json
 backend/data/settings.json

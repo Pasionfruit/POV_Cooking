@@ -39,7 +39,8 @@
     },
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z"
+    "updatedAt": "2026-08-07T00:00:00.000Z",
+    "mealType": "Dinner"
   },
   {
     "id": "seed-chicken-adobo",
@@ -75,7 +76,8 @@
     "notes": "Adobo keeps for days and the flavor deepens — make a double batch.",
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z"
+    "updatedAt": "2026-08-07T00:00:00.000Z",
+    "mealType": "Dinner"
   },
   {
     "id": "seed-overnight-oats",
@@ -106,6 +108,7 @@
     ],
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z"
+    "updatedAt": "2026-08-07T00:00:00.000Z",
+    "mealType": "Breakfast"
   }
 ]

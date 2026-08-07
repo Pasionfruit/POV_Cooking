@@ -1,3 +1,6 @@
+// Fixed meal-type vocabulary, mirrored in the backend's normalizeMealType.
+export const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Alcoholic', 'Snack']
+
 // Ingredients are semi-structured: plain strings ("2 cups flour") or objects
 // ({ item, quantity, unit, note }). Render either form as text.
 export function ingredientToText(ingredient) {

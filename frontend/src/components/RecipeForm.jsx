@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ingredientToText } from '../lib/recipeUtils'
+import { MEAL_TYPES, ingredientToText } from '../lib/recipeUtils'
 
 // Simple form for admins. "Form" mode covers the common fields; "JSON" mode
 // exposes the full semi-structured document for anything else.
@@ -11,6 +11,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy }) {
     description: initial?.description || '',
     image: initial?.image || '',
     cuisine: initial?.cuisine || '',
+    mealType: initial?.mealType || '',
     servings: initial?.servings ?? '',
     prepTimeMinutes: initial?.prepTimeMinutes ?? '',
     cookTimeMinutes: initial?.cookTimeMinutes ?? '',
@@ -34,6 +35,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy }) {
       description: f.description.trim(),
       image: f.image.trim() || null,
       cuisine: f.cuisine.trim() || null,
+      mealType: f.mealType || null,
       servings: num(f.servings),
       prepTimeMinutes: num(f.prepTimeMinutes),
       cookTimeMinutes: num(f.cookTimeMinutes),
@@ -101,6 +103,17 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy }) {
             <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />
           </label>
           <div className="field-grid">
+            <label>
+              Meal type
+              <select value={fields.mealType} onChange={(e) => set('mealType', e.target.value)}>
+                <option value="">None</option>
+                {MEAL_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label>
               Cuisine
               <input value={fields.cuisine} onChange={(e) => set('cuisine', e.target.value)} />

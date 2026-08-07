@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import ThemeIcon from './ThemeIcon'
 import { toggleTheme } from '../lib/theme'
 
 export default function NavBar() {
@@ -32,8 +33,13 @@ export default function NavBar() {
         ) : (
           <NavLink to="/login">Log in</NavLink>
         )}
-        <button className="theme-toggle" onClick={() => setTheme(toggleTheme())}>
-          {theme === 'dark' ? 'Light' : 'Dark'}
+        <button
+          className="theme-toggle"
+          onClick={() => setTheme(toggleTheme())}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          <ThemeIcon theme={theme} />
         </button>
       </nav>
     </header>

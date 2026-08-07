@@ -2,9 +2,11 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import RecipeCard from '../components/RecipeCard'
 import { useSaved } from '../lib/useSaved'
+import { useTried } from '../lib/useTried'
 
 export default function Saved() {
   const { savedRecipes, savedIds, toggleSave } = useSaved()
+  const { triedIds, toggleTried } = useTried()
 
   return (
     <section>
@@ -18,7 +20,14 @@ export default function Saved() {
       ) : (
         <div className="card-grid">
           {savedRecipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} isSaved={savedIds.has(recipe.id)} onToggleSave={toggleSave} />
+            <RecipeCard
+              key={recipe.id}
+              recipe={recipe}
+              isSaved={savedIds.has(recipe.id)}
+              onToggleSave={toggleSave}
+              isTried={triedIds.has(recipe.id)}
+              onToggleTried={toggleTried}
+            />
           ))}
         </div>
       )}

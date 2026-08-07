@@ -5,6 +5,7 @@ import Timer from '../components/Timer'
 import { useAuth } from '../contexts/AuthContext'
 import { ingredientToText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
+import { useTried } from '../lib/useTried'
 
 // Checked-off ingredients/steps are remembered per recipe on this device.
 function loadChecklist(recipeId) {
@@ -20,6 +21,7 @@ export default function RecipeDetail() {
   const navigate = useNavigate()
   const { user, isAdmin, token } = useAuth()
   const { savedIds, toggleSave } = useSaved()
+  const { triedIds, toggleTried } = useTried()
   const [recipe, setRecipe] = useState(null)
   const [error, setError] = useState(null)
   const [checked, setChecked] = useState(() => loadChecklist(id))
@@ -74,9 +76,17 @@ export default function RecipeDetail() {
         <h1>{recipe.title}</h1>
         <div className="detail-actions">
           {user && (
-            <button className={`save-button large ${isSaved ? 'saved' : ''}`} onClick={() => toggleSave(recipe)}>
-              {isSaved ? 'Saved' : 'Save'}
-            </button>
+            <>
+              <button className={`pill large ${isSaved ? 'active' : ''}`} onClick={() => toggleSave(recipe)}>
+                {isSaved ? 'Saved' : 'Save'}
+              </button>
+              <button
+                className={`pill large ${triedIds.has(recipe.id) ? 'active' : ''}`}
+                onClick={() => toggleTried(recipe)}
+              >
+                {triedIds.has(recipe.id) ? 'Cooked' : 'Mark cooked'}
+              </button>
+            </>
           )}
           {isAdmin && (
             <>
@@ -94,6 +104,7 @@ export default function RecipeDetail() {
       {recipe.description && <p className="detail-description">{recipe.description}</p>}
 
       <div className="detail-meta">
+        {recipe.mealType && <span>{recipe.mealType}</span>}
         {recipe.cuisine && <span>{recipe.cuisine}</span>}
         {recipe.servings != null && <span>Serves {recipe.servings}</span>}
         {recipe.prepTimeMinutes != null && <span>Prep {recipe.prepTimeMinutes} min</span>}

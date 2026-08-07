@@ -70,6 +70,7 @@ module.exports = {
   recipes: collection('recipes'),
   users: collection('users'),
   saved: collection('saved'),
+  tried: collection('tried'),
   mealplans: collection('mealplans'),
   settings: collection('settings'),
 }

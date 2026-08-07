@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { totalTimeText } from '../lib/recipeUtils'
 import { useAuth } from '../contexts/AuthContext'
 
-export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
+export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onToggleTried }) {
   const { user } = useAuth()
   const time = totalTimeText(recipe)
 
@@ -17,21 +17,15 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
             {recipe.title.charAt(0).toUpperCase()}
           </span>
         )}
+        {isTried && <span className="tried-badge">Tried</span>}
       </Link>
       <div className="card-body">
-        <div className="card-title-row">
-          <Link to={`/recipes/${recipe.id}`} className="card-title">
-            {recipe.title}
-          </Link>
-          {user && onToggleSave && (
-            <button className={`save-button ${isSaved ? 'saved' : ''}`} onClick={() => onToggleSave(recipe)}>
-              {isSaved ? 'Saved' : 'Save'}
-            </button>
-          )}
-        </div>
+        <Link to={`/recipes/${recipe.id}`} className="card-title">
+          {recipe.title}
+        </Link>
         <div className="card-meta">
+          {recipe.mealType && <span>{recipe.mealType}</span>}
           {time && <span>{time}</span>}
-          {recipe.servings && <span>Serves {recipe.servings}</span>}
           {recipe.cuisine && <span>{recipe.cuisine}</span>}
         </div>
         {recipe.tags?.length > 0 && (
@@ -41,6 +35,20 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave }) {
                 {tag}
               </span>
             ))}
+          </div>
+        )}
+        {user && (
+          <div className="card-actions">
+            {onToggleSave && (
+              <button className={`pill ${isSaved ? 'active' : ''}`} onClick={() => onToggleSave(recipe)}>
+                {isSaved ? 'Saved' : 'Save'}
+              </button>
+            )}
+            {onToggleTried && (
+              <button className={`pill ${isTried ? 'active' : ''}`} onClick={() => onToggleTried(recipe)}>
+                {isTried ? 'Cooked' : 'Mark cooked'}
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -42,6 +42,11 @@ export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { m
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
 export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
 
+// tried ("have cooked this") recipes
+export const getTried = (token) => request('/tried', { token })
+export const markTried = (token, recipeId) => request(`/tried/${recipeId}`, { method: 'POST', token })
+export const unmarkTried = (token, recipeId) => request(`/tried/${recipeId}`, { method: 'DELETE', token })
+
 // featured ("latest attempt") recipe
 export const getFeatured = () => request('/featured')
 export const setFeatured = (token, recipeId) => request('/featured', { method: 'PUT', token, body: { recipeId } })

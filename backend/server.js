@@ -5,7 +5,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved, mealplans, settings } = require('./store')
+const { recipes, users, saved, tried, mealplans, settings } = require('./store')
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 
 const app = express()
@@ -159,6 +159,20 @@ function standardizeIngredient(ing) {
   return ing
 }
 
+const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Alcoholic', 'Snack']
+
+// Meal type is a fixed vocabulary. An explicit value wins; otherwise we try to
+// infer one from the tags so imported recipes still get categorized.
+function normalizeMealType(value, tags = []) {
+  const match = (candidate) => MEAL_TYPES.find((t) => t.toLowerCase() === String(candidate).trim().toLowerCase())
+  if (value) return match(value) || null
+  for (const tag of tags) {
+    const found = match(tag)
+    if (found) return found
+  }
+  return null
+}
+
 // Recipes are semi-structured: a few required/normalized fields, everything else
 // (nutrition, source, custom fields) passes through untouched.
 function normalizeRecipe(input, userId, existing) {
@@ -188,6 +202,7 @@ function normalizeRecipe(input, userId, existing) {
     prepTimeMinutes: asNumberOrNull(input.prepTimeMinutes),
     cookTimeMinutes: asNumberOrNull(input.cookTimeMinutes),
     cuisine: input.cuisine ? standardizeText(input.cuisine) : null,
+    mealType: normalizeMealType(input.mealType, asStringArray(input.tags).map(String)),
     tags: asStringArray(input.tags).map((t) => String(t).toLowerCase()),
     ingredients: asStringArray(input.ingredients).map(standardizeIngredient),
     steps: asStringArray(input.steps).map(standardizeText),
@@ -233,6 +248,7 @@ app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
   const removed = recipes.remove((r) => r.id === req.params.id)
   if (!removed) return res.status(404).json({ error: 'Recipe not found' })
   saved.remove((s) => s.recipeId === req.params.id)
+  tried.remove((t) => t.recipeId === req.params.id)
   // scrub the recipe from every meal plan
   mealplans.all().forEach((plan) => {
     const days = {}
@@ -284,6 +300,28 @@ app.post('/saved/:recipeId', authMiddleware, (req, res) => {
 
 app.delete('/saved/:recipeId', authMiddleware, (req, res) => {
   saved.remove((s) => s.userId === req.user.id && s.recipeId === req.params.recipeId)
+  res.json({ ok: true })
+})
+
+// ----------------------------------------------------------------- tried routes
+
+// Recipes the user has actually cooked. Powers the "never cooked" filter.
+app.get('/tried', authMiddleware, (req, res) => {
+  res.json({ recipeIds: tried.filter((t) => t.userId === req.user.id).map((t) => t.recipeId) })
+})
+
+app.post('/tried/:recipeId', authMiddleware, (req, res) => {
+  const recipe = recipes.findById(req.params.recipeId)
+  if (!recipe) return res.status(404).json({ error: 'Recipe not found' })
+  const exists = tried.find((t) => t.userId === req.user.id && t.recipeId === recipe.id)
+  if (!exists) {
+    tried.insert({ id: crypto.randomUUID(), userId: req.user.id, recipeId: recipe.id, triedAt: new Date().toISOString() })
+  }
+  res.status(201).json({ ok: true })
+})
+
+app.delete('/tried/:recipeId', authMiddleware, (req, res) => {
+  tried.remove((t) => t.userId === req.user.id && t.recipeId === req.params.recipeId)
   res.json({ ok: true })
 })
 
