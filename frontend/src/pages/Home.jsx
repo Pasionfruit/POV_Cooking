@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import * as api from '../api'
 import RecipeCard from '../components/RecipeCard'
 import { useAuth } from '../contexts/AuthContext'
-import { matchesQuery, totalMinutes } from '../lib/recipeUtils'
+import { matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
 
 const DURATIONS = [
@@ -14,14 +15,52 @@ const DURATIONS = [
   { value: '120', label: '≤ 2 hours' },
 ]
 
+// 6 recipes per page on phones, 12 on larger screens.
+function usePageSize() {
+  const [small, setSmall] = useState(() => window.matchMedia('(max-width: 480px)').matches)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 480px)')
+    const onChange = (e) => setSmall(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return small ? 6 : 12
+}
+
+function FeaturedBanner({ recipe }) {
+  const time = totalTimeText(recipe)
+  return (
+    <div className="featured">
+      <div className="featured-label">Abe’s latest recipe attempt</div>
+      <Link to={`/recipes/${recipe.id}`} className="featured-card">
+        <span className="featured-media">
+          {recipe.image ? <img src={recipe.image} alt="" /> : recipe.title.charAt(0).toUpperCase()}
+        </span>
+        <span className="featured-body">
+          <span className="featured-title">{recipe.title}</span>
+          {recipe.description && <span className="featured-description">{recipe.description}</span>}
+          <span className="card-meta">
+            {time && <span>{time}</span>}
+            {recipe.servings && <span>Serves {recipe.servings}</span>}
+            {recipe.cuisine && <span>{recipe.cuisine}</span>}
+          </span>
+        </span>
+      </Link>
+    </div>
+  )
+}
+
 export default function Home() {
   const { user } = useAuth()
   const [recipes, setRecipes] = useState(null)
+  const [featured, setFeatured] = useState(null)
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
   const [cuisine, setCuisine] = useState('')
   const [maxTime, setMaxTime] = useState('')
   const [savedOnly, setSavedOnly] = useState(false)
+  const [page, setPage] = useState(1)
+  const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
 
   useEffect(() => {
@@ -29,14 +68,22 @@ export default function Home() {
       .getRecipes()
       .then(({ recipes }) => setRecipes(recipes))
       .catch((err) => setError(err.message))
+    api
+      .getFeatured()
+      .then(({ recipe }) => setFeatured(recipe))
+      .catch(() => setFeatured(null))
   }, [])
+
+  useEffect(() => {
+    setPage(1)
+  }, [query, cuisine, maxTime, savedOnly, pageSize])
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
 
   const cuisines = [...new Set(recipes.map((r) => r.cuisine).filter(Boolean))].sort()
 
-  const visible = recipes.filter((r) => {
+  const matching = recipes.filter((r) => {
     if (savedOnly && !savedIds.has(r.id)) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
@@ -47,14 +94,18 @@ export default function Home() {
     return true
   })
 
+  const totalPages = Math.max(1, Math.ceil(matching.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const visible = matching.slice((currentPage - 1) * pageSize, currentPage * pageSize)
   const filtersActive = query || cuisine || maxTime || savedOnly
 
   return (
     <section>
+      {featured && <FeaturedBanner recipe={featured} />}
       <div className="page-header">
         <h1>All Recipes</h1>
         <span className="muted small">
-          {visible.length} of {recipes.length}
+          {matching.length} of {recipes.length}
         </span>
       </div>
       <div className="filters">
@@ -98,6 +149,7 @@ export default function Home() {
               setQuery('')
               setCuisine('')
               setMaxTime('')
+              setSavedOnly(false)
             }}
           >
             Clear
@@ -111,6 +163,19 @@ export default function Home() {
           {visible.map((recipe) => (
             <RecipeCard key={recipe.id} recipe={recipe} isSaved={savedIds.has(recipe.id)} onToggleSave={toggleSave} />
           ))}
+        </div>
+      )}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>
+            Previous
+          </button>
+          <span className="muted small">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button type="button" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>
+            Next
+          </button>
         </div>
       )}
     </section>

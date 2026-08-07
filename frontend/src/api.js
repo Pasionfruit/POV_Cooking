@@ -3,6 +3,13 @@
 const BASE =
   import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5001`
 
+// Called when an authenticated request comes back 401 (stale/invalid session),
+// so the app can log out instead of showing broken pages. Set by AuthContext.
+let onUnauthorized = null
+export function setUnauthorizedHandler(fn) {
+  onUnauthorized = fn
+}
+
 async function request(path, { method = 'GET', token, body } = {}) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
@@ -14,7 +21,10 @@ async function request(path, { method = 'GET', token, body } = {}) {
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`)
+  if (!res.ok) {
+    if (res.status === 401 && token && onUnauthorized) onUnauthorized()
+    throw new Error(data.error || `Request failed (${res.status})`)
+  }
   return data
 }
 
@@ -31,6 +41,10 @@ export const createRecipe = (token, recipe) => request('/recipes', { method: 'PO
 export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { method: 'PUT', token, body: recipe })
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
 export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
+
+// featured ("latest attempt") recipe
+export const getFeatured = () => request('/featured')
+export const setFeatured = (token, recipeId) => request('/featured', { method: 'PUT', token, body: { recipeId } })
 
 // meal plan (weekStart = Monday as YYYY-MM-DD)
 export const getMealPlan = (token, weekStart) => request(`/meal-plan?weekStart=${weekStart}`, { token })

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as api from '../api'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -8,6 +8,8 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 export default function Login() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const destination = location.state?.from || '/'
   const [mode, setMode] = useState('login')
   const [fields, setFields] = useState({ email: '', password: '', name: '', adminCode: '' })
   const [showAdminCode, setShowAdminCode] = useState(false)
@@ -16,8 +18,8 @@ export default function Login() {
   const googleButtonRef = useRef(null)
 
   useEffect(() => {
-    if (user) navigate('/')
-  }, [user, navigate])
+    if (user) navigate(destination)
+  }, [user, navigate, destination])
 
   // Google Sign-In: load the Identity Services script and render the button.
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function Login() {
           try {
             const { token, user } = await api.googleLogin(credential)
             login(token, user)
-            navigate('/')
+            navigate(destination)
           } catch (err) {
             setError(err.message)
           }
@@ -51,7 +53,7 @@ export default function Login() {
     script.async = true
     script.onload = renderButton
     document.head.appendChild(script)
-  }, [login, navigate])
+  }, [login, navigate, destination])
 
   function set(name, value) {
     setFields((f) => ({ ...f, [name]: value }))
@@ -72,7 +74,7 @@ export default function Login() {
               adminCode: fields.adminCode || undefined,
             })
       login(token, user)
-      navigate('/')
+      navigate(destination)
     } catch (err) {
       setError(err.message)
     } finally {

@@ -13,6 +13,14 @@ export function AuthProvider({ children }) {
     }
   })
 
+  // Any 401 on an authenticated request means the session is stale
+  // (expired token, wiped database) — log out so the UI never gets stuck.
+  useEffect(() => {
+    api.setUnauthorizedHandler(() => logout())
+    return () => api.setUnauthorizedHandler(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Re-validate the stored session on load; drop it if the token is stale.
   useEffect(() => {
     if (!token) return

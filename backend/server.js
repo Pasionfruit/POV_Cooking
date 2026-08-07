@@ -5,7 +5,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved, mealplans } = require('./store')
+const { recipes, users, saved, mealplans, settings } = require('./store')
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 
 const app = express()
@@ -243,6 +243,8 @@ app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
     }
     if (changed) mealplans.update(plan.id, { days })
   })
+  const featured = settings.findById('featured')
+  if (featured?.recipeId === req.params.id) settings.update('featured', { recipeId: null })
   res.json({ ok: true })
 })
 
@@ -283,6 +285,24 @@ app.post('/saved/:recipeId', authMiddleware, (req, res) => {
 app.delete('/saved/:recipeId', authMiddleware, (req, res) => {
   saved.remove((s) => s.userId === req.user.id && s.recipeId === req.params.recipeId)
   res.json({ ok: true })
+})
+
+// -------------------------------------------------------------- featured recipe
+
+// The admin can pin one recipe ("latest attempt") to the top of the home page.
+app.get('/featured', (req, res) => {
+  const setting = settings.findById('featured')
+  const recipe = setting?.recipeId ? recipes.findById(setting.recipeId) : null
+  res.json({ recipe })
+})
+
+app.put('/featured', authMiddleware, adminMiddleware, (req, res) => {
+  const { recipeId } = req.body || {}
+  if (recipeId != null && !recipes.findById(recipeId)) return res.status(404).json({ error: 'Recipe not found' })
+  const existing = settings.findById('featured')
+  const doc = { id: 'featured', recipeId: recipeId || null, updatedAt: new Date().toISOString() }
+  const stored = existing ? settings.update('featured', doc) : settings.insert(doc)
+  res.json({ recipe: stored.recipeId ? recipes.findById(stored.recipeId) : null })
 })
 
 // ------------------------------------------------------------- meal plan routes

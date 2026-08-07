@@ -71,4 +71,5 @@ module.exports = {
   users: collection('users'),
   saved: collection('saved'),
   mealplans: collection('mealplans'),
+  settings: collection('settings'),
 }

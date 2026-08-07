@@ -8,6 +8,7 @@ export default function Admin() {
   const { token } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [recipes, setRecipes] = useState([])
+  const [featured, setFeaturedState] = useState(null)
   const [editing, setEditing] = useState(null) // 'new' | recipe object | null
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState(null)
@@ -21,7 +22,14 @@ export default function Admin() {
 
   useEffect(() => {
     refresh()
+    api.getFeatured().then(({ recipe }) => setFeaturedState(recipe))
   }, [])
+
+  async function updateFeatured(recipeId) {
+    const { recipe } = await api.setFeatured(token, recipeId)
+    setFeaturedState(recipe)
+    setNotice(recipe ? `“${recipe.title}” is now the latest attempt on the home page` : 'Latest attempt cleared')
+  }
 
   // Support /admin?edit=<id> deep links from the recipe detail page.
   useEffect(() => {
@@ -115,6 +123,26 @@ export default function Admin() {
         </div>
       ) : (
         <>
+          <div className="panel">
+            <h2>Latest recipe attempt</h2>
+            <p className="muted small">Shown at the top of the home page, above All Recipes.</p>
+            <div className="featured-picker">
+              <select value={featured?.id || ''} onChange={(e) => updateFeatured(e.target.value || null)}>
+                <option value="">None</option>
+                {recipes.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.title}
+                  </option>
+                ))}
+              </select>
+              {featured && (
+                <button type="button" onClick={() => updateFeatured(null)}>
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="panel">
             <h2>Recipes ({recipes.length})</h2>
             <ul className="admin-list">
