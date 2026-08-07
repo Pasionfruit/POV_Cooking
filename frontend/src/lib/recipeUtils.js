@@ -10,8 +10,13 @@ export function ingredientToText(ingredient) {
   return ingredient.note ? `${text} (${ingredient.note})` : text
 }
 
-export function totalTimeText(recipe) {
+export function totalMinutes(recipe) {
   const total = (recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)
+  return total || null
+}
+
+export function totalTimeText(recipe) {
+  const total = totalMinutes(recipe)
   if (!total) return null
   return total >= 60 ? `${Math.floor(total / 60)} h ${total % 60 ? `${total % 60} min` : ''}`.trim() : `${total} min`
 }

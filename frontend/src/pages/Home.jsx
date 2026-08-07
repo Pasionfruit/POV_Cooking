@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import RecipeCard from '../components/RecipeCard'
-import { matchesQuery } from '../lib/recipeUtils'
+import { matchesQuery, totalMinutes } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
+
+const DURATIONS = [
+  { value: '', label: 'Any time' },
+  { value: '15', label: '≤ 15 min' },
+  { value: '30', label: '≤ 30 min' },
+  { value: '45', label: '≤ 45 min' },
+  { value: '60', label: '≤ 1 hour' },
+  { value: '120', label: '≤ 2 hours' },
+]
 
 export default function Home() {
   const [recipes, setRecipes] = useState(null)
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
+  const [cuisine, setCuisine] = useState('')
+  const [maxTime, setMaxTime] = useState('')
   const { savedIds, toggleSave } = useSaved()
 
   useEffect(() => {
@@ -20,12 +31,29 @@ export default function Home() {
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
 
-  const visible = recipes.filter((r) => matchesQuery(r, query))
+  const cuisines = [...new Set(recipes.map((r) => r.cuisine).filter(Boolean))].sort()
+
+  const visible = recipes.filter((r) => {
+    if (!matchesQuery(r, query)) return false
+    if (cuisine && r.cuisine !== cuisine) return false
+    if (maxTime) {
+      const total = totalMinutes(r)
+      if (total == null || total > Number(maxTime)) return false
+    }
+    return true
+  })
+
+  const filtersActive = query || cuisine || maxTime
 
   return (
     <section>
       <div className="page-header">
         <h1>All Recipes</h1>
+        <span className="muted small">
+          {visible.length} of {recipes.length}
+        </span>
+      </div>
+      <div className="filters">
         <input
           className="search"
           type="search"
@@ -33,9 +61,37 @@ export default function Home() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <select value={cuisine} onChange={(e) => setCuisine(e.target.value)} aria-label="Filter by cuisine">
+          <option value="">All cuisines</option>
+          {cuisines.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+        <select value={maxTime} onChange={(e) => setMaxTime(e.target.value)} aria-label="Filter by total time">
+          {DURATIONS.map((d) => (
+            <option key={d.value} value={d.value}>
+              {d.label}
+            </option>
+          ))}
+        </select>
+        {filtersActive && (
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => {
+              setQuery('')
+              setCuisine('')
+              setMaxTime('')
+            }}
+          >
+            Clear
+          </button>
+        )}
       </div>
       {visible.length === 0 ? (
-        <p className="muted">No recipes match “{query}”.</p>
+        <p className="muted">No recipes match these filters.</p>
       ) : (
         <div className="card-grid">
           {visible.map((recipe) => (

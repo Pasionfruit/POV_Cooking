@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import * as api from '../api'
+import Timer from '../components/Timer'
 import { useAuth } from '../contexts/AuthContext'
 import { ingredientToText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
+
+// Checked-off ingredients/steps are remembered per recipe on this device.
+function loadChecklist(recipeId) {
+  try {
+    return JSON.parse(localStorage.getItem(`pov_checklist_${recipeId}`)) || { ingredients: [], steps: [] }
+  } catch {
+    return { ingredients: [], steps: [] }
+  }
+}
 
 export default function RecipeDetail() {
   const { id } = useParams()
@@ -12,13 +22,30 @@ export default function RecipeDetail() {
   const { savedIds, toggleSave } = useSaved()
   const [recipe, setRecipe] = useState(null)
   const [error, setError] = useState(null)
+  const [checked, setChecked] = useState(() => loadChecklist(id))
 
   useEffect(() => {
     api
       .getRecipe(id)
       .then(({ recipe }) => setRecipe(recipe))
       .catch((err) => setError(err.message))
+    setChecked(loadChecklist(id))
   }, [id])
+
+  useEffect(() => {
+    localStorage.setItem(`pov_checklist_${id}`, JSON.stringify(checked))
+  }, [id, checked])
+
+  function toggleItem(kind, index) {
+    setChecked((prev) => {
+      const list = prev[kind].includes(index) ? prev[kind].filter((i) => i !== index) : [...prev[kind], index]
+      return { ...prev, [kind]: list }
+    })
+  }
+
+  function resetChecklist() {
+    setChecked({ ingredients: [], steps: [] })
+  }
 
   async function handleDelete() {
     if (!window.confirm(`Delete “${recipe.title}”? This cannot be undone.`)) return
@@ -30,6 +57,13 @@ export default function RecipeDetail() {
   if (!recipe) return <p className="muted">Loading…</p>
 
   const isSaved = savedIds.has(recipe.id)
+  const ingredients = recipe.ingredients || []
+  const steps = recipe.steps || []
+  const anyChecked = checked.ingredients.length > 0 || checked.steps.length > 0
+  const timerPresets = [
+    recipe.cookTimeMinutes ? { label: 'Cook', minutes: recipe.cookTimeMinutes } : null,
+    recipe.prepTimeMinutes ? { label: 'Prep', minutes: recipe.prepTimeMinutes } : null,
+  ].filter(Boolean)
 
   return (
     <article className="detail">
@@ -77,20 +111,55 @@ export default function RecipeDetail() {
 
       {recipe.image && <img className="detail-image" src={recipe.image} alt={recipe.title} />}
 
+      <Timer presets={timerPresets} />
+
       <div className="detail-columns">
         <section>
-          <h2>Ingredients</h2>
-          <ul className="ingredients">
-            {(recipe.ingredients || []).map((ing, i) => (
-              <li key={i}>{ingredientToText(ing)}</li>
+          <div className="list-header">
+            <h2>
+              Ingredients{' '}
+              <span className="muted small">
+                {checked.ingredients.length}/{ingredients.length}
+              </span>
+            </h2>
+          </div>
+          <ul className="check-list">
+            {ingredients.map((ing, i) => (
+              <li key={i}>
+                <label className={checked.ingredients.includes(i) ? 'checked' : ''}>
+                  <input
+                    type="checkbox"
+                    checked={checked.ingredients.includes(i)}
+                    onChange={() => toggleItem('ingredients', i)}
+                  />
+                  <span>{ingredientToText(ing)}</span>
+                </label>
+              </li>
             ))}
           </ul>
         </section>
         <section>
-          <h2>Steps</h2>
-          <ol className="steps">
-            {(recipe.steps || []).map((step, i) => (
-              <li key={i}>{step}</li>
+          <div className="list-header">
+            <h2>
+              Steps{' '}
+              <span className="muted small">
+                {checked.steps.length}/{steps.length}
+              </span>
+            </h2>
+            {anyChecked && (
+              <button type="button" className="link-button small" onClick={resetChecklist}>
+                Reset checklist
+              </button>
+            )}
+          </div>
+          <ol className="check-list steps">
+            {steps.map((step, i) => (
+              <li key={i}>
+                <label className={checked.steps.includes(i) ? 'checked' : ''}>
+                  <input type="checkbox" checked={checked.steps.includes(i)} onChange={() => toggleItem('steps', i)} />
+                  <span>{step}</span>
+                </label>
+              </li>
             ))}
           </ol>
         </section>
