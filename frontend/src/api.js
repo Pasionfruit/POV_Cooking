@@ -47,6 +47,12 @@ export const getTried = (token) => request('/tried', { token })
 export const markTried = (token, recipeId) => request(`/tried/${recipeId}`, { method: 'POST', token })
 export const unmarkTried = (token, recipeId) => request(`/tried/${recipeId}`, { method: 'DELETE', token })
 
+// pantry & fridge
+export const getPantry = (token) => request('/pantry', { token })
+export const addPantryItem = (token, item) => request('/pantry', { method: 'POST', token, body: item })
+export const updatePantryItem = (token, id, item) => request(`/pantry/${id}`, { method: 'PUT', token, body: item })
+export const deletePantryItem = (token, id) => request(`/pantry/${id}`, { method: 'DELETE', token })
+
 // featured ("latest attempt") recipe
 export const getFeatured = () => request('/featured')
 export const setFeatured = (token, recipeId) => request('/featured', { method: 'PUT', token, body: { recipeId } })

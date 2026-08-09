@@ -1,7 +1,0 @@
-<!doctype html><script>
-const p = new URLSearchParams(location.search)
-if (p.get('token')) localStorage.setItem('pov_token', p.get('token'))
-if (p.get('user')) localStorage.setItem('pov_user', p.get('user'))
-if (p.get('theme')) localStorage.setItem('pov_theme', p.get('theme'))
-location.replace(p.get('to') || '/')
-</script>

@@ -14,8 +14,12 @@ store) later.
 - **Recipe pages** — checkable ingredients/steps (remembered per device), a dial
   kitchen timer (drag to set minutes and seconds, prep/cook presets), tags, notes, source
 - **Saved** — logged-in users can save/unsave recipes
-- **Meal Plan** — plan recipes per day, week by week, with a spinning-wheel
-  randomizer for ideas
+- **Meal Plan** — plan recipes per day, week by week, with two randomizers: a
+  spinning wheel of your recipes, and a build-a-meal roller that picks a
+  carb, protein, sauce, and vegetable
+- **Pantry & Fridge** — track what you have with a purchase/made date and shelf
+  life, get a countdown per item plus a "use soon" warning, and see
+  **What can I make right now** — recipes matched against your unexpired items
 - **Login** — email + password (emails stored encrypted, passwords bcrypt-hashed) or Google Sign-In
 - **Light/dark mode** — follows your system by default, toggle in the navbar
 - **Admin** — create, edit (form or raw JSON), and delete recipes; pick which
@@ -84,8 +88,8 @@ HMAC blind index).
 All data lives in JSON files under `backend/data/`:
 
 - `recipes.json` — the cookbook (seeded with 3 recipes; committed to git)
-- `users.json`, `saved.json`, `tried.json`, `mealplans.json`, `settings.json` —
-  created at runtime, gitignored
+- `users.json`, `saved.json`, `tried.json`, `pantry.json`, `mealplans.json`,
+  `settings.json` — created at runtime, gitignored
 
 [backend/store.js](backend/store.js) is the only module that touches storage.
 To switch to MongoDB, reimplement its small collection interface

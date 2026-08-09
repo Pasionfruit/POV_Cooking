@@ -308,6 +308,153 @@ code {
   max-width: 320px;
 }
 
+/* ------------------------------------------------------------------ pantry */
+.warning-banner {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+
+.pantry-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.pantry-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex: 0 1 150px;
+}
+
+.pantry-form label.grow {
+  flex: 2 1 200px;
+}
+
+.pantry-form .form-actions {
+  margin: 0;
+}
+
+.pantry-form .error {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.pantry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pantry-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pantry-item:last-child {
+  border-bottom: none;
+}
+
+.pantry-name {
+  font-weight: 600;
+  flex: 1 1 160px;
+}
+
+.pantry-date {
+  flex: 0 0 auto;
+}
+
+.pantry-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.pantry-actions button {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.expiry-badge {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.expiry-badge.fresh {
+  color: #2e7d4f;
+  border-color: #2e7d4f55;
+}
+
+.expiry-badge.soon {
+  color: #a1710a;
+  border-color: #a1710a55;
+}
+
+.expiry-badge.warning {
+  background: #a1710a;
+  border-color: #a1710a;
+  color: #fff;
+}
+
+.expiry-badge.expired {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+:root[data-theme='dark'] .expiry-badge.fresh {
+  color: #7fc79b;
+}
+
+:root[data-theme='dark'] .expiry-badge.soon {
+  color: #e0b458;
+}
+
+.match-heading {
+  font-size: 0.95rem;
+  margin: 14px 0 6px;
+}
+
+.match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.match-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.match-list li:last-child {
+  border-bottom: none;
+}
+
+.match-list a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
 /* ------------------------------------------------------------------ paging */
 .pagination {
   display: flex;

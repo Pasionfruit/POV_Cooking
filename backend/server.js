@@ -5,7 +5,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved, tried, mealplans, settings } = require('./store')
+const { recipes, users, saved, tried, pantry, mealplans, settings } = require('./store')
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 
 const app = express()
@@ -254,14 +254,10 @@ app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
     const days = {}
     let changed = false
     for (const [day, value] of Object.entries(plan.days || {})) {
-      const slots = Array.isArray(value) ? { dinner: value } : value || {}
-      const daySlots = {}
-      for (const [slot, ids] of Object.entries(slots)) {
-        const kept = (Array.isArray(ids) ? ids : []).filter((id) => id !== req.params.id)
-        if (kept.length !== (ids || []).length) changed = true
-        if (kept.length) daySlots[slot] = kept
-      }
-      if (Object.keys(daySlots).length) days[day] = daySlots
+      const list = Array.isArray(value) ? value : Object.values(value || {}).flat()
+      const kept = list.filter((id) => id !== req.params.id)
+      if (kept.length !== list.length) changed = true
+      if (kept.length) days[day] = kept
     }
     if (changed) mealplans.update(plan.id, { days })
   })
@@ -331,6 +327,61 @@ app.delete('/tried/:recipeId', authMiddleware, (req, res) => {
   res.json({ ok: true })
 })
 
+// --------------------------------------------------------------- pantry routes
+
+// What the user has on hand. `purchasedAt` is when it was bought or the meal was
+// made; `shelfLifeDays` drives the countdown the UI shows.
+const PANTRY_LOCATIONS = ['Fridge', 'Freezer', 'Pantry']
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+
+function normalizePantryItem(input, userId, existing) {
+  const name = String(input?.name || '').trim()
+  if (!name) throw new Error('Item needs a name')
+  const location =
+    PANTRY_LOCATIONS.find((l) => l.toLowerCase() === String(input.location || '').trim().toLowerCase()) || 'Pantry'
+  const shelfLife = Number(input.shelfLifeDays)
+  return {
+    ...(existing || {}),
+    id: existing ? existing.id : crypto.randomUUID(),
+    userId: existing ? existing.userId : userId,
+    name: standardizeText(name),
+    location,
+    quantity: input.quantity ? standardizeText(String(input.quantity)) : null,
+    purchasedAt: DATE_RE.test(input.purchasedAt || '') ? input.purchasedAt : new Date().toISOString().slice(0, 10),
+    shelfLifeDays: Number.isFinite(shelfLife) && shelfLife > 0 ? Math.min(Math.round(shelfLife), 3650) : 7,
+    notes: input.notes ? standardizeText(String(input.notes)) : null,
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+app.get('/pantry', authMiddleware, (req, res) => {
+  res.json({ items: pantry.filter((item) => item.userId === req.user.id) })
+})
+
+app.post('/pantry', authMiddleware, (req, res) => {
+  try {
+    res.status(201).json({ item: pantry.insert(normalizePantryItem(req.body, req.user.id)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.put('/pantry/:id', authMiddleware, (req, res) => {
+  const existing = pantry.findById(req.params.id)
+  if (!existing || existing.userId !== req.user.id) return res.status(404).json({ error: 'Item not found' })
+  try {
+    res.json({ item: pantry.update(existing.id, normalizePantryItem(req.body, req.user.id, existing)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.delete('/pantry/:id', authMiddleware, (req, res) => {
+  const removed = pantry.remove((item) => item.id === req.params.id && item.userId === req.user.id)
+  if (!removed) return res.status(404).json({ error: 'Item not found' })
+  res.json({ ok: true })
+})
+
 // -------------------------------------------------------------- featured recipe
 
 // The admin can pin one recipe ("latest attempt") to the top of the home page.
@@ -352,25 +403,17 @@ app.put('/featured', authMiddleware, adminMiddleware, (req, res) => {
 // ------------------------------------------------------------- meal plan routes
 
 // One plan per user per week. `weekStart` is the Monday as YYYY-MM-DD;
-// `days` maps day index 0-6 (Mon-Sun) to meal slots, each holding recipe ids:
-//   { "0": { breakfast: [id], dinner: [id, id] } }
+// `days` maps day index 0-6 (Mon-Sun) to a list of recipe ids.
 const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/
-const MEAL_SLOTS = ['breakfast', 'lunch', 'dinner', 'snack']
 
 function sanitizeDays(days) {
   const clean = {}
   for (const [key, value] of Object.entries(days || {})) {
     if (!/^[0-6]$/.test(key)) continue
-    // Plans written before meal slots existed stored a flat array — treat those as dinner.
-    const slots = Array.isArray(value) ? { dinner: value } : value || {}
-    const daySlots = {}
-    for (const slot of MEAL_SLOTS) {
-      const ids = (Array.isArray(slots[slot]) ? slots[slot] : [])
-        .filter((id) => typeof id === 'string' && recipes.findById(id))
-        .slice(0, 10)
-      if (ids.length) daySlots[slot] = ids
-    }
-    if (Object.keys(daySlots).length) clean[key] = daySlots
+    // Plans saved while meal slots existed stored { breakfast: [...] } — flatten those.
+    const list = Array.isArray(value) ? value : Object.values(value || {}).flat()
+    const ids = [...new Set(list.filter((id) => typeof id === 'string' && recipes.findById(id)))].slice(0, 20)
+    if (ids.length) clean[key] = ids
   }
   return clean
 }
@@ -379,7 +422,9 @@ app.get('/meal-plan', authMiddleware, (req, res) => {
   const { weekStart } = req.query
   if (!WEEK_START_RE.test(weekStart || '')) return res.status(400).json({ error: 'weekStart (YYYY-MM-DD) required' })
   const plan = mealplans.find((p) => p.userId === req.user.id && p.weekStart === weekStart)
-  res.json({ plan: plan || null })
+  // Run stored days through the sanitizer so older shapes and deleted recipes
+  // never reach the client.
+  res.json({ plan: plan ? { ...plan, days: sanitizeDays(plan.days) } : null })
 })
 
 app.put('/meal-plan', authMiddleware, (req, res) => {
