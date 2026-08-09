@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import RecipeCard from '../components/RecipeCard'
+import RecipeSpinner from '../components/RecipeSpinner'
+import TagFilter from '../components/TagFilter'
 import { useAuth } from '../contexts/AuthContext'
 import { MEAL_TYPES, matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
@@ -60,6 +62,7 @@ export default function Home() {
   const [cuisine, setCuisine] = useState('')
   const [mealType, setMealType] = useState('')
   const [maxTime, setMaxTime] = useState('')
+  const [tags, setTags] = useState([])
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
   const [page, setPage] = useState(1)
@@ -80,12 +83,13 @@ export default function Home() {
 
   useEffect(() => {
     setPage(1)
-  }, [query, cuisine, mealType, maxTime, savedOnly, neverCooked, pageSize])
+  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, pageSize])
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
 
   const cuisines = [...new Set(recipes.map((r) => r.cuisine).filter(Boolean))].sort()
+  const allTags = [...new Set(recipes.flatMap((r) => r.tags || []).filter(Boolean))].sort()
 
   const matching = recipes.filter((r) => {
     if (savedOnly && !savedIds.has(r.id)) return false
@@ -93,6 +97,7 @@ export default function Home() {
     if (mealType && r.mealType !== mealType) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
+    if (tags.length && !tags.every((t) => (r.tags || []).includes(t))) return false
     if (maxTime) {
       const total = totalMinutes(r)
       if (total == null || total > Number(maxTime)) return false
@@ -103,7 +108,9 @@ export default function Home() {
   const totalPages = Math.max(1, Math.ceil(matching.length / pageSize))
   const currentPage = Math.min(page, totalPages)
   const visible = matching.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  const filtersActive = query || cuisine || mealType || maxTime || savedOnly || neverCooked
+  const filtersActive = Boolean(
+    query || cuisine || mealType || maxTime || tags.length || savedOnly || neverCooked
+  )
 
   return (
     <section>
@@ -145,6 +152,7 @@ export default function Home() {
             </option>
           ))}
         </select>
+        <TagFilter tags={allTags} selected={tags} onChange={setTags} />
         {user && (
           <>
             <button
@@ -174,6 +182,7 @@ export default function Home() {
               setCuisine('')
               setMealType('')
               setMaxTime('')
+              setTags([])
               setSavedOnly(false)
               setNeverCooked(false)
             }}
@@ -211,6 +220,7 @@ export default function Home() {
           </button>
         </div>
       )}
+      <RecipeSpinner recipes={recipes} filteredRecipes={matching} filtersActive={filtersActive} />
     </section>
   )
 }

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import ComponentRandomizer from '../components/ComponentRandomizer'
-import SpinWheel from '../components/SpinWheel'
 import { useAuth } from '../contexts/AuthContext'
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -38,7 +37,6 @@ export default function MealPlan() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [wheelPick, setWheelPick] = useState(null)
 
   const weekKey = toKey(weekStart)
   const todayKey = toKey(new Date())

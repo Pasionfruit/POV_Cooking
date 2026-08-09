@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 const COLORS = ['#e8927c', '#f2b705', '#7fb069', '#6ca6c1', '#b087b9', '#e0685e', '#8aa29e', '#d4a373']
 const MAX_SLICES = 12
@@ -17,12 +17,20 @@ function slicePath(startAngle, endAngle, radius) {
 
 // Spinning wheel of recipes. Spins with CSS transition to a random winner and
 // reports it via onResult. If there are more recipes than fit, a random sample
-// goes on the wheel (reshuffled with the ↻ button).
-export default function SpinWheel({ recipes, onResult }) {
+// goes on the wheel (reshuffled with the ↻ button). Bumping spinSignal spins
+// from the outside — used by the result popup's "Spin again".
+export default function SpinWheel({ recipes, onResult, spinSignal = 0 }) {
   const [shuffleSeed, setShuffleSeed] = useState(0)
   const [rotation, setRotation] = useState(0)
   const [spinning, setSpinning] = useState(false)
   const winnerRef = useRef(null)
+  const spinRef = useRef(null)
+
+  // Fires after the re-render that dropped the previous winner from `recipes`,
+  // so the fresh slice list is the one being spun.
+  useEffect(() => {
+    if (spinSignal > 0) spinRef.current?.()
+  }, [spinSignal])
 
   const slices = useMemo(() => {
     if (recipes.length <= MAX_SLICES) return recipes
@@ -35,14 +43,10 @@ export default function SpinWheel({ recipes, onResult }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipes, shuffleSeed])
 
-  if (slices.length < 2) {
-    return <p className="muted">Add at least two recipes to use the wheel.</p>
-  }
-
   const sliceAngle = 360 / slices.length
 
   function spin() {
-    if (spinning) return
+    if (spinning || slices.length < 2) return
     const winnerIndex = Math.floor(Math.random() * slices.length)
     winnerRef.current = slices[winnerIndex]
     // Rotate so the winner's slice center lands under the top pointer,
@@ -60,6 +64,12 @@ export default function SpinWheel({ recipes, onResult }) {
     if (!spinning) return
     setSpinning(false)
     if (winnerRef.current) onResult(winnerRef.current)
+  }
+
+  spinRef.current = spin
+
+  if (slices.length < 2) {
+    return <p className="muted">Add at least two recipes to use the wheel.</p>
   }
 
   return (
