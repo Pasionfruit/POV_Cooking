@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SpinWheel from './SpinWheel'
 import { totalTimeText } from '../lib/recipeUtils'
@@ -22,7 +22,10 @@ export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive 
   }, [result])
 
   const source = useFilters ? filteredRecipes : recipes
-  const pool = source.filter((r) => !excludedIds.has(r.id))
+  // Memoised so the reference only changes when the eligible set really does —
+  // SpinWheel resamples its slices whenever this array identity changes, and
+  // that must not happen just because a result popped up.
+  const pool = useMemo(() => source.filter((r) => !excludedIds.has(r.id)), [source, excludedIds])
   // What "Spin again" would spin over, once the current result is ruled out.
   const nextPool = result ? pool.filter((r) => r.id !== result.id) : pool
 
@@ -49,7 +52,7 @@ export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive 
   return (
     <div className="panel wheel-panel">
       <div className="wheel-head">
-        <h2>Pick a recipe at random</h2>
+        <h2>Randomize, we ball</h2>
         <div className="wheel-head-controls">
           <button
             type="button"

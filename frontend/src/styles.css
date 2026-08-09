@@ -136,6 +136,82 @@ a {
   width: auto;
 }
 
+/* --------------------------------------------------- tag multiselect filter */
+.tag-filter {
+  position: relative;
+  flex: 1 1 130px;
+}
+
+.tag-filter-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.tag-filter-toggle.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tag-filter-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  min-width: 100%;
+  max-width: 260px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tag-filter-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.tag-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tag-filter-option:hover {
+  background: var(--accent-soft);
+}
+
+.tag-filter-option input {
+  width: auto;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.tag-filter .tag-filter-clear {
+  display: block;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
 input,
 textarea,
 select,
@@ -179,7 +255,8 @@ button:hover,
   border-color: var(--accent);
 }
 
-button.primary {
+button.primary,
+.button.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
@@ -1367,19 +1444,113 @@ code {
   gap: 8px;
 }
 
-.wheel-result {
+/* Clear break between the recipe grid above and the wheel */
+.wheel-panel {
+  margin-top: 40px;
+}
+
+.wheel-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 12px;
-  font-size: 1.05rem;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.wheel-result select {
-  width: auto;
-  font-size: 0.9rem;
+.wheel-head-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wheel-head-controls .chip {
+  font-size: 0.82rem;
+  padding: 4px 12px;
+}
+
+.wheel-panel .wheel-wrap {
+  margin-top: 12px;
+}
+
+/* --------------------------------------------------------- spin result modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal {
+  position: relative;
+  width: min(360px, 100%);
+  padding: 24px 20px 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.modal-close:hover {
+  color: var(--text);
+}
+
+.modal-eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.modal-title {
+  margin: 4px 0 0;
+  font-size: 1.3rem;
+}
+
+.modal-meta {
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-note {
+  margin: 10px 0 0;
+}
+
+/* ----------------------------------------------------- trust the algorithm */
+.algorithm-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.algorithm-panel p {
+  flex: 1 1 220px;
+  margin: 0;
 }
 
 /* Calmer, always-two-column layout on small screens */
