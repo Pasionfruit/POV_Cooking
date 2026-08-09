@@ -449,32 +449,61 @@ code {
   margin: 0;
 }
 
-.pantry-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* Pantry items use the same card language as the recipe grid, but always two
+   up — the compound selector is needed to beat .card-grid's auto-fill rule,
+   which is defined later in the file. */
+.card-grid.pantry-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 16px;
 }
 
-.pantry-item {
+.pantry-card .card-body {
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.pantry-card-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
 }
 
-.pantry-item:last-child {
-  border-bottom: none;
-}
-
-.pantry-name {
+.pantry-card-name {
   font-weight: 600;
-  flex: 1 1 160px;
+  overflow-wrap: anywhere;
 }
 
-.pantry-date {
-  flex: 0 0 auto;
+/* A colour bar down the leading edge carries the expiry status. */
+.pantry-card {
+  border-left: 3px solid var(--border);
+}
+
+.pantry-card.fresh {
+  border-left-color: #2e7d4f;
+}
+
+.pantry-card.soon {
+  border-left-color: #a1710a;
+}
+
+.pantry-card.warning {
+  border-left-color: #a1710a;
+}
+
+.pantry-card.expired {
+  border-left-color: var(--danger);
+}
+
+.pantry-card .pantry-actions {
+  margin-top: auto;
+}
+
+.pantry-card .pantry-actions button {
+  padding: 4px 10px;
+  font-size: 0.82rem;
 }
 
 .pantry-type {
@@ -541,17 +570,6 @@ code {
 .scanner-error {
   margin-top: 12px;
   text-align: left;
-}
-
-.pantry-actions {
-  display: flex;
-  gap: 6px;
-  margin-left: auto;
-}
-
-.pantry-actions button {
-  padding: 4px 10px;
-  font-size: 0.8rem;
 }
 
 .expiry-badge {

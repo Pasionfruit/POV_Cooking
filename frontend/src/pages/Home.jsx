@@ -6,6 +6,7 @@ import RecipeSpinner from '../components/RecipeSpinner'
 import TagFilter from '../components/TagFilter'
 import { useAuth } from '../contexts/AuthContext'
 import { MEAL_TYPES, matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
+import { usePageSize } from '../lib/usePageSize'
 import { useSaved } from '../lib/useSaved'
 import { useTried } from '../lib/useTried'
 
@@ -17,18 +18,6 @@ const DURATIONS = [
   { value: '60', label: '≤ 1 hour' },
   { value: '120', label: '≤ 2 hours' },
 ]
-
-// 6 recipes per page on phones, 12 on larger screens.
-function usePageSize() {
-  const [small, setSmall] = useState(() => window.matchMedia('(max-width: 600px)').matches)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 600px)')
-    const onChange = (e) => setSmall(e.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-  return small ? 6 : 12
-}
 
 function FeaturedBanner({ recipe }) {
   const time = totalTimeText(recipe)

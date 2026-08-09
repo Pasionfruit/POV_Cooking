@@ -5,6 +5,7 @@ import BarcodeIcon from '../components/BarcodeIcon'
 import BarcodeScanner from '../components/BarcodeScanner'
 import { useAuth } from '../contexts/AuthContext'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
+import { usePageSize } from '../lib/usePageSize'
 
 const LOCATIONS = ['Fridge', 'Freezer', 'Pantry']
 const TYPES = [
@@ -165,6 +166,12 @@ export default function Pantry() {
   const [scanning, setScanning] = useState(false)
   const [scanStatus, setScanStatus] = useState(null)
   const [prefill, setPrefill] = useState(null)
+  const [page, setPage] = useState(1)
+  const pageSize = usePageSize()
+
+  useEffect(() => {
+    setPage(1)
+  }, [query, location, type, duration, pageSize])
 
   function refresh() {
     return api
@@ -248,6 +255,10 @@ export default function Pantry() {
     return true
   })
   const filtersActive = Boolean(query || location || type || duration)
+
+  const totalPages = Math.max(1, Math.ceil(visible.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const pageItems = visible.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   const matches = matchRecipes(recipes, items)
   const ready = matches.filter((m) => m.missing.length === 0)
@@ -354,36 +365,48 @@ export default function Pantry() {
         </div>
       )}
 
-      {LOCATIONS.map((group) => {
-        const rows = visible.filter(({ item }) => item.location === group)
-        if (!rows.length) return null
-        return (
-          <div key={group} className="panel">
-            <h2>{group}</h2>
-            <ul className="pantry-list">
-              {rows.map(({ item, days }) => (
-                <li key={item.id} className={`pantry-item ${expiryStatus(days)}`}>
-                  <span className="pantry-name">
-                    {item.name}
-                    {item.quantity && <span className="muted small"> · {item.quantity}</span>}
-                  </span>
+      {pageItems.length > 0 && (
+        <div className="card-grid pantry-grid">
+          {pageItems.map(({ item, days }) => (
+            <div key={item.id} className={`card pantry-card ${expiryStatus(days)}`}>
+              <div className="card-body">
+                <div className="pantry-card-head">
+                  <span className="pantry-card-name">{item.name}</span>
                   <span className="pantry-type">{item.type || 'Other'}</span>
-                  <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
-                  <span className="muted small pantry-date">Added {item.purchasedAt}</span>
-                  <span className="pantry-actions">
-                    <button type="button" onClick={() => setEditing(item)}>
-                      Edit
-                    </button>
-                    <button type="button" className="danger" onClick={() => handleDelete(item)}>
-                      Remove
-                    </button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      })}
+                </div>
+                <div className="card-meta">
+                  <span>{item.location}</span>
+                  {item.quantity && <span>{item.quantity}</span>}
+                </div>
+                <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
+                <span className="muted small">Added {item.purchasedAt}</span>
+                <div className="card-actions pantry-actions">
+                  <button type="button" onClick={() => setEditing(item)}>
+                    Edit
+                  </button>
+                  <button type="button" className="danger" onClick={() => handleDelete(item)}>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}>
+            Previous
+          </button>
+          <span className="muted small">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button type="button" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>
+            Next
+          </button>
+        </div>
+      )}
 
       {items.length > 0 && visible.length === 0 && <p className="muted">No items match these filters.</p>}
 
