@@ -20,6 +20,17 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
         )}
         {isTried && <span className="tried-badge">Tried</span>}
       </Link>
+      {user && onToggleSave && (
+        <button
+          className={`heart-button card-save ${isSaved ? 'saved' : ''}`}
+          onClick={() => onToggleSave(recipe)}
+          title={isSaved ? 'Remove from saved' : 'Save recipe'}
+          aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
+          aria-pressed={isSaved}
+        >
+          <HeartIcon filled={isSaved} />
+        </button>
+      )}
       <div className="card-body">
         <Link to={`/recipes/${recipe.id}`} className="card-title">
           {recipe.title}
@@ -38,24 +49,11 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
             ))}
           </div>
         )}
-        {user && (
+        {user && onToggleTried && (
           <div className="card-actions">
-            {onToggleSave && (
-              <button
-                className={`heart-button ${isSaved ? 'saved' : ''}`}
-                onClick={() => onToggleSave(recipe)}
-                title={isSaved ? 'Remove from saved' : 'Save recipe'}
-                aria-label={isSaved ? 'Remove from saved' : 'Save recipe'}
-                aria-pressed={isSaved}
-              >
-                <HeartIcon filled={isSaved} />
-              </button>
-            )}
-            {onToggleTried && (
-              <button className={`pill ${isTried ? 'active' : ''}`} onClick={() => onToggleTried(recipe)}>
-                {isTried ? 'Cooked' : 'Mark cooked'}
-              </button>
-            )}
+            <button className={`pill ${isTried ? 'active' : ''}`} onClick={() => onToggleTried(recipe)}>
+              {isTried ? 'Cooked' : 'Mark cooked'}
+            </button>
           </div>
         )}
       </div>

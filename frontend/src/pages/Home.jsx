@@ -32,7 +32,7 @@ function FeaturedBanner({ recipe }) {
   const time = totalTimeText(recipe)
   return (
     <div className="featured">
-      <div className="featured-label">Abe’s latest recipe attempt</div>
+      <div className="featured-label">Latest recipe attempt</div>
       <Link to={`/recipes/${recipe.id}`} className="featured-card">
         <span className="featured-media">
           {recipe.image ? <img src={recipe.image} alt="" /> : recipe.title.charAt(0).toUpperCase()}
