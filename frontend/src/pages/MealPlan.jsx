@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import ComponentRandomizer from '../components/ComponentRandomizer'
+import RecipeCombobox from '../components/RecipeCombobox'
 import { useAuth } from '../contexts/AuthContext'
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -60,15 +61,21 @@ export default function MealPlan() {
     api.saveMealPlan(token, { weekStart: weekKey, days: nextDays }).catch((err) => setError(err.message))
   }
 
-  function addToDay(dayIndex, recipeId) {
-    if (!recipeId) return
+  // An entry is a recipe id, or { text } for something the user typed in.
+  function addToDay(dayIndex, entry) {
+    if (!entry) return
     const current = days[dayIndex] || []
-    if (current.includes(recipeId)) return
-    persist({ ...days, [dayIndex]: [...current, recipeId] })
+    const duplicate = current.some((e) =>
+      typeof entry === 'string'
+        ? e === entry
+        : typeof e === 'object' && e?.text?.toLowerCase() === entry.text.toLowerCase()
+    )
+    if (duplicate) return
+    persist({ ...days, [dayIndex]: [...current, entry] })
   }
 
-  function removeFromDay(dayIndex, recipeId) {
-    persist({ ...days, [dayIndex]: (days[dayIndex] || []).filter((id) => id !== recipeId) })
+  function removeFromDay(dayIndex, index) {
+    persist({ ...days, [dayIndex]: (days[dayIndex] || []).filter((_, i) => i !== index) })
   }
 
   const plannedCount = Object.values(days).reduce((n, ids) => n + (ids?.length || 0), 0)
@@ -129,17 +136,21 @@ export default function MealPlan() {
                     {name} <span className="muted small">{shortDate(date)}</span>
                   </div>
                   <ul className="day-list">
-                    {(days[i] || []).map((id) => (
-                      <li key={id}>
-                        {recipeById[id] ? (
-                          <Link to={`/recipes/${id}`}>{recipeById[id].title}</Link>
+                    {(days[i] || []).map((entry, index) => (
+                      <li key={index}>
+                        {typeof entry === 'string' ? (
+                          recipeById[entry] ? (
+                            <Link to={`/recipes/${entry}`}>{recipeById[entry].title}</Link>
+                          ) : (
+                            <span className="muted">Removed recipe</span>
+                          )
                         ) : (
-                          <span className="muted">Removed recipe</span>
+                          <span>{entry.text}</span>
                         )}
                         <button
                           type="button"
                           className="remove-button"
-                          onClick={() => removeFromDay(i, id)}
+                          onClick={() => removeFromDay(i, index)}
                           aria-label={`Remove from ${name}`}
                         >
                           ×
@@ -147,19 +158,11 @@ export default function MealPlan() {
                       </li>
                     ))}
                   </ul>
-                  <select
-                    className="slot-add"
-                    value=""
-                    onChange={(e) => addToDay(i, e.target.value)}
-                    aria-label={`Add recipe to ${name}`}
-                  >
-                    <option value="">+ Add recipe</option>
-                    {recipes.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.title}
-                      </option>
-                    ))}
-                  </select>
+                  <RecipeCombobox
+                    recipes={recipes}
+                    onAdd={(entry) => addToDay(i, entry)}
+                    label={`Add a meal to ${name}`}
+                  />
                 </div>
               )
             })}

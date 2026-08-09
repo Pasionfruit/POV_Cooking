@@ -27,7 +27,7 @@ function recipeToMarkdown(recipe) {
 
   if (typeof recipe.notes === 'string' && recipe.notes) lines.push(`> ${recipe.notes}`, '')
   if (recipe.tags?.length) lines.push(`Tags: ${recipe.tags.map((t) => `\`${t}\``).join(', ')}`, '')
-  if (recipe.sourceUrl) lines.push(`Source: <${recipe.sourceUrl}>`, '')
+  if (recipe.source?.url) lines.push(`Source: [${recipe.source.name || recipe.source.url}](${recipe.source.url})`, '')
 
   return lines.join('\n')
 }

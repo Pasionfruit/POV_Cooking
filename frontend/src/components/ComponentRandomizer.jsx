@@ -89,10 +89,10 @@ export default function ComponentRandomizer() {
         ))}
       </div>
       <div className="randomizer-actions">
+        <span className="muted small">Tap any tile to re-roll just that one.</span>
         <button type="button" className="primary" onClick={() => roll(COMPONENTS.map((c) => c.key))}>
           {hasPicks ? 'Randomize again' : 'Randomize'}
         </button>
-        <span className="muted small">Tap any tile to re-roll just that one.</span>
       </div>
     </div>
   )

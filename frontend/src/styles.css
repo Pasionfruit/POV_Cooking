@@ -1372,10 +1372,62 @@ code {
   color: var(--accent);
 }
 
+.combobox {
+  position: relative;
+}
+
+.combobox .slot-add {
+  width: 100%;
+  background: none;
+}
+
+.combobox .slot-add::placeholder {
+  color: var(--muted);
+}
+
+.combobox-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.combobox-option {
+  padding: 7px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combobox-option.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.combobox-custom {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 8px;
+  font-style: italic;
+}
+
 /* ------------------------------------------------------- build-a-meal roller */
 .randomizer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -1414,10 +1466,12 @@ code {
   color: var(--text);
 }
 
+/* Hint on the left, "Randomize again" pinned to the bottom right */
 .randomizer-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 

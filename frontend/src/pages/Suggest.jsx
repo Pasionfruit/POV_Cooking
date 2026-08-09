@@ -67,7 +67,13 @@ export default function Suggest() {
             placeholder="Where it came from, tweaks you made…"
           />
         </label>
-        <RecipeForm key={sent || 'new'} onSubmit={handleSubmit} busy={busy} submitLabel="Send for review" />
+        <RecipeForm
+          key={sent || 'new'}
+          context="suggest"
+          onSubmit={handleSubmit}
+          busy={busy}
+          submitLabel="Send for review"
+        />
       </div>
 
       {mine.length > 0 && (

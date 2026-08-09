@@ -524,8 +524,19 @@ app.put('/featured', authMiddleware, adminMiddleware, (req, res) => {
 // ------------------------------------------------------------- meal plan routes
 
 // One plan per user per week. `weekStart` is the Monday as YYYY-MM-DD;
-// `days` maps day index 0-6 (Mon-Sun) to a list of recipe ids.
+// `days` maps day index 0-6 (Mon-Sun) to a list of entries. An entry is either
+// a recipe id (string) or a free-text plan the user typed: { text: "Leftovers" }.
 const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/
+const MAX_ENTRY_TEXT = 120
+
+function sanitizeEntry(entry) {
+  if (typeof entry === 'string') return recipes.findById(entry) ? entry : null
+  if (entry && typeof entry === 'object' && typeof entry.text === 'string') {
+    const text = entry.text.trim().slice(0, MAX_ENTRY_TEXT)
+    return text ? { text } : null
+  }
+  return null
+}
 
 function sanitizeDays(days) {
   const clean = {}
@@ -533,8 +544,18 @@ function sanitizeDays(days) {
     if (!/^[0-6]$/.test(key)) continue
     // Plans saved while meal slots existed stored { breakfast: [...] } — flatten those.
     const list = Array.isArray(value) ? value : Object.values(value || {}).flat()
-    const ids = [...new Set(list.filter((id) => typeof id === 'string' && recipes.findById(id)))].slice(0, 20)
-    if (ids.length) clean[key] = ids
+    const seen = new Set()
+    const entries = []
+    for (const raw of list) {
+      const entry = sanitizeEntry(raw)
+      if (!entry) continue
+      const dedupeKey = typeof entry === 'string' ? `id:${entry}` : `text:${entry.text.toLowerCase()}`
+      if (seen.has(dedupeKey)) continue
+      seen.add(dedupeKey)
+      entries.push(entry)
+      if (entries.length === 20) break
+    }
+    if (entries.length) clean[key] = entries
   }
   return clean
 }

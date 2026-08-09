@@ -1,16 +1,34 @@
 import React, { useState } from 'react'
 import { MEAL_TYPES, ingredientToText } from '../lib/recipeUtils'
 
+// Turns whatever the user pasted into a source object, guessing the site name
+// from the hostname the way the URL importer does. Returns null if unusable.
+function parseSourceUrl(input) {
+  const raw = input.trim()
+  if (!raw) return null
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`
+  try {
+    const url = new URL(withScheme)
+    if (!url.hostname.includes('.')) return null
+    return { name: url.hostname.replace(/^www\./, ''), url: url.href }
+  } catch {
+    return null
+  }
+}
+
 // Shared recipe editor: used for admin CRUD, reviewing an imported link, and
 // user suggestions. "Form" mode covers the common fields; "JSON" mode exposes
-// the full semi-structured document for anything else.
-export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLabel, cancelLabel }) {
+// the full semi-structured document for anything else. context="suggest" trades
+// the Image URL field for the source website the recipe came from.
+export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLabel, cancelLabel, context }) {
+  const isSuggestion = context === 'suggest'
   const [mode, setMode] = useState('form')
   const [error, setError] = useState(null)
   const [fields, setFields] = useState(() => ({
     title: initial?.title || '',
     description: initial?.description || '',
     image: initial?.image || '',
+    sourceUrl: initial?.source?.url || '',
     cuisine: initial?.cuisine || '',
     mealType: initial?.mealType || '',
     servings: initial?.servings ?? '',
@@ -30,8 +48,10 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
   function buildRecipe(f, base) {
     const lines = (text) => text.split('\n').map((l) => l.trim()).filter(Boolean)
     const num = (v) => (v === '' || v === null ? null : Number(v))
+    const source = parseSourceUrl(f.sourceUrl)
     return {
       ...(base || {}),
+      ...(f.sourceUrl.trim() ? { source } : {}),
       title: f.title.trim(),
       description: f.description.trim(),
       image: f.image.trim() || null,
@@ -65,6 +85,10 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
         return
       }
     } else {
+      if (fields.sourceUrl.trim() && !parseSourceUrl(fields.sourceUrl)) {
+        setError('That website link does not look like a valid URL')
+        return
+      }
       recipe = buildRecipe(fields, initial)
     }
     if (!recipe.title) {
@@ -99,10 +123,22 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
             Description
             <textarea rows={2} value={fields.description} onChange={(e) => set('description', e.target.value)} />
           </label>
-          <label>
-            Image URL
-            <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />
-          </label>
+          {isSuggestion ? (
+            <label>
+              Website link (optional)
+              <input
+                value={fields.sourceUrl}
+                onChange={(e) => set('sourceUrl', e.target.value)}
+                inputMode="url"
+                placeholder="Where you found it, e.g. seriouseats.com/…"
+              />
+            </label>
+          ) : (
+            <label>
+              Image URL
+              <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />
+            </label>
+          )}
           <div className="field-grid">
             <label>
               Meal type
