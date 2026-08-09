@@ -131,6 +131,22 @@ app.get('/auth/me', authMiddleware, (req, res) => {
   res.json({ user: publicUser(req.user) })
 })
 
+// Deletes the account and everything owned by it. Recipes are shared library
+// content, so they stay; only the per-user collections are purged.
+app.delete('/auth/me', authMiddleware, (req, res) => {
+  const userId = req.user.id
+  if (req.user.role === 'admin' && users.filter((u) => u.role === 'admin').length === 1) {
+    return res.status(409).json({ error: 'Cannot delete the only admin account' })
+  }
+  saved.remove((s) => s.userId === userId)
+  tried.remove((t) => t.userId === userId)
+  pantry.remove((p) => p.userId === userId)
+  mealplans.remove((p) => p.userId === userId)
+  suggestions.remove((s) => s.userId === userId)
+  users.remove((u) => u.id === userId)
+  res.json({ ok: true })
+})
+
 // ----------------------------------------------------------------- recipe rules
 
 // Input standardization: first word capitalized, quantity words as digits

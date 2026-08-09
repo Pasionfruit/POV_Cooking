@@ -22,6 +22,12 @@ const PATHS = {
       <path d="M18 15.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" />
     </>
   ),
+  profile: (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </>
+  ),
 }
 
 export default function NavIcon({ name, size = 20 }) {

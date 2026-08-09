@@ -33,6 +33,7 @@ export const register = (payload) => request('/auth/register', { method: 'POST',
 export const login = (payload) => request('/auth/login', { method: 'POST', body: payload })
 export const googleLogin = (credential) => request('/auth/google', { method: 'POST', body: { credential } })
 export const me = (token) => request('/auth/me', { token })
+export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', token })
 
 // recipes
 export const getRecipes = () => request('/recipes')

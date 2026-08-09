@@ -9,6 +9,7 @@ import MealPlan from './pages/MealPlan'
 import Pantry from './pages/Pantry'
 import Suggest from './pages/Suggest'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 import Admin from './pages/Admin'
 
 export default function App() {
@@ -49,6 +50,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Suggest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

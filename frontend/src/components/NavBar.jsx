@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import ThemeIcon from './ThemeIcon'
 import NavIcon from './NavIcon'
@@ -13,14 +13,8 @@ const ICON_LINKS = [
 ]
 
 export default function NavBar() {
-  const { user, isAdmin, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, isAdmin } = useAuth()
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light')
-
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
 
   return (
     <header className="navbar">
@@ -36,9 +30,14 @@ export default function NavBar() {
           ))}
         {isAdmin && <NavLink to="/admin">Admin</NavLink>}
         {user ? (
-          <button className="link-button" onClick={handleLogout}>
-            Log out{user.name ? ` (${user.name})` : ''}
-          </button>
+          <NavLink
+            to="/profile"
+            className="nav-icon"
+            title={user.name ? `Profile (${user.name})` : 'Profile'}
+            aria-label="Profile"
+          >
+            <NavIcon name="profile" />
+          </NavLink>
         ) : (
           <NavLink to="/login">Log in</NavLink>
         )}
