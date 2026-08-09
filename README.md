@@ -22,9 +22,14 @@ store) later.
   **What can I make right now** — recipes matched against your unexpired items
 - **Login** — email + password (emails stored encrypted, passwords bcrypt-hashed) or Google Sign-In
 - **Light/dark mode** — follows your system by default, toggle in the navbar
-- **Admin** — create, edit (form or raw JSON), and delete recipes; pick which
-  recipe shows as the latest attempt on the home page
-- **Import** — upload or paste recipe JSON (single object, array, or `{ "recipes": [...] }`)
+- **Suggest a recipe** — any logged-in user can submit a recipe for review and
+  track its status; admins approve (optionally editing first), reject, or remove
+- **Admin** — create, edit (form or raw JSON), and delete recipes; review
+  suggestions; pick which recipe shows as the latest attempt on the home page
+- **Import from a link** — paste a recipe URL; the server reads the page's
+  schema.org data and shows a preview to check and correct before anything is
+  saved. Links to private/loopback addresses are refused
+- **Import JSON** — upload or paste recipe JSON (single object, array, or `{ "recipes": [...] }`)
 - **Input standardization** — on create/edit/import, titles, ingredients, steps,
   descriptions, and notes get their first word capitalized and quantity words
   become digits ("two cups flour" becomes "2 cups flour")

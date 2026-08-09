@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import * as api from '../api'
 import RecipeForm from '../components/RecipeForm'
+import SuggestionsPanel from '../components/SuggestionsPanel'
+import UrlImport from '../components/UrlImport'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Admin() {
@@ -123,6 +125,18 @@ export default function Admin() {
         </div>
       ) : (
         <>
+          <SuggestionsPanel onChange={refresh} />
+
+          <div className="panel">
+            <h2>Import from a link</h2>
+            <UrlImport
+              onImported={(title) => {
+                setNotice(`Added “${title}” from the link`)
+                refresh()
+              }}
+            />
+          </div>
+
           <div className="panel">
             <h2>Latest recipe attempt</h2>
             <p className="muted small">Shown at the top of the home page, above All Recipes.</p>
@@ -161,7 +175,7 @@ export default function Admin() {
           </div>
 
           <div className="panel">
-            <h2>Import recipes</h2>
+            <h2>Import recipes from JSON</h2>
             <p className="muted small">
               Upload or paste JSON: a single recipe object, an array of recipes, or {'{ "recipes": [...] }'}. Only{' '}
               <code>title</code> is required — extra fields are kept as-is.

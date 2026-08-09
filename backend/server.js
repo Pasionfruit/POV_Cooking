@@ -5,8 +5,9 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved, tried, pantry, mealplans, settings } = require('./store')
+const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions } = require('./store')
 const { encryptField, decryptField, blindIndex } = require('./crypto')
+const { fetchRecipeFromUrl } = require('./importUrl')
 
 const app = express()
 app.use(express.json({ limit: '2mb' }))
@@ -280,6 +281,110 @@ app.post('/recipes/import', authMiddleware, adminMiddleware, (req, res) => {
     }
   })
   res.status(imported.length ? 201 : 400).json({ importedCount: imported.length, imported, skipped })
+})
+
+// ------------------------------------------------------------ suggestion routes
+
+// Any logged-in user can suggest a recipe; admins review and approve.
+function publicSuggestion(suggestion) {
+  const author = users.findById(suggestion.userId)
+  return {
+    ...suggestion,
+    submittedBy: author ? publicUser(author).name || publicUser(author).email : 'Deleted account',
+  }
+}
+
+app.post('/suggestions', authMiddleware, (req, res) => {
+  const { note, ...rest } = req.body || {}
+  const payload = rest.recipe || rest
+  try {
+    const recipe = normalizeRecipe(payload, req.user.id)
+    const suggestion = suggestions.insert({
+      id: crypto.randomUUID(),
+      userId: req.user.id,
+      recipe,
+      note: note ? String(note).trim() : null,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      reviewedAt: null,
+      recipeId: null,
+    })
+    res.status(201).json({ suggestion })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.get('/suggestions/mine', authMiddleware, (req, res) => {
+  res.json({ suggestions: suggestions.filter((s) => s.userId === req.user.id) })
+})
+
+app.get('/suggestions', authMiddleware, adminMiddleware, (req, res) => {
+  const { status } = req.query
+  const list = suggestions.filter((s) => (status ? s.status === status : true)).map(publicSuggestion)
+  res.json({ suggestions: list })
+})
+
+app.put('/suggestions/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const existing = suggestions.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Suggestion not found' })
+  try {
+    const recipe = normalizeRecipe(req.body.recipe || req.body, existing.userId, existing.recipe)
+    res.json({ suggestion: publicSuggestion(suggestions.update(existing.id, { recipe })) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+// Approve: copy the suggestion (with any admin edits) into the cookbook.
+app.post('/suggestions/:id/approve', authMiddleware, adminMiddleware, (req, res) => {
+  const existing = suggestions.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Suggestion not found' })
+  if (existing.status === 'approved') return res.status(409).json({ error: 'That suggestion is already published' })
+  try {
+    // The admin may have edited the suggestion in the review form; prefer that.
+    const edited = req.body?.recipe || (req.body?.title ? req.body : null)
+    const recipe = recipes.insert(normalizeRecipe(edited || existing.recipe, req.user.id))
+    suggestions.update(existing.id, {
+      status: 'approved',
+      reviewedAt: new Date().toISOString(),
+      recipeId: recipe.id,
+      recipe: { ...existing.recipe, ...recipe },
+    })
+    res.status(201).json({ recipe })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.post('/suggestions/:id/reject', authMiddleware, adminMiddleware, (req, res) => {
+  const existing = suggestions.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Suggestion not found' })
+  const updated = suggestions.update(existing.id, {
+    status: 'rejected',
+    reviewedAt: new Date().toISOString(),
+    reviewNote: req.body?.note ? String(req.body.note).trim() : null,
+  })
+  res.json({ suggestion: publicSuggestion(updated) })
+})
+
+app.delete('/suggestions/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const removed = suggestions.remove((s) => s.id === req.params.id)
+  if (!removed) return res.status(404).json({ error: 'Suggestion not found' })
+  res.json({ ok: true })
+})
+
+// Fetch and parse a recipe from a link. This only returns a preview — the admin
+// reviews it and posts to /recipes to actually save it.
+app.post('/recipes/import-url', authMiddleware, adminMiddleware, async (req, res) => {
+  const { url } = req.body || {}
+  if (!url) return res.status(400).json({ error: 'Paste a link to import' })
+  try {
+    const result = await fetchRecipeFromUrl(url)
+    res.json(result)
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
 })
 
 // ----------------------------------------------------------------- saved routes

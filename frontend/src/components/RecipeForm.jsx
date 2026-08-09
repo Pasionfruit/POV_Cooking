@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { MEAL_TYPES, ingredientToText } from '../lib/recipeUtils'
 
-// Simple form for admins. "Form" mode covers the common fields; "JSON" mode
-// exposes the full semi-structured document for anything else.
-export default function RecipeForm({ initial, onSubmit, onCancel, busy }) {
+// Shared recipe editor: used for admin CRUD, reviewing an imported link, and
+// user suggestions. "Form" mode covers the common fields; "JSON" mode exposes
+// the full semi-structured document for anything else.
+export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLabel, cancelLabel }) {
   const [mode, setMode] = useState('form')
   const [error, setError] = useState(null)
   const [fields, setFields] = useState(() => ({
@@ -158,11 +159,11 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy }) {
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
         <button type="submit" className="primary" disabled={busy}>
-          {busy ? 'Saving…' : initial ? 'Save changes' : 'Add recipe'}
+          {busy ? 'Saving…' : submitLabel || (initial ? 'Save changes' : 'Add recipe')}
         </button>
         {onCancel && (
           <button type="button" onClick={onCancel}>
-            Cancel
+            {cancelLabel || 'Cancel'}
           </button>
         )}
       </div>

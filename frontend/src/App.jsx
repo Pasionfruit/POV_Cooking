@@ -7,6 +7,7 @@ import RecipeDetail from './pages/RecipeDetail'
 import Saved from './pages/Saved'
 import MealPlan from './pages/MealPlan'
 import Pantry from './pages/Pantry'
+import Suggest from './pages/Suggest'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
 
@@ -40,6 +41,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Pantry />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/suggest"
+            element={
+              <ProtectedRoute>
+                <Suggest />
               </ProtectedRoute>
             }
           />

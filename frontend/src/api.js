@@ -41,6 +41,19 @@ export const createRecipe = (token, recipe) => request('/recipes', { method: 'PO
 export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { method: 'PUT', token, body: recipe })
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
 export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
+export const importRecipeFromUrl = (token, url) =>
+  request('/recipes/import-url', { method: 'POST', token, body: { url } })
+
+// suggestions
+export const submitSuggestion = (token, payload) => request('/suggestions', { method: 'POST', token, body: payload })
+export const getMySuggestions = (token) => request('/suggestions/mine', { token })
+export const getSuggestions = (token) => request('/suggestions', { token })
+export const updateSuggestion = (token, id, recipe) =>
+  request(`/suggestions/${id}`, { method: 'PUT', token, body: { recipe } })
+export const approveSuggestion = (token, id, recipe) =>
+  request(`/suggestions/${id}/approve`, { method: 'POST', token, body: recipe ? { recipe } : {} })
+export const rejectSuggestion = (token, id) => request(`/suggestions/${id}/reject`, { method: 'POST', token })
+export const deleteSuggestion = (token, id) => request(`/suggestions/${id}`, { method: 'DELETE', token })
 
 // tried ("have cooked this") recipes
 export const getTried = (token) => request('/tried', { token })

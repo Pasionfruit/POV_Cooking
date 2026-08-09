@@ -26,6 +26,7 @@ export default function NavBar() {
         {user && <NavLink to="/saved">Saved</NavLink>}
         {user && <NavLink to="/meal-plan">Meal Plan</NavLink>}
         {user && <NavLink to="/pantry">Pantry</NavLink>}
+        {user && <NavLink to="/suggest">Suggest</NavLink>}
         {isAdmin && <NavLink to="/admin">Admin</NavLink>}
         {user ? (
           <button className="link-button" onClick={handleLogout}>

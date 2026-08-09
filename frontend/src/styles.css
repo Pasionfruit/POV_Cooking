@@ -455,6 +455,143 @@ code {
   text-decoration: none;
 }
 
+/* ------------------------------------------------- suggestions & url import */
+.status-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.status-badge.pending {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.status-badge.approved {
+  background: #2e7d4f;
+  border-color: #2e7d4f;
+  color: #fff;
+}
+
+.status-badge.rejected {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.suggestion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestion {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.suggestion:last-child {
+  border-bottom: none;
+}
+
+.suggestion-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.suggestion-head .link-button {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.suggestion-head .link-button:hover {
+  color: var(--accent);
+}
+
+.suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.suggestion-actions button,
+.suggestion-actions .button {
+  padding: 5px 10px;
+  font-size: 0.82rem;
+}
+
+.suggestion-note {
+  margin: 6px 0 0;
+}
+
+.suggestion-detail {
+  margin-top: 8px;
+  padding-left: 18px;
+}
+
+.suggestion-detail h4 {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.suggest-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.url-import {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.url-import input {
+  flex: 1 1 260px;
+}
+
+.import-preview {
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 12px;
+}
+
+.import-preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.import-preview-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.import-warnings {
+  margin: 8px 0;
+  padding-left: 20px;
+  color: #a1710a;
+  font-size: 0.88rem;
+}
+
+:root[data-theme='dark'] .import-warnings {
+  color: #e0b458;
+}
+
 /* ------------------------------------------------------------------ paging */
 .pagination {
   display: flex;
