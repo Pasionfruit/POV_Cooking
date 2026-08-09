@@ -66,6 +66,8 @@ export const getPantry = (token) => request('/pantry', { token })
 export const addPantryItem = (token, item) => request('/pantry', { method: 'POST', token, body: item })
 export const updatePantryItem = (token, id, item) => request(`/pantry/${id}`, { method: 'PUT', token, body: item })
 export const deletePantryItem = (token, id) => request(`/pantry/${id}`, { method: 'DELETE', token })
+export const addSamplePantry = (token) => request('/pantry/sample', { method: 'POST', token })
+export const lookupBarcode = (token, code) => request(`/pantry/barcode/${encodeURIComponent(code)}`, { token })
 
 // featured ("latest attempt") recipe
 export const getFeatured = () => request('/featured')

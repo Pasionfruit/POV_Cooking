@@ -453,6 +453,20 @@ app.delete('/tried/:recipeId', authMiddleware, (req, res) => {
 // What the user has on hand. `purchasedAt` is when it was bought or the meal was
 // made; `shelfLifeDays` drives the countdown the UI shows.
 const PANTRY_LOCATIONS = ['Fridge', 'Freezer', 'Pantry']
+const PANTRY_TYPES = [
+  'Produce',
+  'Dairy',
+  'Meat',
+  'Seafood',
+  'Grains',
+  'Bakery',
+  'Canned',
+  'Condiment',
+  'Spice',
+  'Snack',
+  'Beverage',
+  'Other',
+]
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
 function normalizePantryItem(input, userId, existing) {
@@ -460,17 +474,21 @@ function normalizePantryItem(input, userId, existing) {
   if (!name) throw new Error('Item needs a name')
   const location =
     PANTRY_LOCATIONS.find((l) => l.toLowerCase() === String(input.location || '').trim().toLowerCase()) || 'Pantry'
+  const type = PANTRY_TYPES.find((t) => t.toLowerCase() === String(input.type || '').trim().toLowerCase()) || 'Other'
   const shelfLife = Number(input.shelfLifeDays)
+  const barcode = String(input.barcode || '').replace(/\D/g, '')
   return {
     ...(existing || {}),
     id: existing ? existing.id : crypto.randomUUID(),
     userId: existing ? existing.userId : userId,
     name: standardizeText(name),
     location,
+    type,
     quantity: input.quantity ? standardizeText(String(input.quantity)) : null,
     purchasedAt: DATE_RE.test(input.purchasedAt || '') ? input.purchasedAt : new Date().toISOString().slice(0, 10),
     shelfLifeDays: Number.isFinite(shelfLife) && shelfLife > 0 ? Math.min(Math.round(shelfLife), 3650) : 7,
     notes: input.notes ? standardizeText(String(input.notes)) : null,
+    barcode: barcode || null,
     updatedAt: new Date().toISOString(),
   }
 }
@@ -501,6 +519,115 @@ app.delete('/pantry/:id', authMiddleware, (req, res) => {
   const removed = pantry.remove((item) => item.id === req.params.id && item.userId === req.user.id)
   if (!removed) return res.status(404).json({ error: 'Item not found' })
   res.json({ ok: true })
+})
+
+// A starter kitchen so the filters and recipe matching have something to chew
+// on. `ago` is days before today, so the sample always has a realistic spread
+// of fresh, use-soon, and already-expired items.
+const SAMPLE_PANTRY = [
+  { name: 'Chicken thighs', location: 'Fridge', type: 'Meat', quantity: '600 g', ago: 1, shelfLifeDays: 4 },
+  { name: 'Whole milk', location: 'Fridge', type: 'Dairy', quantity: '1 L', ago: 4, shelfLifeDays: 10 },
+  { name: 'Greek yogurt', location: 'Fridge', type: 'Dairy', quantity: '500 g', ago: 9, shelfLifeDays: 10 },
+  { name: 'Baby spinach', location: 'Fridge', type: 'Produce', quantity: '150 g', ago: 5, shelfLifeDays: 6 },
+  { name: 'Bell peppers', location: 'Fridge', type: 'Produce', quantity: '3', ago: 2, shelfLifeDays: 9 },
+  { name: 'Fresh mozzarella', location: 'Fridge', type: 'Dairy', quantity: '125 g', ago: 8, shelfLifeDays: 7 },
+  { name: 'Eggs', location: 'Fridge', type: 'Dairy', quantity: '12', ago: 6, shelfLifeDays: 28 },
+  { name: 'Ground beef', location: 'Freezer', type: 'Meat', quantity: '500 g', ago: 20, shelfLifeDays: 120 },
+  { name: 'Shrimp', location: 'Freezer', type: 'Seafood', quantity: '400 g', ago: 45, shelfLifeDays: 180 },
+  { name: 'Peas', location: 'Freezer', type: 'Produce', quantity: '750 g', ago: 30, shelfLifeDays: 270 },
+  { name: 'Pizza dough', location: 'Freezer', type: 'Bakery', quantity: '2 balls', ago: 14, shelfLifeDays: 90 },
+  { name: 'Spaghetti', location: 'Pantry', type: 'Grains', quantity: '500 g', ago: 40, shelfLifeDays: 540 },
+  { name: 'Jasmine rice', location: 'Pantry', type: 'Grains', quantity: '2 kg', ago: 70, shelfLifeDays: 720 },
+  { name: 'Tomato passata', location: 'Pantry', type: 'Canned', quantity: '700 ml', ago: 25, shelfLifeDays: 400 },
+  { name: 'Chickpeas', location: 'Pantry', type: 'Canned', quantity: '2 tins', ago: 60, shelfLifeDays: 730 },
+  { name: 'Olive oil', location: 'Pantry', type: 'Condiment', quantity: '750 ml', ago: 90, shelfLifeDays: 540 },
+  { name: 'Soy sauce', location: 'Pantry', type: 'Condiment', quantity: '250 ml', ago: 120, shelfLifeDays: 730 },
+  { name: 'Smoked paprika', location: 'Pantry', type: 'Spice', quantity: '50 g', ago: 200, shelfLifeDays: 730 },
+  { name: 'Sourdough loaf', location: 'Pantry', type: 'Bakery', quantity: '1', ago: 4, shelfLifeDays: 3 },
+]
+
+app.post('/pantry/sample', authMiddleware, (req, res) => {
+  const existing = pantry.filter((item) => item.userId === req.user.id)
+  const taken = new Set(existing.map((item) => `${item.name.toLowerCase()}|${item.location}`))
+  const added = []
+  for (const sample of SAMPLE_PANTRY) {
+    if (taken.has(`${sample.name.toLowerCase()}|${sample.location}`)) continue
+    const purchased = new Date()
+    purchased.setDate(purchased.getDate() - sample.ago)
+    added.push(
+      pantry.insert(
+        normalizePantryItem({ ...sample, purchasedAt: purchased.toISOString().slice(0, 10) }, req.user.id)
+      )
+    )
+  }
+  res.status(201).json({ items: added, skipped: SAMPLE_PANTRY.length - added.length })
+})
+
+// Barcode -> product, via Open Food Facts. Proxied through the server so the
+// browser never has to deal with the third party directly.
+const OFF_TYPE_HINTS = [
+  [/dairy|milk|cheese|yogurt|yoghurt|butter|cream/, 'Dairy'],
+  [/seafood|fish|shrimp|prawn|salmon|tuna/, 'Seafood'],
+  [/meat|poultry|chicken|beef|pork|sausage|bacon/, 'Meat'],
+  [/pasta|noodle|rice|cereal|grain|flour|oat|bulgur|couscous/, 'Grains'],
+  [/bread|bakery|pastr|cake|tortilla|baguette/, 'Bakery'],
+  [/spice|herb|seasoning/, 'Spice'],
+  [/sauce|condiment|oil|vinegar|dressing|syrup|mustard|ketchup/, 'Condiment'],
+  [/canned|tinned|conserve/, 'Canned'],
+  [/snack|biscuit|chip|crisp|candy|chocolate|confection/, 'Snack'],
+  [/beverage|drink|water|juice|soda|coffee|tea/, 'Beverage'],
+  [/frozen/, 'Frozen'],
+  [/fruit|vegetable|produce|salad|fresh/, 'Produce'],
+]
+
+// Open Food Facts orders categories_tags general -> specific, and its broadest
+// umbrella tags ("plant-based-foods-and-beverages") contain words that would
+// mislead a naive substring match. So walk the tags most-specific first and
+// take the first one that maps to a type we track.
+const OFF_UMBRELLA_TAGS = /plant-based-foods-and-beverages|^en:groceries$|^en:foods?$/
+
+function guessType(categoryTags) {
+  const tags = (Array.isArray(categoryTags) ? categoryTags : [])
+    .map((t) => String(t).toLowerCase())
+    .filter((t) => !OFF_UMBRELLA_TAGS.test(t))
+  for (let i = tags.length - 1; i >= 0; i--) {
+    const hit = OFF_TYPE_HINTS.find(([re]) => re.test(tags[i]))
+    // "Frozen" is a location in this app, not a type — keep looking.
+    if (hit && hit[1] !== 'Frozen') return hit[1]
+  }
+  return 'Other'
+}
+
+app.get('/pantry/barcode/:code', authMiddleware, async (req, res) => {
+  const code = String(req.params.code || '').replace(/\D/g, '')
+  if (code.length < 6 || code.length > 14) return res.status(400).json({ error: 'That does not look like a barcode' })
+  const url =
+    `https://world.openfoodfacts.org/api/v2/product/${code}.json` +
+    '?fields=product_name,generic_name,brands,quantity,categories_tags'
+  try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'POV-Cooking/1.0 (pantry barcode lookup)' },
+    }).finally(() => clearTimeout(timeout))
+    if (!response.ok) return res.status(502).json({ error: 'Product lookup failed' })
+    const data = await response.json()
+    const product = data.status === 1 ? data.product : null
+    if (!product) return res.status(404).json({ error: 'No product found for that barcode', code })
+    const name = String(product.product_name || product.generic_name || '').trim()
+    if (!name) return res.status(404).json({ error: 'No product found for that barcode', code })
+    res.json({
+      code,
+      name,
+      brand: String(product.brands || '').split(',')[0].trim() || null,
+      quantity: product.quantity || null,
+      type: guessType(product.categories_tags),
+    })
+  } catch (err) {
+    console.error('Barcode lookup failed:', err.message)
+    res.status(502).json({ error: 'Could not reach the product database' })
+  }
 })
 
 // -------------------------------------------------------------- featured recipe

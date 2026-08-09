@@ -1,24 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
+import BarcodeScanner from '../components/BarcodeScanner'
 import { useAuth } from '../contexts/AuthContext'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
 
 const LOCATIONS = ['Fridge', 'Freezer', 'Pantry']
+const TYPES = [
+  'Produce',
+  'Dairy',
+  'Meat',
+  'Seafood',
+  'Grains',
+  'Bakery',
+  'Canned',
+  'Condiment',
+  'Spice',
+  'Snack',
+  'Beverage',
+  'Other',
+]
+
+// Duration-left buckets, matched against daysUntilExpiry.
+const DURATIONS = [
+  { value: '', label: 'Any duration', test: () => true },
+  { value: 'expired', label: 'Expired', test: (d) => d < 0 },
+  { value: '2', label: 'Use within 2 days', test: (d) => d >= 0 && d <= 2 },
+  { value: '7', label: 'Use within a week', test: (d) => d >= 0 && d <= 7 },
+  { value: '30', label: 'Use within a month', test: (d) => d >= 0 && d <= 30 },
+  { value: 'later', label: 'More than a month left', test: (d) => d > 30 },
+]
 
 function today() {
   return new Date().toISOString().slice(0, 10)
 }
 
-const EMPTY_FORM = { name: '', location: 'Fridge', quantity: '', purchasedAt: today(), shelfLifeDays: 7, notes: '' }
+const EMPTY_FORM = {
+  name: '',
+  location: 'Fridge',
+  type: 'Produce',
+  quantity: '',
+  purchasedAt: today(),
+  shelfLifeDays: 7,
+  notes: '',
+  barcode: '',
+}
 
-function ItemForm({ initial, onSubmit, onCancel, busy }) {
+function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan }) {
   const [fields, setFields] = useState(initial || EMPTY_FORM)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     setFields(initial || EMPTY_FORM)
   }, [initial])
+
+  // A scanned product drops straight into the fields, leaving the rest as-is
+  // so the user only has to confirm where it goes.
+  useEffect(() => {
+    if (prefill) setFields((f) => ({ ...f, ...prefill }))
+  }, [prefill])
 
   function set(name, value) {
     setFields((f) => ({ ...f, [name]: value }))
@@ -56,6 +96,16 @@ function ItemForm({ initial, onSubmit, onCancel, busy }) {
         </select>
       </label>
       <label>
+        Type
+        <select value={fields.type} onChange={(e) => set('type', e.target.value)}>
+          {TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
         Quantity
         <input value={fields.quantity} onChange={(e) => set('quantity', e.target.value)} placeholder="500 g" />
       </label>
@@ -73,11 +123,17 @@ function ItemForm({ initial, onSubmit, onCancel, busy }) {
           onChange={(e) => set('shelfLifeDays', e.target.value)}
         />
       </label>
+      {fields.barcode && <p className="muted small barcode-note">Barcode {fields.barcode}</p>}
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
         <button type="submit" className="primary" disabled={busy}>
           {initial ? 'Save changes' : 'Add item'}
         </button>
+        {onScan && (
+          <button type="button" onClick={onScan}>
+            Scan barcode
+          </button>
+        )}
         {onCancel && (
           <button type="button" onClick={onCancel}>
             Cancel
@@ -95,6 +151,13 @@ export default function Pantry() {
   const [editing, setEditing] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
+  const [query, setQuery] = useState('')
+  const [location, setLocation] = useState('')
+  const [type, setType] = useState('')
+  const [duration, setDuration] = useState('')
+  const [scanning, setScanning] = useState(false)
+  const [scanStatus, setScanStatus] = useState(null)
+  const [prefill, setPrefill] = useState(null)
 
   function refresh() {
     return api
@@ -130,10 +193,55 @@ export default function Pantry() {
     refresh()
   }
 
+  async function handleAddSamples() {
+    setBusy(true)
+    setError(null)
+    try {
+      await api.addSamplePantry(token)
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDetected(code) {
+    setScanning(false)
+    setScanStatus({ tone: 'muted', text: `Looking up ${code}…` })
+    try {
+      const product = await api.lookupBarcode(token, code)
+      setEditing(null)
+      setPrefill({
+        name: product.brand ? `${product.brand} ${product.name}` : product.name,
+        quantity: product.quantity || '',
+        type: product.type || 'Other',
+        barcode: product.code,
+      })
+      setScanStatus({ tone: 'notice', text: `Found “${product.name}” — check the details and add it.` })
+    } catch (err) {
+      // Still worth adding by hand, so keep the code in the form.
+      setPrefill({ barcode: code, name: '' })
+      setScanStatus({ tone: 'error', text: `${err.message} (barcode ${code}) — type the name yourself.` })
+    }
+  }
+
   const withExpiry = items
     .map((item) => ({ item, days: daysUntilExpiry(item) }))
     .sort((a, b) => a.days - b.days)
   const expiringSoon = withExpiry.filter(({ days }) => days <= 2)
+
+  const durationRule = DURATIONS.find((d) => d.value === duration) || DURATIONS[0]
+  const needle = query.trim().toLowerCase()
+  const visible = withExpiry.filter(({ item, days }) => {
+    if (location && item.location !== location) return false
+    if (type && (item.type || 'Other') !== type) return false
+    if (!durationRule.test(days)) return false
+    if (needle && !item.name.toLowerCase().includes(needle)) return false
+    return true
+  })
+  const filtersActive = Boolean(query || location || type || duration)
+
   const matches = matchRecipes(recipes, items)
   const ready = matches.filter((m) => m.missing.length === 0)
   const almost = matches.filter((m) => m.missing.length > 0 && m.missing.length <= 2)
@@ -143,7 +251,7 @@ export default function Pantry() {
       <div className="page-header">
         <h1>Pantry &amp; Fridge</h1>
         <span className="muted small">
-          {items.length} item{items.length === 1 ? '' : 's'}
+          {filtersActive ? `${visible.length} of ${items.length}` : `${items.length} item${items.length === 1 ? '' : 's'}`}
         </span>
       </div>
 
@@ -163,36 +271,96 @@ export default function Pantry() {
 
       <div className="panel">
         <h2>{editing ? `Edit ${editing.name}` : 'Add an item'}</h2>
+        {scanStatus && !editing && <p className={scanStatus.tone === 'muted' ? 'muted small' : scanStatus.tone}>{scanStatus.text}</p>}
         <ItemForm
           initial={
             editing && {
               name: editing.name,
               location: editing.location,
+              type: editing.type || 'Other',
               quantity: editing.quantity || '',
               purchasedAt: editing.purchasedAt,
               shelfLifeDays: editing.shelfLifeDays,
               notes: editing.notes || '',
+              barcode: editing.barcode || '',
             }
           }
+          prefill={editing ? null : prefill}
+          onScan={() => {
+            setScanStatus(null)
+            setPrefill(null)
+            setScanning(true)
+          }}
           onSubmit={handleSubmit}
           onCancel={editing ? () => setEditing(null) : null}
           busy={busy}
         />
       </div>
 
-      {LOCATIONS.map((location) => {
-        const group = withExpiry.filter(({ item }) => item.location === location)
-        if (!group.length) return null
+      {items.length > 0 && (
+        <div className="filters">
+          <input
+            className="search"
+            type="search"
+            placeholder="Search items…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search pantry items"
+          />
+          <select value={location} onChange={(e) => setLocation(e.target.value)} aria-label="Filter by location">
+            <option value="">All locations</option>
+            {LOCATIONS.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+          <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Filter by type">
+            <option value="">All types</option>
+            {TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+          <select value={duration} onChange={(e) => setDuration(e.target.value)} aria-label="Filter by duration left">
+            {DURATIONS.map((d) => (
+              <option key={d.value} value={d.value}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+          {filtersActive && (
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => {
+                setQuery('')
+                setLocation('')
+                setType('')
+                setDuration('')
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      )}
+
+      {LOCATIONS.map((group) => {
+        const rows = visible.filter(({ item }) => item.location === group)
+        if (!rows.length) return null
         return (
-          <div key={location} className="panel">
-            <h2>{location}</h2>
+          <div key={group} className="panel">
+            <h2>{group}</h2>
             <ul className="pantry-list">
-              {group.map(({ item, days }) => (
+              {rows.map(({ item, days }) => (
                 <li key={item.id} className={`pantry-item ${expiryStatus(days)}`}>
                   <span className="pantry-name">
                     {item.name}
                     {item.quantity && <span className="muted small"> · {item.quantity}</span>}
                   </span>
+                  <span className="pantry-type">{item.type || 'Other'}</span>
                   <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
                   <span className="muted small pantry-date">Added {item.purchasedAt}</span>
                   <span className="pantry-actions">
@@ -210,7 +378,16 @@ export default function Pantry() {
         )
       })}
 
-      {items.length === 0 && <p className="muted">Nothing tracked yet — add what’s in your fridge and cupboards above.</p>}
+      {items.length > 0 && visible.length === 0 && <p className="muted">No items match these filters.</p>}
+
+      {items.length === 0 && (
+        <div className="panel empty-pantry">
+          <p className="muted">Nothing tracked yet — add what’s in your fridge and cupboards above.</p>
+          <button type="button" onClick={handleAddSamples} disabled={busy}>
+            {busy ? 'Adding…' : 'Fill with sample items'}
+          </button>
+        </div>
+      )}
 
       <div className="panel">
         <h2>What can I make right now?</h2>
@@ -253,6 +430,8 @@ export default function Pantry() {
           </>
         )}
       </div>
+
+      {scanning && <BarcodeScanner onDetected={handleDetected} onClose={() => setScanning(false)} />}
     </section>
   )
 }

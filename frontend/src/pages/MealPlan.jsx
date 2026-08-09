@@ -169,13 +169,13 @@ export default function MealPlan() {
           </div>
 
           <div className="panel algorithm-panel">
-            <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
-              Trust the Algorithm
-            </button>
             <p className="muted small">
               Fills every day of {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))} with one random recipe,
               replacing whatever is planned.
             </p>
+            <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
+              Trust the Algorithm
+            </button>
           </div>
 
           <div className="panel">
