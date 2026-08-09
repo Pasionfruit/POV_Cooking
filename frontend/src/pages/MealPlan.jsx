@@ -73,6 +73,20 @@ export default function MealPlan() {
 
   const plannedCount = Object.values(days).reduce((n, ids) => n + (ids?.length || 0), 0)
 
+  // One random recipe per day, drawn without replacement so a week's picks are
+  // distinct whenever there are at least seven recipes to draw from.
+  function trustTheAlgorithm() {
+    if (recipes.length === 0) return
+    if (plannedCount > 0 && !window.confirm('Replace this week’s plan with one random recipe per day?')) return
+    const pool = []
+    const next = {}
+    DAY_NAMES.forEach((_, i) => {
+      if (pool.length === 0) pool.push(...recipes)
+      next[i] = [pool.splice(Math.floor(Math.random() * pool.length), 1)[0].id]
+    })
+    persist(next)
+  }
+
   return (
     <section>
       <div className="page-header">
@@ -151,36 +165,20 @@ export default function MealPlan() {
             })}
           </div>
 
+          <div className="panel algorithm-panel">
+            <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
+              Trust the Algorithm
+            </button>
+            <p className="muted small">
+              Fills every day of {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))} with one random recipe,
+              replacing whatever is planned.
+            </p>
+          </div>
+
           <div className="panel">
             <h2>Build a meal</h2>
             <p className="muted small">Roll a combination of components when you want to improvise.</p>
             <ComponentRandomizer />
-          </div>
-
-          <div className="panel wheel-panel">
-            <h2>Pick a recipe at random</h2>
-            <SpinWheel recipes={recipes} onResult={setWheelPick} />
-            {wheelPick && (
-              <div className="wheel-result">
-                <span>
-                  Result: <Link to={`/recipes/${wheelPick.id}`}>{wheelPick.title}</Link>
-                </span>
-                <select
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value !== '') addToDay(Number(e.target.value), wheelPick.id)
-                  }}
-                  aria-label="Add wheel result to a day"
-                >
-                  <option value="">Add to day…</option>
-                  {DAY_NAMES.map((name, i) => (
-                    <option key={name} value={i}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </>
       )}
