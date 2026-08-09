@@ -438,7 +438,9 @@ code {
   flex: 2 1 200px;
 }
 
+/* Own full-width row so the scan icon and Add item hit opposite corners */
 .pantry-form .form-actions {
+  flex-basis: 100%;
   margin: 0;
 }
 
@@ -1195,10 +1197,30 @@ code {
   gap: 10px;
 }
 
+/* Primary action sits bottom right on every form, at every width */
 .form-actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   margin-top: 4px;
+}
+
+/* Icon-only actions (barcode scan) anchor to the opposite corner */
+.form-actions .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: auto;
+  padding: 8px;
+  color: var(--muted);
+  line-height: 0;
+}
+
+.form-actions .icon-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .form-mode-row {
@@ -1532,13 +1554,18 @@ code {
   color: var(--text);
 }
 
-/* Hint on the left, "Randomize again" pinned to the bottom right */
+/* Hint on the left, "Randomize again" pinned to the bottom right. margin-left
+   rather than space-between so the button stays right once the row wraps on
+   narrow screens instead of starting a new left-aligned line. */
 .randomizer-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
+}
+
+.randomizer-actions button {
+  margin-left: auto;
 }
 
 /* --------------------------------------------------------------- spin wheel */

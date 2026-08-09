@@ -17,3 +17,13 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </BrowserRouter>
 )
+
+// Offline shell for the installed app. Production only — in dev the service
+// worker would sit in front of Vite's HMR and serve stale modules.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('Service worker registration failed:', err.message)
+    })
+  })
+}

@@ -194,14 +194,14 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
 
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
-        <button type="submit" className="primary" disabled={busy}>
-          {busy ? 'Saving…' : submitLabel || (initial ? 'Save changes' : 'Add recipe')}
-        </button>
         {onCancel && (
           <button type="button" onClick={onCancel}>
             {cancelLabel || 'Cancel'}
           </button>
         )}
+        <button type="submit" className="primary" disabled={busy}>
+          {busy ? 'Saving…' : submitLabel || (initial ? 'Save changes' : 'Add recipe')}
+        </button>
       </div>
     </form>
   )

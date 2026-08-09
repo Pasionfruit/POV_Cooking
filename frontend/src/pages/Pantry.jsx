@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
+import BarcodeIcon from '../components/BarcodeIcon'
 import BarcodeScanner from '../components/BarcodeScanner'
 import { useAuth } from '../contexts/AuthContext'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
@@ -126,12 +127,15 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan }) {
       {fields.barcode && <p className="muted small barcode-note">Barcode {fields.barcode}</p>}
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
-        <button type="submit" className="primary" disabled={busy}>
-          {initial ? 'Save changes' : 'Add item'}
-        </button>
         {onScan && (
-          <button type="button" onClick={onScan}>
-            Scan barcode
+          <button
+            type="button"
+            className="icon-button scan-button"
+            onClick={onScan}
+            title="Scan a barcode"
+            aria-label="Scan a barcode"
+          >
+            <BarcodeIcon />
           </button>
         )}
         {onCancel && (
@@ -139,6 +143,9 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan }) {
             Cancel
           </button>
         )}
+        <button type="submit" className="primary" disabled={busy}>
+          {initial ? 'Save changes' : 'Add item'}
+        </button>
       </div>
     </form>
   )
