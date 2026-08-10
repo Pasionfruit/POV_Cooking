@@ -1267,26 +1267,109 @@ code {
 
 /* -------------------------------------------------------------------- auth */
 .auth-page {
-  max-width: 380px;
+  max-width: 400px;
   margin: 24px auto;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-.auth-divider {
+.auth-head {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-head h1 {
+  font-size: 1.35rem;
+}
+
+.auth-head p {
+  margin: 0;
+}
+
+/* Rule through the middle with the label sitting in a gap */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
 .google-button {
   display: flex;
   justify-content: center;
+  min-height: 40px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 62px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.auth-inline-link {
+  align-self: flex-start;
+  font-size: 0.85rem;
+}
+
+.auth-submit {
+  margin-top: 2px;
+  padding: 11px 14px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin: 0;
+}
+
+.auth-switch .link-button {
+  font-weight: 600;
+}
+
+.auth-note {
+  text-align: center;
+  margin: 0;
 }
 
 /* -------------------------------------------------------------------- admin */

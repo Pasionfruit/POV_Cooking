@@ -88,18 +88,29 @@ for real use set `JWT_SECRET` and a 64-char hex `ENCRYPTION_KEY`
 (usernames/emails are encrypted at rest with AES-256-GCM and looked up via an
 HMAC blind index).
 
-## Data & the MongoDB plan
+## Deploying
 
-All data lives in JSON files under `backend/data/`:
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for a step-by-step walkthrough of hosting
+the whole thing free (MongoDB Atlas + Render + Vercel), enabling Google Sign-In,
+and verifying the PWA installs on desktop and phone.
 
-- `recipes.json` — the cookbook (seeded with 3 recipes; committed to git)
-- `users.json`, `saved.json`, `tried.json`, `pantry.json`, `mealplans.json`,
-  `settings.json` — created at runtime, gitignored
+## Data & storage
 
-[backend/store.js](backend/store.js) is the only module that touches storage.
-To switch to MongoDB, reimplement its small collection interface
-(`all/find/filter/findById/insert/update/remove`) on top of a Mongo collection —
-recipe documents map 1:1.
+[backend/store.js](backend/store.js) is the only module that touches storage,
+and it has two backends behind one synchronous interface:
+
+- **JSON files** under `backend/data/` — the default, used for local development.
+  `recipes.json` is the seed cookbook and is committed; `users.json`,
+  `saved.json`, `tried.json`, `pantry.json`, `suggestions.json`,
+  `mealplans.json`, and `settings.json` are created at runtime and gitignored.
+- **MongoDB** — used when `MONGODB_URI` is set. Required in production, because
+  free hosts wipe the filesystem on every deploy. Each collection is stored as
+  one document, so the Mongo and on-disk shapes are identical, and a fresh
+  database is seeded from the repo's `recipes.json` on first boot.
+
+Both keep collections in memory and write through on change, which is what lets
+every route handler stay synchronous — and which means the API must run as a
+single instance.
 
 ## Recipe JSON shape
 

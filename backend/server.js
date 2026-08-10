@@ -5,16 +5,17 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions } = require('./store')
+const store = require('./store')
+const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions } = store
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 const { fetchRecipeFromUrl } = require('./importUrl')
 
 const app = express()
 app.use(express.json({ limit: '2mb' }))
-app.use(cors())
 
 // 5001 because macOS AirPlay occupies port 5000
 const PORT = process.env.PORT || 5001
+const IS_PROD = process.env.NODE_ENV === 'production'
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
 const ADMIN_CODE = process.env.ADMIN_CODE || 'admin-secret'
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
@@ -22,6 +23,35 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
   .split(',')
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean)
+
+// Refuse to run in production on the built-in development secrets: the fallback
+// JWT secret would let anyone mint a valid session, and the fallback encryption
+// key would make every stored email decryptable by anyone with the source.
+if (IS_PROD) {
+  const missing = ['JWT_SECRET', 'ENCRYPTION_KEY'].filter((name) => !process.env[name])
+  if (missing.length) {
+    console.error(`Refusing to start: ${missing.join(' and ')} must be set when NODE_ENV=production.`)
+    process.exit(1)
+  }
+}
+
+// In production only the deployed frontend may call the API. Left unset (local
+// development) any origin is allowed, which is how it behaved before.
+const CORS_ORIGINS = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim().replace(/\/$/, ''))
+  .filter(Boolean)
+
+// Turn a disallowed origin away with a clear 403 (including its preflight)
+// rather than letting the cors package throw its way to a 500.
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  // No Origin header at all: curl, health checks, server-to-server.
+  if (!CORS_ORIGINS.length || !origin || CORS_ORIGINS.includes(origin.replace(/\/$/, ''))) return next()
+  res.status(403).json({ error: 'Origin not allowed' })
+})
+
+app.use(cors(CORS_ORIGINS.length ? { origin: CORS_ORIGINS } : {}))
 
 // ---------------------------------------------------------------- auth helpers
 
@@ -57,6 +87,22 @@ function authMiddleware(req, res, next) {
 function adminMiddleware(req, res, next) {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' })
   next()
+}
+
+// ADMIN_EMAILS is re-checked on every sign-in, not just at registration.
+// Otherwise adding yourself to the list after you had already signed in would
+// leave you a plain user with no way to promote yourself on a deployed server.
+function syncAdminRole(user) {
+  if (!ADMIN_EMAILS.length || user.role === 'admin') return user
+  let email
+  try {
+    email = decryptField(user.email)
+  } catch {
+    return user
+  }
+  if (!ADMIN_EMAILS.includes(email.trim().toLowerCase())) return user
+  console.log(`Promoting ${email} to admin (listed in ADMIN_EMAILS)`)
+  return users.update(user.id, { role: 'admin' }) || user
 }
 
 function createUser({ email, name, passwordHash, provider, adminCode }) {
@@ -96,10 +142,11 @@ app.post('/auth/register', async (req, res) => {
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body || {}
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
-  const user = users.find((u) => u.emailIndex === blindIndex(email))
-  if (!user || !user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
+  const found = users.find((u) => u.emailIndex === blindIndex(email))
+  if (!found || !found.passwordHash || !(await bcrypt.compare(password, found.passwordHash))) {
     return res.status(401).json({ error: 'Invalid email or password' })
   }
+  const user = syncAdminRole(found)
   res.json({ token: signToken(user), user: publicUser(user) })
 })
 
@@ -119,6 +166,8 @@ app.post('/auth/google', async (req, res) => {
     let user = users.find((u) => u.emailIndex === blindIndex(info.email))
     if (!user) {
       user = createUser({ email: info.email, name: info.name, provider: 'google' })
+    } else {
+      user = syncAdminRole(user)
     }
     res.json({ token: signToken(user), user: publicUser(user) })
   } catch (err) {
@@ -720,13 +769,17 @@ app.get('/health', (req, res) => res.json({ ok: true }))
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }))
 
-// Demo accounts so the app is usable straight after cloning.
+// Demo accounts so the app is usable straight after cloning. Off in production
+// by default — published credentials would be an open door. Set SEED_DEMO=true
+// to opt back in.
+const SEED_DEMO = process.env.SEED_DEMO ? process.env.SEED_DEMO === 'true' : !IS_PROD
 const DEMO_ACCOUNTS = [
   { email: 'demo@povcooking.com', password: 'demo1234', name: 'Demo', adminCode: null },
   { email: 'admin@povcooking.com', password: 'admin1234', name: 'Demo Admin', adminCode: ADMIN_CODE },
 ]
 
 async function ensureDemoUsers() {
+  if (!SEED_DEMO) return
   for (const account of DEMO_ACCOUNTS) {
     if (users.find((u) => u.emailIndex === blindIndex(account.email))) continue
     createUser({
@@ -740,9 +793,31 @@ async function ensureDemoUsers() {
   }
 }
 
-ensureDemoUsers().then(() => {
-  app.listen(PORT, () => {
-    console.log(`POV Cooking API running on http://localhost:${PORT}`)
+async function start() {
+  // Load the data layer before serving, so no request can hit an empty cache.
+  const { driver, location, seeded } = await store.connect()
+  console.log(`Store: ${driver} (${location})`)
+  if (seeded?.length) console.log(`Seeded fresh database from repo data: ${seeded.join(', ')}`)
+
+  await ensureDemoUsers()
+
+  const server = app.listen(PORT, () => {
+    console.log(`POV Cooking API running on port ${PORT}`)
     if (!GOOGLE_CLIENT_ID) console.log('Google login disabled (set GOOGLE_CLIENT_ID to enable)')
+    if (IS_PROD && !CORS_ORIGINS.length) console.log('WARNING: CORS_ORIGIN is unset — the API accepts any origin')
   })
+
+  // Hosts restart containers with SIGTERM; let queued writes land first.
+  for (const signal of ['SIGTERM', 'SIGINT']) {
+    process.on(signal, () => {
+      console.log(`${signal} received, shutting down…`)
+      server.close(() => store.close().then(() => process.exit(0)))
+      setTimeout(() => process.exit(0), 10000).unref()
+    })
+  }
+}
+
+start().catch((err) => {
+  console.error('Failed to start:', err.message)
+  process.exit(1)
 })
