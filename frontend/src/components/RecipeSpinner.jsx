@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import CollapsibleSection from './CollapsibleSection'
 import SpinWheel from './SpinWheel'
 import { totalTimeText } from '../lib/recipeUtils'
 
@@ -7,6 +8,7 @@ import { totalTimeText } from '../lib/recipeUtils'
 // eligible, the result popup, and the exclusion set that keeps "Spin again"
 // from handing back the recipe you just rejected.
 export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive }) {
+  const [open, setOpen] = useState(true)
   const [useFilters, setUseFilters] = useState(true)
   const [excludedIds, setExcludedIds] = useState(() => new Set())
   const [result, setResult] = useState(null)
@@ -51,8 +53,7 @@ export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive 
 
   return (
     <div className="panel wheel-panel">
-      <div className="wheel-head">
-        <h2>Randomize, we ball</h2>
+      <CollapsibleSection title="Randomize, we ball" open={open} onToggle={() => setOpen((o) => !o)} id="wheel-body">
         <div className="wheel-head-controls">
           <button
             type="button"
@@ -68,30 +69,30 @@ export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive 
             </button>
           )}
         </div>
-      </div>
 
-      <p className="muted small">
-        {pool.length} recipe{pool.length === 1 ? '' : 's'} on the wheel
-        {useFilters && filtersActive ? ' from your current filters' : ''}
-        {excludedIds.size > 0 ? ` · ${excludedIds.size} ruled out` : ''}
-      </p>
+        <p className="muted small">
+          {pool.length} recipe{pool.length === 1 ? '' : 's'} on the wheel
+          {useFilters && filtersActive ? ' from your current filters' : ''}
+          {excludedIds.size > 0 ? ` · ${excludedIds.size} ruled out` : ''}
+        </p>
 
-      {exhausted ? (
-        <p className="muted">
-          You have ruled out everything on the wheel.{' '}
-          <button type="button" className="link-button" onClick={reset}>
-            Reset the wheel
-          </button>
-        </p>
-      ) : pool.length < 2 ? (
-        <p className="muted">
-          {useFilters && filtersActive
-            ? 'Not enough recipes match your filters to spin — loosen them or switch to all recipes.'
-            : 'Add at least two recipes to use the wheel.'}
-        </p>
-      ) : (
-        <SpinWheel recipes={pool} onResult={setResult} spinSignal={spinSignal} />
-      )}
+        {exhausted ? (
+          <p className="muted">
+            You have ruled out everything on the wheel.{' '}
+            <button type="button" className="link-button" onClick={reset}>
+              Reset the wheel
+            </button>
+          </p>
+        ) : pool.length < 2 ? (
+          <p className="muted">
+            {useFilters && filtersActive
+              ? 'Not enough recipes match your filters to spin — loosen them or switch to all recipes.'
+              : 'Add at least two recipes to use the wheel.'}
+          </p>
+        ) : (
+          <SpinWheel recipes={pool} onResult={setResult} spinSignal={spinSignal} />
+        )}
+      </CollapsibleSection>
 
       {result && (
         <div className="modal-backdrop" onClick={() => setResult(null)} role="presentation">

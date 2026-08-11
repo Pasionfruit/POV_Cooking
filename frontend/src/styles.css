@@ -634,6 +634,89 @@ code {
   text-align: left;
 }
 
+/* -------------------------------------------------------------- receipt scan */
+.receipt-progress {
+  margin-top: 14px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  overflow: hidden;
+}
+
+.receipt-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.receipt-confirm-modal {
+  width: min(640px, 100%);
+  text-align: left;
+}
+
+.receipt-purchased {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.receipt-purchased input {
+  width: auto;
+}
+
+.receipt-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.receipt-item-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-item-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-item-name {
+  flex: 2 1 160px;
+  min-width: 0;
+}
+
+.receipt-item-qty {
+  flex: 0 1 64px;
+  min-width: 0;
+}
+
+.receipt-item-type,
+.receipt-item-location {
+  flex: 1 1 110px;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.receipt-item-shelf {
+  flex: 0 1 64px;
+  min-width: 0;
+}
+
+.receipt-item-row input,
+.receipt-item-row select {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
 .expiry-badge {
   font-size: 0.76rem;
   font-weight: 600;
@@ -1293,11 +1376,16 @@ code {
 }
 
 /* Icon-only actions (barcode scan) anchor to the opposite corner */
+.form-actions .scan-buttons {
+  display: flex;
+  gap: 8px;
+  margin-right: auto;
+}
+
 .form-actions .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: auto;
   padding: 8px;
   color: var(--muted);
   line-height: 0;
@@ -1808,12 +1896,35 @@ code {
   margin-top: 40px;
 }
 
-.wheel-head {
+/* Shared by every collapsible section (spinner, pantry add-item, what-can-I-make) */
+.collapsible-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
+}
+
+.collapsible-head h2 {
+  margin: 0 0 10px;
+}
+
+.collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.collapse-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .wheel-head-controls {

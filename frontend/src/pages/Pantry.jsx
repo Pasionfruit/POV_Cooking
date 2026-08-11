@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom'
 import * as api from '../api'
 import BarcodeIcon from '../components/BarcodeIcon'
 import BarcodeScanner from '../components/BarcodeScanner'
+import CollapsibleSection from '../components/CollapsibleSection'
+import ReceiptConfirmModal from '../components/ReceiptConfirmModal'
+import ReceiptIcon from '../components/ReceiptIcon'
+import ReceiptScanner from '../components/ReceiptScanner'
 import { useAuth } from '../contexts/AuthContext'
 import { ITEM_TYPES } from '../lib/itemTypes'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
@@ -36,7 +40,7 @@ const EMPTY_FORM = {
   barcode: '',
 }
 
-function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan }) {
+function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan, onScanReceipt }) {
   const [fields, setFields] = useState(initial || EMPTY_FORM)
   const [error, setError] = useState(null)
 
@@ -116,17 +120,30 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan }) {
       {fields.barcode && <p className="muted small barcode-note">Barcode {fields.barcode}</p>}
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
-        {onScan && (
-          <button
-            type="button"
-            className="icon-button scan-button"
-            onClick={onScan}
-            title="Scan a barcode"
-            aria-label="Scan a barcode"
-          >
-            <BarcodeIcon />
-          </button>
-        )}
+        <div className="scan-buttons">
+          {onScan && (
+            <button
+              type="button"
+              className="icon-button"
+              onClick={onScan}
+              title="Scan a barcode"
+              aria-label="Scan a barcode"
+            >
+              <BarcodeIcon />
+            </button>
+          )}
+          {onScanReceipt && (
+            <button
+              type="button"
+              className="icon-button"
+              onClick={onScanReceipt}
+              title="Scan a receipt to add items"
+              aria-label="Scan a receipt to add items"
+            >
+              <ReceiptIcon />
+            </button>
+          )}
+        </div>
         {onCancel && (
           <button type="button" onClick={onCancel}>
             Cancel
@@ -156,10 +173,21 @@ export default function Pantry() {
   const [prefill, setPrefill] = useState(null)
   const [page, setPage] = useState(1)
   const pageSize = usePageSize()
+  const [addOpen, setAddOpen] = useState(true)
+  const [makeOpen, setMakeOpen] = useState(true)
+  const [receiptScanning, setReceiptScanning] = useState(false)
+  const [receiptCandidates, setReceiptCandidates] = useState(null)
+  const [receiptBusy, setReceiptBusy] = useState(false)
 
   useEffect(() => {
     setPage(1)
   }, [query, location, type, duration, pageSize])
+
+  // Re-open "Add an item" if it was collapsed, so editing a card is never
+  // hidden behind a closed section.
+  useEffect(() => {
+    if (editing) setAddOpen(true)
+  }, [editing])
 
   function refresh() {
     return api
@@ -228,6 +256,43 @@ export default function Pantry() {
     }
   }
 
+  // The scanner only OCRs the photo into raw text; turning that into
+  // candidate items is the server's job, same split as barcode lookup.
+  async function handleReceiptText(text) {
+    setReceiptScanning(false)
+    setScanStatus({ tone: 'muted', text: 'Matching items…' })
+    try {
+      const { items: candidates } = await api.parseReceiptText(token, text)
+      if (candidates.length === 0) {
+        setScanStatus({ tone: 'error', text: 'Found text, but nothing that looked like a line item — try a clearer photo.' })
+        return
+      }
+      setScanStatus(null)
+      setReceiptCandidates(candidates)
+    } catch (err) {
+      setScanStatus({ tone: 'error', text: err.message })
+    }
+  }
+
+  async function handleReceiptConfirm(finalizedItems) {
+    setReceiptBusy(true)
+    try {
+      const { items: inserted, skipped } = await api.bulkAddPantryItems(token, finalizedItems)
+      setReceiptCandidates(null)
+      setScanStatus({
+        tone: 'notice',
+        text: `Added ${inserted.length} item${inserted.length === 1 ? '' : 's'} to your pantry.${
+          skipped.length ? ` ${skipped.length} skipped.` : ''
+        }`,
+      })
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setReceiptBusy(false)
+    }
+  }
+
   const withExpiry = items
     .map((item) => ({ item, days: daysUntilExpiry(item) }))
     .sort((a, b) => a.days - b.days)
@@ -276,31 +341,47 @@ export default function Pantry() {
       )}
 
       <div className="panel">
-        <h2>{editing ? `Edit ${editing.name}` : 'Add an item'}</h2>
-        {scanStatus && !editing && <p className={scanStatus.tone === 'muted' ? 'muted small' : scanStatus.tone}>{scanStatus.text}</p>}
-        <ItemForm
-          initial={
-            editing && {
-              name: editing.name,
-              location: editing.location,
-              type: editing.type || 'Other',
-              quantity: editing.quantity || '',
-              purchasedAt: editing.purchasedAt,
-              shelfLifeDays: editing.shelfLifeDays,
-              notes: editing.notes || '',
-              barcode: editing.barcode || '',
+        <CollapsibleSection
+          title={editing ? `Edit ${editing.name}` : 'Add an item'}
+          open={addOpen}
+          onToggle={() => setAddOpen((o) => !o)}
+          id="add-item-body"
+        >
+          {scanStatus && !editing && (
+            <p className={scanStatus.tone === 'muted' ? 'muted small' : scanStatus.tone}>{scanStatus.text}</p>
+          )}
+          <ItemForm
+            initial={
+              editing && {
+                name: editing.name,
+                location: editing.location,
+                type: editing.type || 'Other',
+                quantity: editing.quantity || '',
+                purchasedAt: editing.purchasedAt,
+                shelfLifeDays: editing.shelfLifeDays,
+                notes: editing.notes || '',
+                barcode: editing.barcode || '',
+              }
             }
-          }
-          prefill={editing ? null : prefill}
-          onScan={() => {
-            setScanStatus(null)
-            setPrefill(null)
-            setScanning(true)
-          }}
-          onSubmit={handleSubmit}
-          onCancel={editing ? () => setEditing(null) : null}
-          busy={busy}
-        />
+            prefill={editing ? null : prefill}
+            onScan={() => {
+              setScanStatus(null)
+              setPrefill(null)
+              setScanning(true)
+            }}
+            onScanReceipt={
+              editing
+                ? null
+                : () => {
+                    setScanStatus(null)
+                    setReceiptScanning(true)
+                  }
+            }
+            onSubmit={handleSubmit}
+            onCancel={editing ? () => setEditing(null) : null}
+            busy={busy}
+          />
+        </CollapsibleSection>
       </div>
 
       {items.length > 0 && (
@@ -408,48 +489,63 @@ export default function Pantry() {
       )}
 
       <div className="panel">
-        <h2>What can I make right now?</h2>
-        <p className="muted small">
-          Based on unexpired items you have on hand. {STAPLES.slice(0, -1).join(', ')} and {STAPLES.slice(-1)} are
-          assumed to always be in the kitchen.
-        </p>
-        {items.length === 0 ? (
-          <p className="muted">Add pantry items to see what you can cook.</p>
-        ) : ready.length === 0 && almost.length === 0 ? (
-          <p className="muted">Nothing matches yet — add more items, or a few more recipes to the cookbook.</p>
-        ) : (
-          <>
-            {ready.length > 0 && (
-              <>
-                <h3 className="match-heading">Ready to cook</h3>
-                <ul className="match-list">
-                  {ready.map(({ recipe, total }) => (
-                    <li key={recipe.id}>
-                      <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
-                      <span className="muted small">all {total} ingredients on hand</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {almost.length > 0 && (
-              <>
-                <h3 className="match-heading">Almost there</h3>
-                <ul className="match-list">
-                  {almost.map(({ recipe, missing }) => (
-                    <li key={recipe.id}>
-                      <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
-                      <span className="muted small">missing {missing.join(', ')}</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </>
-        )}
+        <CollapsibleSection
+          title="What can I make right now?"
+          open={makeOpen}
+          onToggle={() => setMakeOpen((o) => !o)}
+          id="make-now-body"
+        >
+          <p className="muted small">
+            Based on unexpired items you have on hand. {STAPLES.slice(0, -1).join(', ')} and {STAPLES.slice(-1)} are
+            assumed to always be in the kitchen.
+          </p>
+          {items.length === 0 ? (
+            <p className="muted">Add pantry items to see what you can cook.</p>
+          ) : ready.length === 0 && almost.length === 0 ? (
+            <p className="muted">Nothing matches yet — add more items, or a few more recipes to the cookbook.</p>
+          ) : (
+            <>
+              {ready.length > 0 && (
+                <>
+                  <h3 className="match-heading">Ready to cook</h3>
+                  <ul className="match-list">
+                    {ready.map(({ recipe, total }) => (
+                      <li key={recipe.id}>
+                        <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+                        <span className="muted small">all {total} ingredients on hand</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {almost.length > 0 && (
+                <>
+                  <h3 className="match-heading">Almost there</h3>
+                  <ul className="match-list">
+                    {almost.map(({ recipe, missing }) => (
+                      <li key={recipe.id}>
+                        <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+                        <span className="muted small">missing {missing.join(', ')}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </>
+          )}
+        </CollapsibleSection>
       </div>
 
       {scanning && <BarcodeScanner onDetected={handleDetected} onClose={() => setScanning(false)} />}
+      {receiptScanning && <ReceiptScanner onText={handleReceiptText} onClose={() => setReceiptScanning(false)} />}
+      {receiptCandidates && (
+        <ReceiptConfirmModal
+          items={receiptCandidates}
+          onConfirm={handleReceiptConfirm}
+          onCancel={() => setReceiptCandidates(null)}
+          busy={receiptBusy}
+        />
+      )}
     </section>
   )
 }

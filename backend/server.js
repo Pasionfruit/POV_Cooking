@@ -680,6 +680,124 @@ app.get('/pantry/barcode/:code', authMiddleware, async (req, res) => {
   }
 })
 
+// Typical fridge/pantry life by category, used to pre-fill a guess the user
+// can still override — same spirit as the barcode lookup's category guess.
+const SHELF_LIFE_BY_TYPE = {
+  Produce: 7,
+  Dairy: 10,
+  Meat: 4,
+  Seafood: 3,
+  Grains: 365,
+  Bakery: 5,
+  Canned: 545,
+  Condiment: 270,
+  Spice: 730,
+  Snack: 120,
+  Beverage: 180,
+  Other: 14,
+}
+
+// Best-effort category guess from a receipt line's item name — same idea as
+// guessType() above, but matched against free text rather than Open Food
+// Facts category tags, since a receipt only ever gives us a name to go on.
+const NAME_TYPE_HINTS = [
+  [/\b(milk|cheese|yogurt|yoghurt|butter|cream|egg)/i, 'Dairy'],
+  [/\b(chicken|beef|pork|turkey|sausage|bacon|steak)\b/i, 'Meat'],
+  [/\bground (beef|turkey|pork|lamb|chicken)\b/i, 'Meat'],
+  [/\b(shrimp|salmon|tuna|fish|crab|tilapia)/i, 'Seafood'],
+  [/\b(bread|bagel|muffin|croissant|tortilla|bun|roll)/i, 'Bakery'],
+  [/\b(rice|pasta|noodle|cereal|oat|flour|quinoa)/i, 'Grains'],
+  [/\b(can|canned|soup|beans?)\b/i, 'Canned'],
+  [/\b(sauce|ketchup|mustard|mayo|dressing|oil|vinegar|syrup)/i, 'Condiment'],
+  [/\b(spice|pepper|salt|season|cinnamon|paprika)/i, 'Spice'],
+  [/\b(chip|cookie|cracker|candy|chocolate|snack)/i, 'Snack'],
+  [/\b(soda|juice|water|coffee|tea|drink)/i, 'Beverage'],
+  [/\b(apple|banana|lettuce|tomato|onion|potato|carrot|spinach|berry|fruit|veg)/i, 'Produce'],
+]
+
+function guessTypeFromName(name) {
+  const hit = NAME_TYPE_HINTS.find(([re]) => re.test(name))
+  return hit ? hit[1] : 'Other'
+}
+
+// Receipts OCR into noisy text: store header/footer, prices, barcodes,
+// totals. This keeps only plausible item lines and guesses a quantity +
+// category for each — deliberately rough, since the confirmation popup on
+// the frontend is where the user actually corrects it before anything saves.
+const RECEIPT_NOISE_RE =
+  /^(subtotal|total|tax|change|cash|credit|debit|card|balance|tender|visa|mastercard|amex|discover|approved|auth|ref|thank you|store|receipt|cashier|register|member|savings|order|transaction|www\.|http)/i
+// A bare trailing price ("...  1.29" or "...  @ 9.99"), with no quantity digit
+// to say how many — just a leftover unit-price marker to strip alongside it.
+const RECEIPT_PRICE_RE = /\s*[@x×]?\s*\$?\d+\.\d{2}\s*$/i
+// A leading "2 x " quantity, occasionally seen before the item name.
+const RECEIPT_QTY_PREFIX_RE = /^(\d+)\s*[x×]\s*/i
+// The far more common shape: a trailing "2 x 1.29" or "2 @ 1.29" (quantity,
+// separator, unit price) — must be checked before the bare-price stripper,
+// or the "2 x" is left dangling on the name.
+const RECEIPT_QTY_PRICE_SUFFIX_RE = /\s*(\d+)\s*[x×@]\s*\$?\d+\.\d{2}\s*$/i
+
+function parseReceiptText(text) {
+  const lines = String(text || '')
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+
+  const items = []
+  for (const rawLine of lines) {
+    if (RECEIPT_NOISE_RE.test(rawLine)) continue
+    if (/^\d+$/.test(rawLine)) continue // a bare barcode/SKU line
+    if (/^[\d\s\-.:/]+$/.test(rawLine)) continue // dates, phone numbers, totals-only lines
+
+    let line = rawLine
+    let quantity = null
+
+    const leadingQty = line.match(RECEIPT_QTY_PREFIX_RE)
+    if (leadingQty) {
+      quantity = leadingQty[1]
+      line = line.slice(leadingQty[0].length)
+    }
+
+    const trailingQtyPrice = line.match(RECEIPT_QTY_PRICE_SUFFIX_RE)
+    if (trailingQtyPrice) {
+      quantity = quantity || trailingQtyPrice[1]
+      line = line.slice(0, line.length - trailingQtyPrice[0].length)
+    } else {
+      line = line.replace(RECEIPT_PRICE_RE, '')
+    }
+
+    const name = standardizeText(line.replace(/\s+/g, ' ').trim())
+    if (name.length < 2) continue
+
+    const type = guessTypeFromName(name)
+    items.push({ name, quantity, type, shelfLifeDays: SHELF_LIFE_BY_TYPE[type] })
+  }
+  // A single receipt rarely has more than ~40 line items; cap generously to
+  // keep the confirmation popup manageable and guard against garbage OCR text.
+  return items.slice(0, 60)
+}
+
+app.post('/pantry/receipt/parse', authMiddleware, (req, res) => {
+  const text = String(req.body?.text || '')
+  if (!text.trim()) return res.status(400).json({ error: 'No text to parse' })
+  res.json({ items: parseReceiptText(text) })
+})
+
+// Confirmed receipt items land here in one request rather than one POST
+// /pantry per row.
+app.post('/pantry/bulk', authMiddleware, (req, res) => {
+  const list = Array.isArray(req.body?.items) ? req.body.items : []
+  const inserted = []
+  const skipped = []
+  list.forEach((raw, index) => {
+    try {
+      inserted.push(pantry.insert(normalizePantryItem(raw, req.user.id)))
+    } catch (err) {
+      skipped.push({ index, reason: err.message })
+    }
+  })
+  res.status(inserted.length ? 201 : 400).json({ items: inserted, skipped })
+})
+
 // ------------------------------------------------------------- grocery routes
 
 // The catalog is the admin-curated picklist that powers the grocery list's

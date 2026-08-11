@@ -68,6 +68,8 @@ export const updatePantryItem = (token, id, item) => request(`/pantry/${id}`, { 
 export const deletePantryItem = (token, id) => request(`/pantry/${id}`, { method: 'DELETE', token })
 export const addSamplePantry = (token) => request('/pantry/sample', { method: 'POST', token })
 export const lookupBarcode = (token, code) => request(`/pantry/barcode/${encodeURIComponent(code)}`, { token })
+export const parseReceiptText = (token, text) => request('/pantry/receipt/parse', { method: 'POST', token, body: { text } })
+export const bulkAddPantryItems = (token, items) => request('/pantry/bulk', { method: 'POST', token, body: { items } })
 
 // grocery catalog (admin-managed picklist for the grocery list's add-item dropdown)
 export const getGroceryCatalog = (token) => request('/grocery-catalog', { token })
