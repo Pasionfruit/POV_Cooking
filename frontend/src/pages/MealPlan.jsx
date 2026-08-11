@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import ComponentRandomizer from '../components/ComponentRandomizer'
 import RecipeCombobox from '../components/RecipeCombobox'
 import { useAuth } from '../contexts/AuthContext'
+import { copyText, mealPlanToText } from '../lib/mealPlanText'
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
@@ -38,6 +39,8 @@ export default function MealPlan() {
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [copied, setCopied] = useState(false)
+  const copyTimer = useRef(null)
 
   const weekKey = toKey(weekStart)
   const todayKey = toKey(new Date())
@@ -55,6 +58,14 @@ export default function MealPlan() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
   }, [token, weekKey])
+
+  // Drop the "Copied!" state when the visible week changes, so it can't linger
+  // and describe the wrong week's plan.
+  useEffect(() => {
+    setCopied(false)
+  }, [weekKey])
+
+  useEffect(() => () => clearTimeout(copyTimer.current), [])
 
   function persist(nextDays) {
     setDays(nextDays)
@@ -79,6 +90,25 @@ export default function MealPlan() {
   }
 
   const plannedCount = Object.values(days).reduce((n, ids) => n + (ids?.length || 0), 0)
+
+  async function handleCopy() {
+    const text = mealPlanToText({
+      weekStart: shortDate(weekStart),
+      weekEnd: shortDate(addDays(weekStart, 6)),
+      dayNames: DAY_NAMES,
+      days,
+      recipeById,
+      dateForIndex: (i) => shortDate(addDays(weekStart, i)),
+    })
+    try {
+      await copyText(text)
+      setCopied(true)
+      clearTimeout(copyTimer.current)
+      copyTimer.current = setTimeout(() => setCopied(false), 1800)
+    } catch (err) {
+      setError(`Could not copy the meal plan: ${err.message}`)
+    }
+  }
 
   // One random recipe per day, drawn without replacement so a week's picks are
   // distinct whenever there are at least seven recipes to draw from.
@@ -121,11 +151,21 @@ export default function MealPlan() {
         <p className="muted">Loading week…</p>
       ) : (
         <>
-          <p className="muted small">
-            {plannedCount === 0
-              ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
-              : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
-          </p>
+          <div className="meal-plan-summary">
+            <p className="muted small">
+              {plannedCount === 0
+                ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
+                : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
+            </p>
+            <button
+              type="button"
+              className={`copy-plan-button ${copied ? 'copied' : ''}`}
+              onClick={handleCopy}
+              title="Copy this week's plan as text to paste into a message"
+            >
+              {copied ? 'Copied!' : 'Copy meal plan'}
+            </button>
+          </div>
           <div className="week-grid">
             {DAY_NAMES.map((name, i) => {
               const date = addDays(weekStart, i)
