@@ -1,10 +1,10 @@
 /* Simple, mobile-first styles for POV Cooking */
 :root {
-  --bg: #faf7f2;
-  --surface: #ffffff;
+  --bg: #f6efe3;
+  --surface: #fffbf3;
   --text: #2b2723;
   --muted: #7a7268;
-  --border: #e6dfd5;
+  --border: #e7dcc8;
   --accent: #c8552e;
   --accent-soft: #fbe9e1;
   --danger: #b3261e;
@@ -70,7 +70,7 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
   text-decoration: none;
-  color: var(--text);
+  color: var(--accent);
 }
 
 .nav-links {
@@ -432,6 +432,10 @@ code {
   font-size: 0.85rem;
   font-weight: 600;
   flex: 0 1 150px;
+  /* Flex items default to a content-based min-width, so a native date input's
+     intrinsic width can stop this from shrinking and overflow onto the next
+     row instead of wrapping cleanly. */
+  min-width: 0;
 }
 
 .pantry-form label.grow {
@@ -802,6 +806,11 @@ code {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
 }
 
 .card-media {
@@ -1951,5 +1960,21 @@ code {
 
   .week-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Always stack title above week-nav on mobile. Left inline, the "This week"
+     button's width varies with which week is shown, so the row would
+     sometimes fit next to the title and sometimes wrap below it — a layout
+     jump on every navigation. Stacking unconditionally keeps it put. */
+  .meal-plan-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Two fixed-width fields (date + number) no longer reliably fit per row
+     next to a 150px sibling once shrunk to a phone's width, so stack the
+     pantry form to one field per row instead. */
+  .pantry-form label {
+    flex-basis: 100%;
   }
 }

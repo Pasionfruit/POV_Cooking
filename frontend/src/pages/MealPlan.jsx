@@ -96,7 +96,7 @@ export default function MealPlan() {
 
   return (
     <section>
-      <div className="page-header">
+      <div className="page-header meal-plan-header">
         <h1>Meal Plan</h1>
         <div className="week-nav">
           <button type="button" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week">
