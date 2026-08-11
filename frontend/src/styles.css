@@ -527,6 +527,64 @@ code {
   margin: 0;
 }
 
+/* ------------------------------------------------------------- grocery list */
+.grocery-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.grocery-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.grocery-item:last-child {
+  border-bottom: none;
+}
+
+.grocery-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.grocery-check input[type='checkbox'] {
+  width: auto;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.grocery-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+.grocery-item.checked .grocery-name {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.grocery-quantity {
+  width: 90px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
 .empty-pantry {
   display: flex;
   flex-wrap: wrap;
@@ -1475,7 +1533,8 @@ code {
   text-align: center;
 }
 
-.meal-plan-summary {
+/* Summary line + action row, shared by the meal plan and grocery list */
+.list-summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1484,8 +1543,13 @@ code {
   margin-bottom: 12px;
 }
 
-.meal-plan-summary p {
+.list-summary p {
   margin: 0;
+}
+
+.list-summary .button-group {
+  display: flex;
+  gap: 8px;
 }
 
 .copy-plan-button {

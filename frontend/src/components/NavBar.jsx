@@ -9,6 +9,7 @@ const ICON_LINKS = [
   { to: '/saved', icon: 'saved', label: 'Saved' },
   { to: '/meal-plan', icon: 'meal-plan', label: 'Meal Plan' },
   { to: '/pantry', icon: 'pantry', label: 'Pantry' },
+  { to: '/grocery-list', icon: 'grocery-list', label: 'Grocery List' },
   { to: '/suggest', icon: 'suggest', label: 'Suggest' },
 ]
 

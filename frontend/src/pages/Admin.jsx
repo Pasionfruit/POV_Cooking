@@ -5,6 +5,9 @@ import RecipeForm from '../components/RecipeForm'
 import SuggestionsPanel from '../components/SuggestionsPanel'
 import UrlImport from '../components/UrlImport'
 import { useAuth } from '../contexts/AuthContext'
+import { ITEM_TYPES } from '../lib/itemTypes'
+
+const EMPTY_CATALOG_FORM = { name: '', category: 'Produce' }
 
 export default function Admin() {
   const { token } = useAuth()
@@ -17,14 +20,25 @@ export default function Admin() {
   const [importText, setImportText] = useState('')
   const [importResult, setImportResult] = useState(null)
   const fileInputRef = useRef(null)
+  const [catalog, setCatalog] = useState([])
+  const [catalogEditing, setCatalogEditing] = useState(null) // catalog item object | null
+  const [catalogFields, setCatalogFields] = useState(EMPTY_CATALOG_FORM)
+  const [catalogBusy, setCatalogBusy] = useState(false)
+  const [catalogError, setCatalogError] = useState(null)
 
   function refresh() {
     return api.getRecipes().then(({ recipes }) => setRecipes(recipes))
   }
 
+  function refreshCatalog() {
+    return api.getGroceryCatalog(token).then(({ items }) => setCatalog(items))
+  }
+
   useEffect(() => {
     refresh()
+    refreshCatalog()
     api.getFeatured().then(({ recipe }) => setFeaturedState(recipe))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function updateFeatured(recipeId) {
@@ -69,6 +83,48 @@ export default function Admin() {
     await api.deleteRecipe(token, recipe.id)
     setNotice(`Deleted “${recipe.title}”`)
     refresh()
+  }
+
+  function startCatalogEdit(item) {
+    setCatalogEditing(item)
+    setCatalogFields({ name: item.name, category: item.category })
+    setCatalogError(null)
+  }
+
+  function cancelCatalogEdit() {
+    setCatalogEditing(null)
+    setCatalogFields(EMPTY_CATALOG_FORM)
+    setCatalogError(null)
+  }
+
+  async function handleCatalogSubmit(e) {
+    e.preventDefault()
+    setCatalogError(null)
+    if (!catalogFields.name.trim()) {
+      setCatalogError('Give the item a name')
+      return
+    }
+    setCatalogBusy(true)
+    try {
+      if (catalogEditing) {
+        await api.updateGroceryCatalogItem(token, catalogEditing.id, catalogFields)
+      } else {
+        await api.createGroceryCatalogItem(token, catalogFields)
+      }
+      cancelCatalogEdit()
+      await refreshCatalog()
+    } catch (err) {
+      setCatalogError(err.message)
+    } finally {
+      setCatalogBusy(false)
+    }
+  }
+
+  async function handleCatalogDelete(item) {
+    if (!window.confirm(`Remove “${item.name}” from the grocery catalog?`)) return
+    await api.deleteGroceryCatalogItem(token, item.id)
+    if (catalogEditing?.id === item.id) cancelCatalogEdit()
+    refreshCatalog()
   }
 
   function handleFilePick(e) {
@@ -172,6 +228,64 @@ export default function Admin() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div className="panel">
+            <h2>Grocery catalog ({catalog.length})</h2>
+            <p className="muted small">
+              The items available in the grocery list&rsquo;s add-item dropdown. Anyone can still type a one-off item
+              on their own list — this is just the shared picklist.
+            </p>
+            <form className="pantry-form" onSubmit={handleCatalogSubmit}>
+              <label className="grow">
+                Item name
+                <input
+                  value={catalogFields.name}
+                  onChange={(e) => setCatalogFields((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="Eggs"
+                />
+              </label>
+              <label>
+                Category
+                <select
+                  value={catalogFields.category}
+                  onChange={(e) => setCatalogFields((f) => ({ ...f, category: e.target.value }))}
+                >
+                  {ITEM_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {catalogError && <p className="error">{catalogError}</p>}
+              <div className="form-actions">
+                {catalogEditing && (
+                  <button type="button" onClick={cancelCatalogEdit}>
+                    Cancel
+                  </button>
+                )}
+                <button type="submit" className="primary" disabled={catalogBusy}>
+                  {catalogEditing ? 'Save changes' : 'Add item'}
+                </button>
+              </div>
+            </form>
+            <ul className="admin-list">
+              {catalog.map((item) => (
+                <li key={item.id}>
+                  <span>
+                    {item.name} <span className="muted small">({item.category})</span>
+                  </span>
+                  <span className="admin-actions">
+                    <button onClick={() => startCatalogEdit(item)}>Edit</button>
+                    <button className="danger" onClick={() => handleCatalogDelete(item)}>
+                      Delete
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {catalog.length === 0 && <p className="muted small">No catalog items yet — add some above.</p>}
           </div>
 
           <div className="panel">

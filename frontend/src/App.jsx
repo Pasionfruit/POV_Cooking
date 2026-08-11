@@ -7,6 +7,7 @@ import RecipeDetail from './pages/RecipeDetail'
 import Saved from './pages/Saved'
 import MealPlan from './pages/MealPlan'
 import Pantry from './pages/Pantry'
+import GroceryList from './pages/GroceryList'
 import Suggest from './pages/Suggest'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
@@ -42,6 +43,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Pantry />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/grocery-list"
+            element={
+              <ProtectedRoute>
+                <GroceryList />
               </ProtectedRoute>
             }
           />

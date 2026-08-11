@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const store = require('./store')
-const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions } = store
+const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions, groceryCatalog, grocery } = store
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 const { fetchRecipeFromUrl } = require('./importUrl')
 
@@ -192,6 +192,7 @@ app.delete('/auth/me', authMiddleware, (req, res) => {
   pantry.remove((p) => p.userId === userId)
   mealplans.remove((p) => p.userId === userId)
   suggestions.remove((s) => s.userId === userId)
+  grocery.remove((g) => g.userId === userId)
   users.remove((u) => u.id === userId)
   res.json({ ok: true })
 })
@@ -677,6 +678,103 @@ app.get('/pantry/barcode/:code', authMiddleware, async (req, res) => {
     console.error('Barcode lookup failed:', err.message)
     res.status(502).json({ error: 'Could not reach the product database' })
   }
+})
+
+// ------------------------------------------------------------- grocery routes
+
+// The catalog is the admin-curated picklist that powers the grocery list's
+// add-item dropdown (frontend/src/components/ItemCombobox.jsx). Shared across
+// all users, same relationship as recipes are to meal plans.
+function normalizeGroceryCatalogItem(input, existing) {
+  const name = String(input?.name || '').trim()
+  if (!name) throw new Error('Item needs a name')
+  const category = PANTRY_TYPES.find((t) => t.toLowerCase() === String(input.category || '').trim().toLowerCase()) || 'Other'
+  return {
+    ...(existing || {}),
+    id: existing ? existing.id : crypto.randomUUID(),
+    name: standardizeText(name),
+    category,
+    createdAt: existing ? existing.createdAt : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+app.get('/grocery-catalog', authMiddleware, (req, res) => {
+  res.json({ items: groceryCatalog.all() })
+})
+
+app.post('/grocery-catalog', authMiddleware, adminMiddleware, (req, res) => {
+  try {
+    res.status(201).json({ item: groceryCatalog.insert(normalizeGroceryCatalogItem(req.body)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.put('/grocery-catalog/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const existing = groceryCatalog.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Item not found' })
+  try {
+    res.json({ item: groceryCatalog.update(existing.id, normalizeGroceryCatalogItem(req.body, existing)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.delete('/grocery-catalog/:id', authMiddleware, adminMiddleware, (req, res) => {
+  const removed = groceryCatalog.remove((item) => item.id === req.params.id)
+  if (!removed) return res.status(404).json({ error: 'Item not found' })
+  res.json({ ok: true })
+})
+
+// A user's personal shopping list. `name` and `category` are denormalized from
+// the catalog entry at add/edit time (same reasoning as meal-plan entries
+// keeping a recipe's title) so the list still reads fine if the catalog entry
+// is later edited or removed.
+function normalizeGroceryItem(input, userId, existing) {
+  const name = String(input?.name || '').trim()
+  if (!name) throw new Error('Item needs a name')
+  const catalogEntry = input.catalogItemId ? groceryCatalog.findById(input.catalogItemId) : null
+  return {
+    ...(existing || {}),
+    id: existing ? existing.id : crypto.randomUUID(),
+    userId: existing ? existing.userId : userId,
+    name: standardizeText(name),
+    catalogItemId: catalogEntry ? catalogEntry.id : null,
+    category: catalogEntry ? catalogEntry.category : null,
+    quantity: input.quantity ? standardizeText(String(input.quantity)) : null,
+    checked: Boolean(input.checked),
+    createdAt: existing ? existing.createdAt : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
+
+app.get('/grocery-list', authMiddleware, (req, res) => {
+  res.json({ items: grocery.filter((item) => item.userId === req.user.id) })
+})
+
+app.post('/grocery-list', authMiddleware, (req, res) => {
+  try {
+    res.status(201).json({ item: grocery.insert(normalizeGroceryItem(req.body, req.user.id)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.put('/grocery-list/:id', authMiddleware, (req, res) => {
+  const existing = grocery.findById(req.params.id)
+  if (!existing || existing.userId !== req.user.id) return res.status(404).json({ error: 'Item not found' })
+  try {
+    res.json({ item: grocery.update(existing.id, normalizeGroceryItem(req.body, req.user.id, existing)) })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+})
+
+app.delete('/grocery-list/:id', authMiddleware, (req, res) => {
+  const removed = grocery.remove((item) => item.id === req.params.id && item.userId === req.user.id)
+  if (!removed) return res.status(404).json({ error: 'Item not found' })
+  res.json({ ok: true })
 })
 
 // -------------------------------------------------------------- featured recipe

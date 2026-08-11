@@ -69,6 +69,19 @@ export const deletePantryItem = (token, id) => request(`/pantry/${id}`, { method
 export const addSamplePantry = (token) => request('/pantry/sample', { method: 'POST', token })
 export const lookupBarcode = (token, code) => request(`/pantry/barcode/${encodeURIComponent(code)}`, { token })
 
+// grocery catalog (admin-managed picklist for the grocery list's add-item dropdown)
+export const getGroceryCatalog = (token) => request('/grocery-catalog', { token })
+export const createGroceryCatalogItem = (token, item) => request('/grocery-catalog', { method: 'POST', token, body: item })
+export const updateGroceryCatalogItem = (token, id, item) =>
+  request(`/grocery-catalog/${id}`, { method: 'PUT', token, body: item })
+export const deleteGroceryCatalogItem = (token, id) => request(`/grocery-catalog/${id}`, { method: 'DELETE', token })
+
+// grocery list (per user)
+export const getGroceryList = (token) => request('/grocery-list', { token })
+export const addGroceryItem = (token, item) => request('/grocery-list', { method: 'POST', token, body: item })
+export const updateGroceryItem = (token, id, item) => request(`/grocery-list/${id}`, { method: 'PUT', token, body: item })
+export const deleteGroceryItem = (token, id) => request(`/grocery-list/${id}`, { method: 'DELETE', token })
+
 // featured ("latest attempt") recipe
 export const getFeatured = () => request('/featured')
 export const setFeatured = (token, recipeId) => request('/featured', { method: 'PUT', token, body: { recipeId } })

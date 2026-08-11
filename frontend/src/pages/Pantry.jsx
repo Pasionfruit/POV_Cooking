@@ -4,24 +4,12 @@ import * as api from '../api'
 import BarcodeIcon from '../components/BarcodeIcon'
 import BarcodeScanner from '../components/BarcodeScanner'
 import { useAuth } from '../contexts/AuthContext'
+import { ITEM_TYPES } from '../lib/itemTypes'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
 import { usePageSize } from '../lib/usePageSize'
 
 const LOCATIONS = ['Fridge', 'Freezer', 'Pantry']
-const TYPES = [
-  'Produce',
-  'Dairy',
-  'Meat',
-  'Seafood',
-  'Grains',
-  'Bakery',
-  'Canned',
-  'Condiment',
-  'Spice',
-  'Snack',
-  'Beverage',
-  'Other',
-]
+const TYPES = ITEM_TYPES
 
 // Duration-left buckets, matched against daysUntilExpiry.
 const DURATIONS = [

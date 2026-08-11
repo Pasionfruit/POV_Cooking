@@ -2,9 +2,16 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 const MAX_MATCHES = 8
 
-// Type-to-filter picker for a meal slot. Picking a suggestion adds the recipe
-// id; anything else you type is kept as a free-text plan ({ text }).
-export default function RecipeCombobox({ recipes, onAdd, label }) {
+// Type-to-filter picker: used for meal-plan day slots (items = recipes) and
+// the grocery list (items = the catalog). Picking a suggestion adds its id;
+// anything else you type is kept as a free-text entry ({ text }).
+export default function ItemCombobox({
+  items,
+  getLabel = (item) => item.title,
+  onAdd,
+  label,
+  placeholder = '+ Add recipe or type your own',
+}) {
   const [text, setText] = useState('')
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
@@ -12,11 +19,11 @@ export default function RecipeCombobox({ recipes, onAdd, label }) {
 
   const query = text.trim().toLowerCase()
   const matches = useMemo(
-    () => (query ? recipes.filter((r) => r.title.toLowerCase().includes(query)) : recipes).slice(0, MAX_MATCHES),
-    [recipes, query]
+    () => (query ? items.filter((item) => getLabel(item).toLowerCase().includes(query)) : items).slice(0, MAX_MATCHES),
+    [items, getLabel, query]
   )
 
-  const canAddCustom = query.length > 0 && !matches.some((r) => r.title.toLowerCase() === query)
+  const canAddCustom = query.length > 0 && !matches.some((item) => getLabel(item).toLowerCase() === query)
   const optionCount = matches.length + (canAddCustom ? 1 : 0)
 
   useEffect(() => setActive(0), [text])
@@ -67,7 +74,7 @@ export default function RecipeCombobox({ recipes, onAdd, label }) {
         aria-expanded={open}
         aria-autocomplete="list"
         aria-label={label}
-        placeholder="+ Add recipe or type your own"
+        placeholder={placeholder}
         value={text}
         onChange={(e) => {
           setText(e.target.value)
@@ -78,16 +85,16 @@ export default function RecipeCombobox({ recipes, onAdd, label }) {
       />
       {open && optionCount > 0 && (
         <ul className="combobox-menu" role="listbox" aria-label={label}>
-          {matches.map((r, i) => (
+          {matches.map((item, i) => (
             <li
-              key={r.id}
+              key={item.id}
               role="option"
               aria-selected={active === i}
               className={`combobox-option ${active === i ? 'active' : ''}`}
               onMouseEnter={() => setActive(i)}
               onClick={() => commit(i)}
             >
-              {r.title}
+              {getLabel(item)}
             </li>
           ))}
           {canAddCustom && (

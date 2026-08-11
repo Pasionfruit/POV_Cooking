@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import ComponentRandomizer from '../components/ComponentRandomizer'
-import RecipeCombobox from '../components/RecipeCombobox'
+import ItemCombobox from '../components/ItemCombobox'
 import { useAuth } from '../contexts/AuthContext'
 import { copyText, mealPlanToText } from '../lib/mealPlanText'
 
@@ -151,7 +151,7 @@ export default function MealPlan() {
         <p className="muted">Loading week…</p>
       ) : (
         <>
-          <div className="meal-plan-summary">
+          <div className="list-summary">
             <p className="muted small">
               {plannedCount === 0
                 ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
@@ -198,8 +198,8 @@ export default function MealPlan() {
                       </li>
                     ))}
                   </ul>
-                  <RecipeCombobox
-                    recipes={recipes}
+                  <ItemCombobox
+                    items={recipes}
                     onAdd={(entry) => addToDay(i, entry)}
                     label={`Add a meal to ${name}`}
                   />

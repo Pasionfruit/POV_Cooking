@@ -117,6 +117,8 @@ const collections = {
   suggestions: collection('suggestions'),
   mealplans: collection('mealplans'),
   settings: collection('settings'),
+  groceryCatalog: collection('groceryCatalog'),
+  grocery: collection('grocery'),
 }
 
 // Call once at boot, before serving. Without MONGODB_URI this is a no-op and
