@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
-import ComponentRandomizer from '../components/ComponentRandomizer'
 import ItemCombobox from '../components/ItemCombobox'
 import { useAuth } from '../contexts/AuthContext'
 import { copyText, mealPlanToText } from '../lib/mealPlanText'
@@ -143,6 +142,15 @@ export default function MealPlan() {
               This week
             </button>
           )}
+          <button
+            type="button"
+            className={`copy-plan-button ${copied ? 'copied' : ''}`}
+            onClick={handleCopy}
+            disabled={loading}
+            title="Copy this week's plan as text to paste into a message"
+          >
+            {copied ? 'Copied!' : 'Copy meal plan'}
+          </button>
         </div>
       </div>
 
@@ -157,14 +165,6 @@ export default function MealPlan() {
                 ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
                 : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
             </p>
-            <button
-              type="button"
-              className={`copy-plan-button ${copied ? 'copied' : ''}`}
-              onClick={handleCopy}
-              title="Copy this week's plan as text to paste into a message"
-            >
-              {copied ? 'Copied!' : 'Copy meal plan'}
-            </button>
           </div>
           <div className="week-grid">
             {DAY_NAMES.map((name, i) => {
@@ -218,11 +218,6 @@ export default function MealPlan() {
             </button>
           </div>
 
-          <div className="panel">
-            <h2>Build a meal</h2>
-            <p className="muted small">Roll a combination of components when you want to improvise.</p>
-            <ComponentRandomizer />
-          </div>
         </>
       )}
     </section>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
+import CollapsibleSection from '../components/CollapsibleSection'
+import ComponentRandomizer from '../components/ComponentRandomizer'
 import RecipeCard from '../components/RecipeCard'
 import RecipeSpinner from '../components/RecipeSpinner'
 import TagFilter from '../components/TagFilter'
@@ -54,6 +56,7 @@ export default function Home() {
   const [tags, setTags] = useState([])
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
+  const [buildOpen, setBuildOpen] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
@@ -210,6 +213,17 @@ export default function Home() {
         </div>
       )}
       <RecipeSpinner recipes={recipes} filteredRecipes={matching} filtersActive={filtersActive} />
+      <div className="panel">
+        <CollapsibleSection
+          title="Build a meal"
+          open={buildOpen}
+          onToggle={() => setBuildOpen((o) => !o)}
+          id="build-a-meal-body"
+        >
+          <p className="muted small">Roll a combination of components when you want to improvise.</p>
+          <ComponentRandomizer />
+        </CollapsibleSection>
+      </div>
     </section>
   )
 }

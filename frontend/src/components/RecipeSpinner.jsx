@@ -8,7 +8,7 @@ import { totalTimeText } from '../lib/recipeUtils'
 // eligible, the result popup, and the exclusion set that keeps "Spin again"
 // from handing back the recipe you just rejected.
 export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive }) {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const [useFilters, setUseFilters] = useState(true)
   const [excludedIds, setExcludedIds] = useState(() => new Set())
   const [result, setResult] = useState(null)
