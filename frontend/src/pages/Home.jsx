@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import * as api from '../api'
 import CollapsibleSection from '../components/CollapsibleSection'
 import ComponentRandomizer from '../components/ComponentRandomizer'
+import HeartIcon from '../components/HeartIcon'
+import PotIcon from '../components/PotIcon'
 import RecipeCard from '../components/RecipeCard'
 import RecipeSpinner from '../components/RecipeSpinner'
 import TagFilter from '../components/TagFilter'
@@ -153,6 +155,7 @@ export default function Home() {
               onClick={() => setSavedOnly(!savedOnly)}
               title="Show only recipes you saved"
             >
+              <HeartIcon filled />
               Saved only
             </button>
             <button
@@ -161,6 +164,7 @@ export default function Home() {
               onClick={() => setNeverCooked(!neverCooked)}
               title="Show only recipes you have never cooked"
             >
+              <PotIcon />
               Never cooked
             </button>
           </>

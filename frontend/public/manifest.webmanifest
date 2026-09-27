@@ -16,6 +16,6 @@
   "shortcuts": [
     { "name": "Meal Plan", "url": "/meal-plan" },
     { "name": "Pantry", "url": "/pantry" },
-    { "name": "Saved", "url": "/saved" }
+    { "name": "Group", "url": "/group" }
   ]
 }

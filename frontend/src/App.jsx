@@ -4,10 +4,8 @@ import NavBar from './components/NavBar'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import RecipeDetail from './pages/RecipeDetail'
-import Saved from './pages/Saved'
 import MealPlan from './pages/MealPlan'
 import Pantry from './pages/Pantry'
-import GroceryList from './pages/GroceryList'
 import Suggest from './pages/Suggest'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
@@ -25,14 +23,6 @@ export default function App() {
           <Route path="/recipes/:id" element={<RecipeDetail />} />
           <Route path="/login" element={<Login />} />
           <Route
-            path="/saved"
-            element={
-              <ProtectedRoute>
-                <Saved />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/meal-plan"
             element={
               <ProtectedRoute>
@@ -45,14 +35,6 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Pantry />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/grocery-list"
-            element={
-              <ProtectedRoute>
-                <GroceryList />
               </ProtectedRoute>
             }
           />

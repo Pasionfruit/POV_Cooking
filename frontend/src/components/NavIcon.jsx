@@ -3,7 +3,13 @@ import React from 'react'
 // Minimal line icons for the navbar links, drawn on the same 24x24 grid and
 // stroke weight as ThemeIcon so the whole bar reads as one set.
 const PATHS = {
-  saved: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 1 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z" />,
+  home: (
+    <>
+      <path d="M4 11.5 12 4l8 7.5" />
+      <path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9" />
+      <path d="M10 20v-6h4v6" />
+    </>
+  ),
   'meal-plan': (
     <>
       <rect x="3" y="5" width="18" height="16" rx="2" />

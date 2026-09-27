@@ -6,10 +6,8 @@ import NavIcon from './NavIcon'
 import { toggleTheme } from '../lib/theme'
 
 const ICON_LINKS = [
-  { to: '/saved', icon: 'saved', label: 'Saved' },
   { to: '/meal-plan', icon: 'meal-plan', label: 'Meal Plan' },
   { to: '/pantry', icon: 'pantry', label: 'Pantry' },
-  { to: '/grocery-list', icon: 'grocery-list', label: 'Grocery List' },
   { to: '/suggest', icon: 'suggest', label: 'Suggest' },
   { to: '/group', icon: 'group', label: 'Group' },
 ]
@@ -24,6 +22,9 @@ export default function NavBar() {
         POV Cooking
       </Link>
       <nav className="nav-links">
+        <NavLink to="/" end className="nav-icon" title="Home" aria-label="Home">
+          <NavIcon name="home" />
+        </NavLink>
         {user &&
           ICON_LINKS.map(({ to, icon, label }) => (
             <NavLink key={to} to={to} className="nav-icon" title={label} aria-label={label}>

@@ -32,6 +32,10 @@ function arcDash(angle, radius) {
   return `${(circumference * angle) / 360} ${circumference}`
 }
 
+function clamp(n, min, max) {
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min
+}
+
 // Kitchen timer set with a drag dial: outer ring = minutes (0-59), inner ring =
 // seconds (5s steps). Uses an end-timestamp so it stays accurate when the tab
 // is backgrounded.
@@ -204,7 +208,36 @@ export default function Timer({ presets = [] }) {
             {running ? 'running' : paused ? 'paused' : 'min : sec'}
           </text>
         </svg>
-        <p className="muted small dial-legend">Drag the outer ring for minutes, inner ring for seconds.</p>
+        <p className="muted small dial-legend">Drag the ring, or type the time directly.</p>
+        <div className="timer-manual">
+          <label>
+            <span className="muted small">Min</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              max="59"
+              value={minutes}
+              disabled={running}
+              onChange={(e) => applyDial(clamp(e.target.valueAsNumber, 0, 59), seconds)}
+            />
+          </label>
+          <span className="timer-manual-colon" aria-hidden>
+            :
+          </span>
+          <label>
+            <span className="muted small">Sec</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              max="59"
+              value={seconds}
+              disabled={running}
+              onChange={(e) => applyDial(minutes, clamp(e.target.valueAsNumber, 0, 59))}
+            />
+          </label>
+        </div>
         <div className="timer-buttons">
           {running ? (
             <button type="button" onClick={() => setRunning(false)}>

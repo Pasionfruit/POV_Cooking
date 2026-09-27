@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as api from '../api'
-import ItemCombobox from '../components/ItemCombobox'
 import { useAuth } from '../contexts/AuthContext'
+import ItemCombobox from './ItemCombobox'
 
 // A single row's quantity is edited inline and only saved on blur/Enter, so
 // typing doesn't fire a request per keystroke. Local state re-syncs whenever
@@ -46,7 +46,9 @@ function GroceryRow({ item, onToggle, onSaveQuantity, onDelete }) {
   )
 }
 
-export default function GroceryList() {
+// Embedded in the Meal Plan tab, right below the week's plan — shopping for
+// the week you just built is the natural next step.
+export default function GroceryListSection() {
   const { token } = useAuth()
   const [items, setItems] = useState([])
   const [catalog, setCatalog] = useState([])
@@ -129,31 +131,19 @@ export default function GroceryList() {
   const sorted = [...items].sort((a, b) => Number(a.checked) - Number(b.checked))
 
   return (
-    <section>
-      <div className="page-header">
-        <h1>Grocery List</h1>
-        <span className="muted small">
-          {items.length} item{items.length === 1 ? '' : 's'}
-        </span>
-      </div>
-
+    <>
       {error && <p className="error">{error}</p>}
-
-      <div className="panel">
-        <h2>Add an item</h2>
-        <ItemCombobox
-          items={catalog}
-          getLabel={(c) => c.name}
-          onAdd={handleAdd}
-          label="Add a grocery item"
-          placeholder="+ Add item or type your own"
-        />
-      </div>
-
+      <ItemCombobox
+        items={catalog}
+        getLabel={(c) => c.name}
+        onAdd={handleAdd}
+        label="Add a grocery item"
+        placeholder="+ Add item or type your own"
+      />
       {loading ? (
-        <p className="muted">Loading your list…</p>
+        <p className="muted small">Loading your list…</p>
       ) : items.length === 0 ? (
-        <p className="muted">Nothing on your list yet — add items above.</p>
+        <p className="muted small">Nothing on your list yet — add items above.</p>
       ) : (
         <>
           <div className="list-summary">
@@ -166,21 +156,19 @@ export default function GroceryList() {
               </button>
             )}
           </div>
-          <div className="panel">
-            <ul className="grocery-list">
-              {sorted.map((item) => (
-                <GroceryRow
-                  key={item.id}
-                  item={item}
-                  onToggle={handleToggle}
-                  onSaveQuantity={handleSaveQuantity}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </ul>
-          </div>
+          <ul className="grocery-list">
+            {sorted.map((item) => (
+              <GroceryRow
+                key={item.id}
+                item={item}
+                onToggle={handleToggle}
+                onSaveQuantity={handleSaveQuantity}
+                onDelete={handleDelete}
+              />
+            ))}
+          </ul>
         </>
       )}
-    </section>
+    </>
   )
 }

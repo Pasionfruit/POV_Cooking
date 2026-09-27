@@ -6,7 +6,11 @@ import ChevronIcon from './ChevronIcon'
 // (e.g. Pantry re-opens "Add an item" when you click Edit on a card even if
 // you'd collapsed it). Doesn't render the outer .panel — callers keep that,
 // same as every other panel in the app.
-export default function CollapsibleSection({ title, open, onToggle, id, children }) {
+export default function CollapsibleSection({ title, label, open, onToggle, id, children }) {
+  // `title` can be a JSX node (e.g. title + icon); `label` gives the toggle
+  // button a plain-text name for screen readers when it is. Defaults to
+  // `title` itself, which works fine when title is already a plain string.
+  const name = label || title
   return (
     <>
       <div className="collapsible-head">
@@ -17,7 +21,7 @@ export default function CollapsibleSection({ title, open, onToggle, id, children
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={id}
-          aria-label={open ? `Collapse ${title}` : `Expand ${title}`}
+          aria-label={open ? `Collapse ${name}` : `Expand ${name}`}
         >
           <ChevronIcon open={open} />
         </button>

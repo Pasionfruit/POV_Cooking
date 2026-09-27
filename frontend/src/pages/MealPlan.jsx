@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
+import CollapsibleSection from '../components/CollapsibleSection'
+import CopyIcon from '../components/CopyIcon'
+import GroceryListSection from '../components/GroceryListSection'
 import ItemCombobox from '../components/ItemCombobox'
+import NavIcon from '../components/NavIcon'
 import { useAuth } from '../contexts/AuthContext'
 import { copyText, mealPlanToText } from '../lib/mealPlanText'
 
@@ -40,6 +44,7 @@ export default function MealPlan() {
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
   const copyTimer = useRef(null)
+  const [groceryOpen, setGroceryOpen] = useState(false)
 
   const weekKey = toKey(weekStart)
   const todayKey = toKey(new Date())
@@ -149,6 +154,7 @@ export default function MealPlan() {
             disabled={loading}
             title="Copy this week's plan as text to paste into a message"
           >
+            <CopyIcon />
             {copied ? 'Copied!' : 'Copy meal plan'}
           </button>
         </div>
@@ -218,6 +224,22 @@ export default function MealPlan() {
             </button>
           </div>
 
+          <div className="panel">
+            <CollapsibleSection
+              title={
+                <span className="section-title-icon">
+                  <NavIcon name="grocery-list" size={18} />
+                  Grocery List
+                </span>
+              }
+              label="Grocery List"
+              open={groceryOpen}
+              onToggle={() => setGroceryOpen((o) => !o)}
+              id="grocery-list-body"
+            >
+              <GroceryListSection />
+            </CollapsibleSection>
+          </div>
         </>
       )}
     </section>
