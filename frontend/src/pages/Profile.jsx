@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import * as api from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { useSaved } from '../lib/useSaved'
+import { useGroup } from '../lib/useGroup'
 import { FONTS, getFont, setFont } from '../lib/font'
 import { toggleTheme } from '../lib/theme'
 import { downloadMarkdown, savedRecipesToMarkdown } from '../lib/exportMarkdown'
@@ -11,6 +12,7 @@ export default function Profile() {
   const { user, token, logout } = useAuth()
   const navigate = useNavigate()
   const { savedRecipes } = useSaved()
+  const { group } = useGroup()
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light')
   const [font, setFontState] = useState(getFont)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -113,6 +115,23 @@ export default function Profile() {
       </div>
 
       <div className="panel">
+        <h2>Household</h2>
+        <div className="pref-row">
+          <div>
+            <div className="pref-label">{group ? group.name : 'Not in a group'}</div>
+            <div className="muted small">
+              {group
+                ? `Shared with ${group.members.length} member${group.members.length === 1 ? '' : 's'}.`
+                : 'Share your pantry, meal plan, and grocery list with the people you cook with.'}
+            </div>
+          </div>
+          <button type="button" onClick={() => navigate('/group')}>
+            Manage
+          </button>
+        </div>
+      </div>
+
+      <div className="panel">
         <h2>Account</h2>
         {error && <p className="error">{error}</p>}
         <div className="pref-row">
@@ -129,8 +148,9 @@ export default function Profile() {
           <div>
             <div className="pref-label">Delete profile</div>
             <div className="muted small">
-              Permanently removes your account, saved recipes, pantry, meal plans, and suggestions. Recipes in the
-              shared cookbook stay. This cannot be undone.
+              Permanently removes your account, saved recipes, and suggestions, plus your personal pantry, meal
+              plans, and grocery list. Recipes in the shared cookbook stay, and if you're in a group its shared data
+              stays with the group. This cannot be undone.
             </div>
           </div>
           {confirmDelete ? (

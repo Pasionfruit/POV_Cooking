@@ -6,7 +6,20 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const store = require('./store')
-const { recipes, users, saved, tried, pantry, mealplans, settings, suggestions, groceryCatalog, grocery } = store
+const {
+  recipes,
+  users,
+  saved,
+  tried,
+  pantry,
+  mealplans,
+  settings,
+  suggestions,
+  groceryCatalog,
+  grocery,
+  groups,
+  groupInvites,
+} = store
 const { encryptField, decryptField, blindIndex } = require('./crypto')
 const { fetchRecipeFromUrl } = require('./importUrl')
 
@@ -17,7 +30,9 @@ app.use(express.json({ limit: '2mb' }))
 const PORT = process.env.PORT || 5001
 const IS_PROD = process.env.NODE_ENV === 'production'
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
 const ADMIN_CODE = process.env.ADMIN_CODE || 'admin-secret'
+const GROUP_INVITE_TTL_DAYS = Number(process.env.GROUP_INVITE_TTL_DAYS || 7)
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
   .split(',')
@@ -66,7 +81,7 @@ function publicUser(user) {
 }
 
 function signToken(user) {
-  return jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
+  return jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 }
 
 function authMiddleware(req, res, next) {
@@ -87,6 +102,21 @@ function authMiddleware(req, res, next) {
 function adminMiddleware(req, res, next) {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' })
   next()
+}
+
+// A grouped user's pantry/meal-plan/grocery items are shared with the whole
+// group instead of scoped to just them. Solo (groupId null) behaves exactly
+// as before: userId equality, and never matches an item that's shared with
+// some group (that state shouldn't occur for a solo user, but stay strict).
+function scopedTo(user) {
+  return (item) => (user.groupId ? item.groupId === user.groupId : !item.groupId && item.userId === user.id)
+}
+
+// Stamped onto every create/update of a pantry/meal-plan/grocery item so it
+// lands in the right bucket. userId is kept as "who added this" attribution
+// even once an item is group-shared.
+function ownerFields(user, existing) {
+  return { userId: existing ? existing.userId : user.id, groupId: user.groupId || null }
 }
 
 // ADMIN_EMAILS is re-checked on every sign-in, not just at registration.
@@ -116,6 +146,7 @@ function createUser({ email, name, passwordHash, provider, adminCode }) {
     passwordHash: passwordHash || null,
     provider,
     role: isAdmin ? 'admin' : 'user',
+    groupId: null,
     createdAt: new Date().toISOString(),
   })
 }
@@ -180,20 +211,169 @@ app.get('/auth/me', authMiddleware, (req, res) => {
   res.json({ user: publicUser(req.user) })
 })
 
+// Mints a fresh token for the caller. authMiddleware already re-verified the
+// incoming token and re-fetched the live user, so this is just a sliding
+// expiry: no separate refresh token, no rotation, no revocation list. The
+// frontend calls this periodically so an app left open never actually hits
+// the JWT_EXPIRES_IN wall.
+app.post('/auth/refresh', authMiddleware, (req, res) => {
+  res.json({ token: signToken(req.user) })
+})
+
 // Deletes the account and everything owned by it. Recipes are shared library
-// content, so they stay; only the per-user collections are purged.
+// content, so they stay; only the per-user collections are purged. Group-
+// shared items are left alone (other members still use them) — leaveGroup
+// detaches this user from the group first, transferring ownership/dissolving
+// it as needed, exactly as a manual "leave" would.
 app.delete('/auth/me', authMiddleware, (req, res) => {
   const userId = req.user.id
   if (req.user.role === 'admin' && users.filter((u) => u.role === 'admin').length === 1) {
     return res.status(409).json({ error: 'Cannot delete the only admin account' })
   }
+  if (req.user.groupId) leaveGroup(req.user)
   saved.remove((s) => s.userId === userId)
   tried.remove((t) => t.userId === userId)
-  pantry.remove((p) => p.userId === userId)
-  mealplans.remove((p) => p.userId === userId)
+  pantry.remove((p) => p.userId === userId && !p.groupId)
+  mealplans.remove((p) => p.userId === userId && !p.groupId)
   suggestions.remove((s) => s.userId === userId)
-  grocery.remove((g) => g.userId === userId)
+  grocery.remove((g) => g.userId === userId && !g.groupId)
   users.remove((u) => u.id === userId)
+  res.json({ ok: true })
+})
+
+// ----------------------------------------------------------------- group routes
+
+// Households/roommates: a user belongs to at most one group. Being in a
+// group shares pantry, meal plan, and grocery list with every other member
+// (see scopedTo/ownerFields above) — solo users are unaffected.
+const INVITE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789' // no 0/O/1/I/L — easy to read aloud/type
+
+function generateInviteCode(length = 8) {
+  return Array.from(crypto.randomBytes(length), (b) => INVITE_ALPHABET[b % INVITE_ALPHABET.length]).join('')
+}
+
+function publicGroup(group) {
+  const members = users
+    .filter((u) => u.groupId === group.id)
+    .map((u) => ({ ...publicUser(u), isOwner: u.id === group.ownerId }))
+  return { id: group.id, name: group.name, ownerId: group.ownerId, members }
+}
+
+function groupOwnerMiddleware(req, res, next) {
+  if (!req.user.groupId) return res.status(400).json({ error: 'Not in a group' })
+  const group = groups.findById(req.user.groupId)
+  if (!group) return res.status(404).json({ error: 'Group not found' })
+  if (group.ownerId !== req.user.id) return res.status(403).json({ error: 'Only the group owner can do that' })
+  req.group = group
+  next()
+}
+
+// Moves every personal (ungrouped) pantry/grocery item into the group. Meal
+// plans are unique per week, so a personal plan for a week the group already
+// has is left alone rather than overwriting the group's — it reappears if
+// this user later leaves the group, since scopedTo() matches it again once
+// their groupId clears.
+function migratePersonalItemsIntoGroup(user, group) {
+  for (const col of [pantry, grocery]) {
+    col
+      .filter((item) => item.userId === user.id && !item.groupId)
+      .forEach((item) => col.update(item.id, { groupId: group.id }))
+  }
+  const takenWeeks = new Set(mealplans.filter((p) => p.groupId === group.id).map((p) => p.weekStart))
+  mealplans
+    .filter((p) => p.userId === user.id && !p.groupId && !takenWeeks.has(p.weekStart))
+    .forEach((p) => mealplans.update(p.id, { groupId: group.id }))
+}
+
+// Reverts every item shared with a group back to personal, owned by whoever
+// originally added it. Used when a group is deleted, or its last member
+// leaves — nothing is destroyed, it's just un-shared.
+function unshareGroupItems(groupId) {
+  for (const col of [pantry, mealplans, grocery]) {
+    col.filter((item) => item.groupId === groupId).forEach((item) => col.update(item.id, { groupId: null }))
+  }
+}
+
+// Shared by POST /groups/leave and DELETE /auth/me.
+function leaveGroup(user) {
+  const group = groups.findById(user.groupId)
+  users.update(user.id, { groupId: null })
+  if (!group) return
+  if (group.ownerId !== user.id) return // not the owner: nothing else to reassign
+  const remaining = users.filter((u) => u.groupId === group.id)
+  if (remaining.length > 0) {
+    groups.update(group.id, { ownerId: remaining[0].id, updatedAt: new Date().toISOString() })
+    return
+  }
+  // Last member out: dissolve the group so nothing is left orphaned under a
+  // dead group id.
+  unshareGroupItems(group.id)
+  groups.remove((g) => g.id === group.id)
+  groupInvites.remove((inv) => inv.groupId === group.id)
+}
+
+app.post('/groups', authMiddleware, (req, res) => {
+  if (req.user.groupId) return res.status(409).json({ error: 'Already in a group — leave it first' })
+  const name =
+    String(req.body?.name || '').trim().slice(0, 60) ||
+    (req.user.name ? `${decryptField(req.user.name)}'s Kitchen` : 'Our Kitchen')
+  const group = groups.insert({
+    id: crypto.randomUUID(),
+    name,
+    ownerId: req.user.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  })
+  users.update(req.user.id, { groupId: group.id })
+  migratePersonalItemsIntoGroup(req.user, group)
+  res.status(201).json({ group: publicGroup(group) })
+})
+
+app.get('/groups/me', authMiddleware, (req, res) => {
+  const group = req.user.groupId ? groups.findById(req.user.groupId) : null
+  res.json({ group: group ? publicGroup(group) : null })
+})
+
+app.get('/groups/invite', authMiddleware, groupOwnerMiddleware, (req, res) => {
+  const invite = groupInvites.findById(req.group.id)
+  const active = invite && new Date(invite.expiresAt) > new Date() ? invite : null
+  res.json({ invite: active ? { code: active.code, expiresAt: active.expiresAt } : null })
+})
+
+app.post('/groups/invite', authMiddleware, groupOwnerMiddleware, (req, res) => {
+  const now = new Date()
+  const expiresAt = new Date(now.getTime() + GROUP_INVITE_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString()
+  const doc = { id: req.group.id, groupId: req.group.id, code: generateInviteCode(), createdAt: now.toISOString(), expiresAt }
+  const invite = groupInvites.findById(req.group.id) ? groupInvites.update(req.group.id, doc) : groupInvites.insert(doc)
+  res.status(201).json({ invite: { code: invite.code, expiresAt: invite.expiresAt } })
+})
+
+app.post('/groups/join', authMiddleware, (req, res) => {
+  if (req.user.groupId) return res.status(409).json({ error: 'Already in a group — leave it first' })
+  const code = String(req.body?.code || '').trim().toUpperCase()
+  if (!code) return res.status(400).json({ error: 'Invite code required' })
+  const invite = groupInvites.find((inv) => inv.code === code)
+  if (!invite || new Date(invite.expiresAt) <= new Date()) {
+    return res.status(404).json({ error: 'Invalid or expired invite code' })
+  }
+  const group = groups.findById(invite.groupId)
+  if (!group) return res.status(404).json({ error: 'Invalid or expired invite code' })
+  users.update(req.user.id, { groupId: group.id })
+  migratePersonalItemsIntoGroup(req.user, group)
+  res.json({ group: publicGroup(group) })
+})
+
+app.post('/groups/leave', authMiddleware, (req, res) => {
+  if (!req.user.groupId) return res.status(400).json({ error: 'Not in a group' })
+  leaveGroup(req.user)
+  res.json({ ok: true })
+})
+
+app.delete('/groups', authMiddleware, groupOwnerMiddleware, (req, res) => {
+  unshareGroupItems(req.group.id)
+  users.filter((u) => u.groupId === req.group.id).forEach((u) => users.update(u.id, { groupId: null }))
+  groups.remove((g) => g.id === req.group.id)
+  groupInvites.remove((inv) => inv.groupId === req.group.id)
   res.json({ ok: true })
 })
 
@@ -519,7 +699,7 @@ const PANTRY_TYPES = [
 ]
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
-function normalizePantryItem(input, userId, existing) {
+function normalizePantryItem(input, user, existing) {
   const name = String(input?.name || '').trim()
   if (!name) throw new Error('Item needs a name')
   const location =
@@ -530,7 +710,7 @@ function normalizePantryItem(input, userId, existing) {
   return {
     ...(existing || {}),
     id: existing ? existing.id : crypto.randomUUID(),
-    userId: existing ? existing.userId : userId,
+    ...ownerFields(user, existing),
     name: standardizeText(name),
     location,
     type,
@@ -544,12 +724,12 @@ function normalizePantryItem(input, userId, existing) {
 }
 
 app.get('/pantry', authMiddleware, (req, res) => {
-  res.json({ items: pantry.filter((item) => item.userId === req.user.id) })
+  res.json({ items: pantry.filter(scopedTo(req.user)) })
 })
 
 app.post('/pantry', authMiddleware, (req, res) => {
   try {
-    res.status(201).json({ item: pantry.insert(normalizePantryItem(req.body, req.user.id)) })
+    res.status(201).json({ item: pantry.insert(normalizePantryItem(req.body, req.user)) })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
@@ -557,17 +737,18 @@ app.post('/pantry', authMiddleware, (req, res) => {
 
 app.put('/pantry/:id', authMiddleware, (req, res) => {
   const existing = pantry.findById(req.params.id)
-  if (!existing || existing.userId !== req.user.id) return res.status(404).json({ error: 'Item not found' })
+  if (!existing || !scopedTo(req.user)(existing)) return res.status(404).json({ error: 'Item not found' })
   try {
-    res.json({ item: pantry.update(existing.id, normalizePantryItem(req.body, req.user.id, existing)) })
+    res.json({ item: pantry.update(existing.id, normalizePantryItem(req.body, req.user, existing)) })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
 })
 
 app.delete('/pantry/:id', authMiddleware, (req, res) => {
-  const removed = pantry.remove((item) => item.id === req.params.id && item.userId === req.user.id)
-  if (!removed) return res.status(404).json({ error: 'Item not found' })
+  const existing = pantry.findById(req.params.id)
+  if (!existing || !scopedTo(req.user)(existing)) return res.status(404).json({ error: 'Item not found' })
+  pantry.remove((item) => item.id === req.params.id)
   res.json({ ok: true })
 })
 
@@ -597,7 +778,7 @@ const SAMPLE_PANTRY = [
 ]
 
 app.post('/pantry/sample', authMiddleware, (req, res) => {
-  const existing = pantry.filter((item) => item.userId === req.user.id)
+  const existing = pantry.filter(scopedTo(req.user))
   const taken = new Set(existing.map((item) => `${item.name.toLowerCase()}|${item.location}`))
   const added = []
   for (const sample of SAMPLE_PANTRY) {
@@ -605,9 +786,7 @@ app.post('/pantry/sample', authMiddleware, (req, res) => {
     const purchased = new Date()
     purchased.setDate(purchased.getDate() - sample.ago)
     added.push(
-      pantry.insert(
-        normalizePantryItem({ ...sample, purchasedAt: purchased.toISOString().slice(0, 10) }, req.user.id)
-      )
+      pantry.insert(normalizePantryItem({ ...sample, purchasedAt: purchased.toISOString().slice(0, 10) }, req.user))
     )
   }
   res.status(201).json({ items: added, skipped: SAMPLE_PANTRY.length - added.length })
@@ -790,7 +969,7 @@ app.post('/pantry/bulk', authMiddleware, (req, res) => {
   const skipped = []
   list.forEach((raw, index) => {
     try {
-      inserted.push(pantry.insert(normalizePantryItem(raw, req.user.id)))
+      inserted.push(pantry.insert(normalizePantryItem(raw, req.user)))
     } catch (err) {
       skipped.push({ index, reason: err.message })
     }
@@ -849,14 +1028,14 @@ app.delete('/grocery-catalog/:id', authMiddleware, adminMiddleware, (req, res) =
 // the catalog entry at add/edit time (same reasoning as meal-plan entries
 // keeping a recipe's title) so the list still reads fine if the catalog entry
 // is later edited or removed.
-function normalizeGroceryItem(input, userId, existing) {
+function normalizeGroceryItem(input, user, existing) {
   const name = String(input?.name || '').trim()
   if (!name) throw new Error('Item needs a name')
   const catalogEntry = input.catalogItemId ? groceryCatalog.findById(input.catalogItemId) : null
   return {
     ...(existing || {}),
     id: existing ? existing.id : crypto.randomUUID(),
-    userId: existing ? existing.userId : userId,
+    ...ownerFields(user, existing),
     name: standardizeText(name),
     catalogItemId: catalogEntry ? catalogEntry.id : null,
     category: catalogEntry ? catalogEntry.category : null,
@@ -868,12 +1047,12 @@ function normalizeGroceryItem(input, userId, existing) {
 }
 
 app.get('/grocery-list', authMiddleware, (req, res) => {
-  res.json({ items: grocery.filter((item) => item.userId === req.user.id) })
+  res.json({ items: grocery.filter(scopedTo(req.user)) })
 })
 
 app.post('/grocery-list', authMiddleware, (req, res) => {
   try {
-    res.status(201).json({ item: grocery.insert(normalizeGroceryItem(req.body, req.user.id)) })
+    res.status(201).json({ item: grocery.insert(normalizeGroceryItem(req.body, req.user)) })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
@@ -881,17 +1060,18 @@ app.post('/grocery-list', authMiddleware, (req, res) => {
 
 app.put('/grocery-list/:id', authMiddleware, (req, res) => {
   const existing = grocery.findById(req.params.id)
-  if (!existing || existing.userId !== req.user.id) return res.status(404).json({ error: 'Item not found' })
+  if (!existing || !scopedTo(req.user)(existing)) return res.status(404).json({ error: 'Item not found' })
   try {
-    res.json({ item: grocery.update(existing.id, normalizeGroceryItem(req.body, req.user.id, existing)) })
+    res.json({ item: grocery.update(existing.id, normalizeGroceryItem(req.body, req.user, existing)) })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
 })
 
 app.delete('/grocery-list/:id', authMiddleware, (req, res) => {
-  const removed = grocery.remove((item) => item.id === req.params.id && item.userId === req.user.id)
-  if (!removed) return res.status(404).json({ error: 'Item not found' })
+  const existing = grocery.findById(req.params.id)
+  if (!existing || !scopedTo(req.user)(existing)) return res.status(404).json({ error: 'Item not found' })
+  grocery.remove((item) => item.id === req.params.id)
   res.json({ ok: true })
 })
 
@@ -955,7 +1135,7 @@ function sanitizeDays(days) {
 app.get('/meal-plan', authMiddleware, (req, res) => {
   const { weekStart } = req.query
   if (!WEEK_START_RE.test(weekStart || '')) return res.status(400).json({ error: 'weekStart (YYYY-MM-DD) required' })
-  const plan = mealplans.find((p) => p.userId === req.user.id && p.weekStart === weekStart)
+  const plan = mealplans.find((p) => scopedTo(req.user)(p) && p.weekStart === weekStart)
   // Run stored days through the sanitizer so older shapes and deleted recipes
   // never reach the client.
   res.json({ plan: plan ? { ...plan, days: sanitizeDays(plan.days) } : null })
@@ -965,12 +1145,12 @@ app.put('/meal-plan', authMiddleware, (req, res) => {
   const { weekStart, days } = req.body || {}
   if (!WEEK_START_RE.test(weekStart || '')) return res.status(400).json({ error: 'weekStart (YYYY-MM-DD) required' })
   const clean = sanitizeDays(days)
-  const existing = mealplans.find((p) => p.userId === req.user.id && p.weekStart === weekStart)
+  const existing = mealplans.find((p) => scopedTo(req.user)(p) && p.weekStart === weekStart)
   const plan = existing
     ? mealplans.update(existing.id, { days: clean, updatedAt: new Date().toISOString() })
     : mealplans.insert({
         id: crypto.randomUUID(),
-        userId: req.user.id,
+        ...ownerFields(req.user),
         weekStart,
         days: clean,
         createdAt: new Date().toISOString(),

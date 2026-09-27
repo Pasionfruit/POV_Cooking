@@ -34,6 +34,13 @@ const PATHS = {
       <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
     </>
   ),
+  group: (
+    <>
+      <circle cx="8.5" cy="8" r="3" />
+      <circle cx="16" cy="9.5" r="2.5" />
+      <path d="M2.5 20a6 6 0 0 1 12 0M13.5 15a5 5 0 0 1 8 4.5" />
+    </>
+  ),
 }
 
 export default function NavIcon({ name, size = 20 }) {

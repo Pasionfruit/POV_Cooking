@@ -11,6 +11,8 @@ import GroceryList from './pages/GroceryList'
 import Suggest from './pages/Suggest'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import Group from './pages/Group'
+import JoinGroup from './pages/JoinGroup'
 import Admin from './pages/Admin'
 
 export default function App() {
@@ -67,6 +69,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/group"
+            element={
+              <ProtectedRoute>
+                <Group />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/join/:code"
+            element={
+              <ProtectedRoute>
+                <JoinGroup />
               </ProtectedRoute>
             }
           />

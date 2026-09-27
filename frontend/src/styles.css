@@ -2073,6 +2073,49 @@ code {
   gap: 6px;
 }
 
+/* -------------------------------------------------------------------- group */
+.group-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.group-form-row input {
+  flex: 1 1 220px;
+}
+
+.group-members {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.group-member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-member .profile-avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 0.95rem;
+}
+
+.group-owner-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 /* Each option previews the font it selects */
 .font-option.font-serif {
   font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif;

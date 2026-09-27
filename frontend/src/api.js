@@ -34,6 +34,7 @@ export const login = (payload) => request('/auth/login', { method: 'POST', body:
 export const googleLogin = (credential) => request('/auth/google', { method: 'POST', body: { credential } })
 export const me = (token) => request('/auth/me', { token })
 export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', token })
+export const refreshToken = (token) => request('/auth/refresh', { method: 'POST', token })
 
 // recipes
 export const getRecipes = () => request('/recipes')
@@ -96,3 +97,12 @@ export const saveMealPlan = (token, payload) => request('/meal-plan', { method: 
 export const getSaved = (token) => request('/saved', { token })
 export const saveRecipe = (token, recipeId) => request(`/saved/${recipeId}`, { method: 'POST', token })
 export const unsaveRecipe = (token, recipeId) => request(`/saved/${recipeId}`, { method: 'DELETE', token })
+
+// group (shared pantry/meal-plan/grocery-list)
+export const getMyGroup = (token) => request('/groups/me', { token })
+export const createGroup = (token, payload) => request('/groups', { method: 'POST', token, body: payload })
+export const getGroupInvite = (token) => request('/groups/invite', { token })
+export const createGroupInvite = (token) => request('/groups/invite', { method: 'POST', token })
+export const joinGroup = (token, code) => request('/groups/join', { method: 'POST', token, body: { code } })
+export const leaveGroup = (token) => request('/groups/leave', { method: 'POST', token })
+export const deleteGroup = (token) => request('/groups', { method: 'DELETE', token })

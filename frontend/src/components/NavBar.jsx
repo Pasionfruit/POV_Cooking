@@ -11,6 +11,7 @@ const ICON_LINKS = [
   { to: '/pantry', icon: 'pantry', label: 'Pantry' },
   { to: '/grocery-list', icon: 'grocery-list', label: 'Grocery List' },
   { to: '/suggest', icon: 'suggest', label: 'Suggest' },
+  { to: '/group', icon: 'group', label: 'Group' },
 ]
 
 export default function NavBar() {
