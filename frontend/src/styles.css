@@ -1184,6 +1184,13 @@ code {
   gap: 6px;
 }
 
+/* Fills the full card height (recipe cards only) so .card-actions' auto
+   margin below can dock "Mark cooked" to the card's actual bottom edge,
+   even when a shorter neighbor in the same grid row gets stretched taller. */
+.card:not(.pantry-card) > .card-body {
+  flex: 1;
+}
+
 .card-title {
   font-weight: 600;
   color: var(--text);
@@ -1235,6 +1242,17 @@ code {
   align-items: center;
   gap: 6px;
   margin-top: 2px;
+}
+
+/* Docks "Mark cooked" to the bottom right of the card (pantry's own action
+   row keeps its existing bottom-right handling, untouched). */
+.card-actions:not(.pantry-actions) {
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.card-actions .pill {
+  border-radius: var(--radius);
 }
 
 .heart-button {
