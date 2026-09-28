@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
-import CollapsibleSection from '../components/CollapsibleSection'
-import ComponentRandomizer from '../components/ComponentRandomizer'
 import HeartIcon from '../components/HeartIcon'
-import PotIcon from '../components/PotIcon'
+import DiceIcon from '../components/DiceIcon'
+import MealIdeasModal from '../components/MealIdeasModal'
 import RecipeCard from '../components/RecipeCard'
-import RecipeSpinner from '../components/RecipeSpinner'
 import TagFilter from '../components/TagFilter'
 import { useAuth } from '../contexts/AuthContext'
 import { MEAL_TYPES, matchesQuery, totalMinutes, totalTimeText } from '../lib/recipeUtils'
@@ -58,7 +56,7 @@ export default function Home() {
   const [tags, setTags] = useState([])
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
-  const [buildOpen, setBuildOpen] = useState(false)
+  const [ideasOpen, setIdeasOpen] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
@@ -154,21 +152,32 @@ export default function Home() {
               className={`chip ${savedOnly ? 'active' : ''}`}
               onClick={() => setSavedOnly(!savedOnly)}
               title="Show only recipes you saved"
+              aria-label="Saved only"
+              aria-pressed={savedOnly}
             >
               <HeartIcon filled />
-              Saved only
             </button>
             <button
               type="button"
               className={`chip ${neverCooked ? 'active' : ''}`}
               onClick={() => setNeverCooked(!neverCooked)}
               title="Show only recipes you have never cooked"
+              aria-pressed={neverCooked}
             >
-              <PotIcon />
               Never cooked
             </button>
           </>
         )}
+        <button
+          type="button"
+          className="icon-button"
+          onClick={() => setIdeasOpen(true)}
+          aria-label="Open randomizer and meal builder"
+          title="Randomize or build a meal"
+          aria-haspopup="dialog"
+        >
+          <DiceIcon />
+        </button>
         {filtersActive && (
           <button
             type="button"
@@ -216,18 +225,14 @@ export default function Home() {
           </button>
         </div>
       )}
-      <RecipeSpinner recipes={recipes} filteredRecipes={matching} filtersActive={filtersActive} />
-      <div className="panel">
-        <CollapsibleSection
-          title="Build a meal"
-          open={buildOpen}
-          onToggle={() => setBuildOpen((o) => !o)}
-          id="build-a-meal-body"
-        >
-          <p className="muted small">Roll a combination of components when you want to improvise.</p>
-          <ComponentRandomizer />
-        </CollapsibleSection>
-      </div>
+      {ideasOpen && (
+        <MealIdeasModal
+          recipes={recipes}
+          filteredRecipes={matching}
+          filtersActive={filtersActive}
+          onClose={() => setIdeasOpen(false)}
+        />
+      )}
     </section>
   )
 }

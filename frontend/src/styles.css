@@ -2281,3 +2281,14 @@ code {
 #expiry-warning-body {
   margin-top: 8px;
 }
+
+.meal-ideas-modal {
+  width: min(760px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.meal-ideas-modal > .modal-title {
+  margin-bottom: 20px;
+}

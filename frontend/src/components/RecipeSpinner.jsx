@@ -7,8 +7,8 @@ import { totalTimeText } from '../lib/recipeUtils'
 // Wraps SpinWheel with the bits around the spin itself: which recipes are
 // eligible, the result popup, and the exclusion set that keeps "Spin again"
 // from handing back the recipe you just rejected.
-export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive }) {
-  const [open, setOpen] = useState(false)
+export default function RecipeSpinner({ recipes, filteredRecipes, filtersActive, initiallyOpen = false }) {
+  const [open, setOpen] = useState(initiallyOpen)
   const [useFilters, setUseFilters] = useState(true)
   const [excludedIds, setExcludedIds] = useState(() => new Set())
   const [result, setResult] = useState(null)
