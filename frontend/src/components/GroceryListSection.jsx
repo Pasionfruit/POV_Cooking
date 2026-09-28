@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import ItemCombobox from './ItemCombobox'
+import Toast from './Toast'
 
 // A single row's quantity is edited inline and only saved on blur/Enter, so
 // typing doesn't fire a request per keystroke. Local state re-syncs whenever
@@ -48,12 +49,13 @@ function GroceryRow({ item, onToggle, onSaveQuantity, onDelete }) {
 
 // Embedded in the Meal Plan tab, right below the week's plan — shopping for
 // the week you just built is the natural next step.
-export default function GroceryListSection() {
+export default function GroceryListSection({ mealPlanIngredients = [] }) {
   const { token } = useAuth()
   const [items, setItems] = useState([])
   const [catalog, setCatalog] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [toast, setToast] = useState(null)
 
   function refresh() {
     return api
@@ -82,10 +84,37 @@ export default function GroceryListSection() {
         !item.checked &&
         (isCatalog ? item.catalogItemId === entry : !item.catalogItemId && item.name.toLowerCase() === name.toLowerCase())
     )
-    if (duplicate) return
+    if (duplicate) {
+      setToast(`“${name}” is already on your list.`)
+      return
+    }
     api
       .addGroceryItem(token, { name, catalogItemId: isCatalog ? entry : null })
       .then(refresh)
+      .catch((err) => setError(err.message))
+  }
+
+  // Adds every ingredient from this week's planned recipes that isn't
+  // already sitting unchecked on the list.
+  function handlePopulateFromMealPlan() {
+    const existing = new Set(
+      items.filter((item) => !item.checked && !item.catalogItemId).map((item) => item.name.toLowerCase())
+    )
+    const toAdd = mealPlanIngredients.filter((name) => !existing.has(name.toLowerCase()))
+    if (toAdd.length === 0) {
+      setToast('Everything from this week’s meal plan is already on your list.')
+      return
+    }
+    Promise.all(toAdd.map((name) => api.addGroceryItem(token, { name, catalogItemId: null })))
+      .then(() => {
+        refresh()
+        const skipped = mealPlanIngredients.length - toAdd.length
+        setToast(
+          `Added ${toAdd.length} item${toAdd.length === 1 ? '' : 's'} from your meal plan.${
+            skipped > 0 ? ` ${skipped} already on your list.` : ''
+          }`
+        )
+      })
       .catch((err) => setError(err.message))
   }
 
@@ -133,13 +162,23 @@ export default function GroceryListSection() {
   return (
     <>
       {error && <p className="error">{error}</p>}
-      <ItemCombobox
-        items={catalog}
-        getLabel={(c) => c.name}
-        onAdd={handleAdd}
-        label="Add a grocery item"
-        placeholder="+ Add item or type your own"
-      />
+      <div className="grocery-toolbar">
+        <ItemCombobox
+          items={catalog}
+          getLabel={(c) => c.name}
+          onAdd={handleAdd}
+          label="Add a grocery item"
+          placeholder="+ Add item or type your own"
+        />
+        <button
+          type="button"
+          onClick={handlePopulateFromMealPlan}
+          disabled={mealPlanIngredients.length === 0}
+          title="Add every ingredient from this week's planned recipes"
+        >
+          Populate from meal plan
+        </button>
+      </div>
       {loading ? (
         <p className="muted small">Loading your list…</p>
       ) : items.length === 0 ? (
@@ -169,6 +208,7 @@ export default function GroceryListSection() {
           </ul>
         </>
       )}
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </>
   )
 }

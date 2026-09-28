@@ -5,11 +5,11 @@ import CollapsibleSection from '../components/CollapsibleSection'
 import CopyIcon from '../components/CopyIcon'
 import GroceryListSection from '../components/GroceryListSection'
 import ItemCombobox from '../components/ItemCombobox'
-import NavIcon from '../components/NavIcon'
 import { useAuth } from '../contexts/AuthContext'
 import { copyText, mealPlanToText } from '../lib/mealPlanText'
+import { ingredientToText } from '../lib/recipeUtils'
 
-const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 function toKey(date) {
   const y = date.getFullYear()
@@ -18,11 +18,34 @@ function toKey(date) {
   return `${y}-${m}-${d}`
 }
 
-function mondayOf(date) {
+function sundayOf(date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
-  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  d.setDate(d.getDate() - d.getDay())
   return d
+}
+
+// Ingredient lines (as displayed on the recipe page) for every recipe planned
+// this week, deduped case-insensitively. Free-text plan entries (typed
+// leftovers, etc.) have no ingredient list, so they're skipped.
+function mealPlanIngredients(days, recipeById) {
+  const seen = new Set()
+  const result = []
+  Object.values(days).forEach((entries) => {
+    ;(entries || []).forEach((entry) => {
+      if (typeof entry !== 'string') return
+      const recipe = recipeById[entry]
+      if (!recipe) return
+      ;(recipe.ingredients || []).forEach((ingredient) => {
+        const text = ingredientToText(ingredient).trim()
+        const key = text.toLowerCase()
+        if (!text || seen.has(key)) return
+        seen.add(key)
+        result.push(text)
+      })
+    })
+  })
+  return result
 }
 
 function addDays(date, n) {
@@ -37,7 +60,7 @@ function shortDate(date) {
 
 export default function MealPlan() {
   const { token } = useAuth()
-  const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()))
+  const [weekStart, setWeekStart] = useState(() => sundayOf(new Date()))
   const [days, setDays] = useState({})
   const [recipes, setRecipes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -115,6 +138,12 @@ export default function MealPlan() {
     }
   }
 
+  function clearMealPlan() {
+    if (plannedCount === 0) return
+    if (!window.confirm('Remove every meal planned for this week?')) return
+    persist({})
+  }
+
   // One random recipe per day, drawn without replacement so a week's picks are
   // distinct whenever there are at least seven recipes to draw from.
   function trustTheAlgorithm() {
@@ -150,8 +179,8 @@ export default function MealPlan() {
               <button type="button" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week">
                 →
               </button>
-              {weekKey !== toKey(mondayOf(new Date())) && (
-                <button type="button" className="link-button" onClick={() => setWeekStart(mondayOf(new Date()))}>
+              {weekKey !== toKey(sundayOf(new Date())) && (
+                <button type="button" className="link-button" onClick={() => setWeekStart(sundayOf(new Date()))}>
                   This week
                 </button>
               )}
@@ -228,9 +257,14 @@ export default function MealPlan() {
                   Fills every day of {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))} with one random recipe,
                   replacing whatever is planned.
                 </p>
-                <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
-                  Trust the Algorithm
-                </button>
+                <div className="algorithm-actions">
+                  <button type="button" onClick={clearMealPlan} disabled={plannedCount === 0}>
+                    Clear meal plan
+                  </button>
+                  <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
+                    Trust the Algorithm
+                  </button>
+                </div>
               </div>
 
             </>
@@ -241,18 +275,12 @@ export default function MealPlan() {
       {!loading && (
           <div className="panel">
             <CollapsibleSection
-              title={
-                <span className="section-title-icon">
-                  <NavIcon name="grocery-list" size={18} />
-                  Grocery List
-                </span>
-              }
-              label="Grocery List"
+              title="Grocery List"
               open={groceryOpen}
               onToggle={() => setGroceryOpen((o) => !o)}
               id="grocery-list-body"
             >
-              <GroceryListSection />
+              <GroceryListSection mealPlanIngredients={mealPlanIngredients(days, recipeById)} />
             </CollapsibleSection>
           </div>
       )}

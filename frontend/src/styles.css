@@ -284,6 +284,19 @@ a {
   font-size: 0.85rem;
 }
 
+/* Trims each select's height on desktop, where there's no touch-target
+   minimum to respect like there is on mobile. */
+@media (min-width: 601px) {
+  .pantry-filter-menu {
+    gap: 6px;
+  }
+
+  .pantry-filter-menu select {
+    padding: 5px 8px;
+    font-size: 0.85rem;
+  }
+}
+
 input,
 textarea,
 select,
@@ -371,6 +384,35 @@ button:disabled {
   background: #fdecea;
   padding: 10px 12px;
   border-radius: var(--radius);
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 14px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  font-size: 0.9rem;
+}
+
+.toast-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .notice {
@@ -482,6 +524,28 @@ code {
   font-size: 0.92rem;
 }
 
+.use-soon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.use-soon-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.use-soon-days {
+  color: var(--muted);
+  flex-shrink: 0;
+  font-size: 0.85rem;
+}
+
 .pantry-form {
   display: flex;
   flex-wrap: wrap;
@@ -585,12 +649,17 @@ code {
   border-left-color: var(--danger);
 }
 
-.pantry-card .pantry-actions {
-  margin-top: auto;
-  align-self: flex-end;
+.pantry-card.selectable {
+  cursor: pointer;
 }
 
-.pantry-card .expiry-badge {
+.pantry-card.selected {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.pantry-card .pantry-actions {
+  margin-top: auto;
   align-self: flex-end;
 }
 
@@ -641,6 +710,22 @@ code {
 }
 
 /* ------------------------------------------------------------- grocery list */
+.grocery-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.grocery-toolbar .combobox {
+  flex: 1 1 220px;
+}
+
+.grocery-toolbar > button {
+  flex-shrink: 0;
+}
+
 .grocery-list {
   list-style: none;
   margin: 0;
@@ -833,32 +918,24 @@ code {
 .expiry-badge {
   font-size: 0.76rem;
   font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
   color: var(--muted);
   white-space: nowrap;
+  margin-left: auto;
 }
 
 .expiry-badge.fresh {
   color: #2e7d4f;
-  border-color: #2e7d4f55;
 }
 
 .expiry-badge.soon {
   color: #a1710a;
-  border-color: #a1710a55;
 }
 
 .expiry-badge.warning {
-  background: #a1710a1a;
-  border-color: #a1710a55;
   color: #a1710a;
 }
 
 .expiry-badge.expired {
-  background: #b3261e1a;
-  border-color: #b3261e55;
   color: var(--danger);
 }
 
@@ -2088,12 +2165,6 @@ code {
   line-height: 1;
 }
 
-.section-title-icon {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .collapse-toggle {
   display: inline-flex;
   align-items: center;
@@ -2194,6 +2265,25 @@ code {
 
 .modal-note {
   margin: 10px 0 0;
+}
+
+.confirm-modal-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.confirm-modal-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.confirm-modal-list li:last-child {
+  border-bottom: none;
 }
 
 /* ------------------------------------------------------------------ profile */
@@ -2327,6 +2417,13 @@ code {
 .algorithm-panel p {
   flex: 1 1 220px;
   margin: 0;
+}
+
+.algorithm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 /* Calmer, always-two-column layout on small screens */

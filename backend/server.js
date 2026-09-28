@@ -1095,9 +1095,10 @@ app.put('/featured', authMiddleware, adminMiddleware, (req, res) => {
 
 // ------------------------------------------------------------- meal plan routes
 
-// One plan per user per week. `weekStart` is the Monday as YYYY-MM-DD;
-// `days` maps day index 0-6 (Mon-Sun) to a list of entries. An entry is either
-// a recipe id (string) or a free-text plan the user typed: { text: "Leftovers" }.
+// One plan per user per week. `weekStart` is the Sunday as YYYY-MM-DD;
+// `days` maps day index 0-6 (Sun-Sat, i.e. Date#getDay()) to a list of
+// entries. An entry is either a recipe id (string) or a free-text plan the
+// user typed: { text: "Leftovers" }.
 const WEEK_START_RE = /^\d{4}-\d{2}-\d{2}$/
 const MAX_ENTRY_TEXT = 120
 
@@ -1130,6 +1131,80 @@ function sanitizeDays(days) {
     if (entries.length) clean[key] = entries
   }
   return clean
+}
+
+function dateKey(date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+// One-time, idempotent migration: plans saved before the Meal Plan page
+// switched to Sunday-start weeks have `weekStart` on a Monday, with days
+// keyed 0=Monday..6=Sunday. The new scheme never saves a Monday `weekStart`,
+// so any plan that still has one is legacy. A Monday-Sunday week always
+// straddles two Sunday-Saturday weeks — its trailing Sunday actually starts
+// the *next* one — so each entry moves to whichever new week its real
+// calendar date falls in, rather than assuming the whole plan maps 1:1 onto
+// a single new week. Runs on every boot; already-migrated plans are skipped.
+function migrateMealPlansToSundayWeeks() {
+  mealplans.all().forEach((plan) => {
+    if (!WEEK_START_RE.test(plan.weekStart || '')) return
+    const oldStart = new Date(`${plan.weekStart}T00:00:00`)
+    if (oldStart.getDay() !== 1) return
+
+    const buckets = new Map() // new weekStart -> { newDayIndex: entries[] }
+    for (const [oldIndexStr, value] of Object.entries(plan.days || {})) {
+      const oldIndex = Number(oldIndexStr)
+      if (!Number.isInteger(oldIndex)) continue
+      const list = Array.isArray(value) ? value : Object.values(value || {}).flat()
+      if (!list.length) continue
+      const date = new Date(oldStart)
+      date.setDate(date.getDate() + oldIndex)
+      const newIndex = String(date.getDay())
+      const weekStartDate = new Date(date)
+      weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay())
+      const newWeekStart = dateKey(weekStartDate)
+      if (!buckets.has(newWeekStart)) buckets.set(newWeekStart, {})
+      const bucket = buckets.get(newWeekStart)
+      bucket[newIndex] = [...(bucket[newIndex] || []), ...list]
+    }
+
+    const owner = { id: plan.userId, groupId: plan.groupId }
+    let reusedOriginal = false
+    buckets.forEach((newDays, newWeekStart) => {
+      const collision = mealplans.find((p) => p.id !== plan.id && scopedTo(owner)(p) && p.weekStart === newWeekStart)
+      if (collision) {
+        const merged = { ...collision.days }
+        for (const [idx, entries] of Object.entries(newDays)) {
+          merged[idx] = [...(merged[idx] || []), ...entries]
+        }
+        mealplans.update(collision.id, { days: sanitizeDays(merged) })
+      } else if (!reusedOriginal) {
+        // Reuse the original row for the first bucket so the plan keeps its id/createdAt.
+        mealplans.update(plan.id, { weekStart: newWeekStart, days: sanitizeDays(newDays) })
+        reusedOriginal = true
+      } else {
+        mealplans.insert({
+          id: crypto.randomUUID(),
+          userId: plan.userId,
+          groupId: plan.groupId,
+          weekStart: newWeekStart,
+          days: sanitizeDays(newDays),
+          createdAt: plan.createdAt,
+          updatedAt: new Date().toISOString(),
+        })
+      }
+    })
+    // An empty legacy plan has no buckets to reuse the row for — normalize
+    // its weekStart in place so it isn't re-checked on every future boot.
+    if (!reusedOriginal && buckets.size === 0) {
+      const emptyStart = new Date(oldStart)
+      emptyStart.setDate(emptyStart.getDate() - emptyStart.getDay())
+      mealplans.update(plan.id, { weekStart: dateKey(emptyStart), days: {} })
+    }
+  })
 }
 
 app.get('/meal-plan', authMiddleware, (req, res) => {
@@ -1196,6 +1271,7 @@ async function start() {
   if (seeded?.length) console.log(`Seeded fresh database from repo data: ${seeded.join(', ')}`)
 
   await ensureDemoUsers()
+  migrateMealPlansToSundayWeeks()
 
   const server = app.listen(PORT, () => {
     console.log(`POV Cooking API running on port ${PORT}`)

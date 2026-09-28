@@ -311,12 +311,14 @@ export default function Pantry() {
             onToggle={() => setWarningOpen((open) => !open)}
             id="expiry-warning-body"
           >
-          {expiringSoon.map(({ item, days }, i) => (
-            <span key={item.id}>
-              {i > 0 && ', '}
-              {item.name} ({expiryLabel(days).toLowerCase()})
-            </span>
-          ))}
+          <ul className="use-soon-list">
+            {expiringSoon.map(({ item, days }) => (
+              <li key={item.id}>
+                <span className="use-soon-name">{item.name}</span>
+                <span className="use-soon-days">{expiryLabel(days)}</span>
+              </li>
+            ))}
+          </ul>
           </CollapsibleSection>
         </div>
       )}
@@ -407,7 +409,13 @@ export default function Pantry() {
           {pageItems.length > 0 && (
             <div className="card-grid pantry-grid">
               {pageItems.map(({ item, days }) => (
-                <div key={item.id} className={`card pantry-card ${expiryStatus(days)}`}>
+                <div
+                  key={item.id}
+                  className={`card pantry-card ${expiryStatus(days)} ${selectMode ? 'selectable' : ''} ${
+                    selectMode && selectedIds.has(item.id) ? 'selected' : ''
+                  }`}
+                  onClick={selectMode ? () => toggleSelected(item.id) : undefined}
+                >
                   <div className="card-body">
                     <div className="pantry-card-head">
                       {selectMode && (
@@ -416,6 +424,7 @@ export default function Pantry() {
                           className="pantry-select-checkbox"
                           checked={selectedIds.has(item.id)}
                           onChange={() => toggleSelected(item.id)}
+                          onClick={(e) => e.stopPropagation()}
                           aria-label={`Select ${item.name}`}
                         />
                       )}
@@ -425,8 +434,8 @@ export default function Pantry() {
                     <div className="card-meta">
                       <span>{item.location}</span>
                       {item.quantity && <span>{item.quantity}</span>}
+                      <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
                     </div>
-                    <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
                     {!selectMode && (
                       <div className="card-actions pantry-actions">
                         <button
@@ -519,11 +528,8 @@ export default function Pantry() {
       )}
       {pendingDelete && (
         <ConfirmModal
-          title={
-            pendingDelete.items.length === 1
-              ? `Remove “${pendingDelete.items[0].name}”?`
-              : `Remove ${pendingDelete.items.length} items?`
-          }
+          title={pendingDelete.items.length === 1 ? 'Remove item?' : `Remove ${pendingDelete.items.length} items?`}
+          items={pendingDelete.items.map((item) => item.name)}
           message="This cannot be undone."
           confirmLabel="Remove"
           busy={deleteBusy}

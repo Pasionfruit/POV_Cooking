@@ -2,7 +2,7 @@ import React from 'react'
 
 // Generic yes/no popup, same modal chrome as the rest of the app
 // (AddItemModal / ReceiptConfirmModal / BarcodeScanner).
-export default function ConfirmModal({ title, message, confirmLabel = 'Confirm', busy = false, onConfirm, onCancel }) {
+export default function ConfirmModal({ title, items, message, confirmLabel = 'Confirm', busy = false, onConfirm, onCancel }) {
   return (
     <div className="modal-backdrop" onClick={onCancel} role="presentation">
       <div
@@ -18,6 +18,13 @@ export default function ConfirmModal({ title, message, confirmLabel = 'Confirm',
         <h3 className="modal-title" id="confirm-modal-title">
           {title}
         </h3>
+        {items && items.length > 0 && (
+          <ul className="confirm-modal-list">
+            {items.map((name, i) => (
+              <li key={i}>{name}</li>
+            ))}
+          </ul>
+        )}
         {message && <p className="muted">{message}</p>}
         <div className="modal-actions">
           <button type="button" onClick={onCancel} disabled={busy}>
