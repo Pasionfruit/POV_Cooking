@@ -45,6 +45,7 @@ export default function MealPlan() {
   const [copied, setCopied] = useState(false)
   const copyTimer = useRef(null)
   const [groceryOpen, setGroceryOpen] = useState(false)
+  const [mealPlanOpen, setMealPlanOpen] = useState(true)
 
   const weekKey = toKey(weekStart)
   const todayKey = toKey(new Date())
@@ -130,100 +131,114 @@ export default function MealPlan() {
 
   return (
     <section>
-      <div className="page-header meal-plan-header">
-        <h1>Meal Plan</h1>
-        <div className="week-nav">
-          <button type="button" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week">
-            ←
-          </button>
-          <span className="week-label">
-            {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))}
-          </span>
-          <button type="button" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week">
-            →
-          </button>
-          {weekKey !== toKey(mondayOf(new Date())) && (
-            <button type="button" className="link-button" onClick={() => setWeekStart(mondayOf(new Date()))}>
-              This week
-            </button>
+      <div className="panel">
+        <CollapsibleSection
+          title="Weekly meal plan"
+          open={mealPlanOpen}
+          onToggle={() => setMealPlanOpen((open) => !open)}
+          id="meal-plan-body"
+        >
+          <div className="page-header meal-plan-header">
+            <h1>Meal Plan</h1>
+            <div className="week-nav">
+              <button type="button" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week">
+                ←
+              </button>
+              <span className="week-label">
+                {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))}
+              </span>
+              <button type="button" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week">
+                →
+              </button>
+              {weekKey !== toKey(mondayOf(new Date())) && (
+                <button type="button" className="link-button" onClick={() => setWeekStart(mondayOf(new Date()))}>
+                  This week
+                </button>
+              )}
+              <button
+                type="button"
+                className={`copy-plan-button ${copied ? 'copied' : ''}`}
+                aria-label={copied ? 'Copied!' : 'Copy meal plan'}
+                onClick={handleCopy}
+                disabled={loading}
+                title="Copy this week's plan as text to paste into a message"
+              >
+                <CopyIcon />
+                {copied && <span role="status">Copied!</span>}
+              </button>
+            </div>
+          </div>
+
+          {error && <p className="error">{error}</p>}
+          {loading ? (
+            <p className="muted">Loading week…</p>
+          ) : (
+            <>
+              <div className="list-summary">
+                <p className="muted small">
+                  {plannedCount === 0
+                    ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
+                    : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
+                </p>
+              </div>
+              <div className="week-grid">
+                {DAY_NAMES.map((name, i) => {
+                  const date = addDays(weekStart, i)
+                  const isToday = toKey(date) === todayKey
+                  return (
+                    <div key={name} className={`day-panel ${isToday ? 'today' : ''}`}>
+                      <div className="day-title">
+                        {name} <span className="muted small">{shortDate(date)}</span>
+                      </div>
+                      <ul className="day-list">
+                        {(days[i] || []).map((entry, index) => (
+                          <li key={index}>
+                            {typeof entry === 'string' ? (
+                              recipeById[entry] ? (
+                                <Link to={`/recipes/${entry}`}>{recipeById[entry].title}</Link>
+                              ) : (
+                                <span className="muted">Removed recipe</span>
+                              )
+                            ) : (
+                              <span>{entry.text}</span>
+                            )}
+                            <button
+                              type="button"
+                              className="remove-button"
+                              onClick={() => removeFromDay(i, index)}
+                              aria-label={`Remove from ${name}`}
+                            >
+                              ×
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                      <ItemCombobox
+                        items={recipes}
+                        onAdd={(entry) => addToDay(i, entry)}
+                        label={`Add a meal to ${name}`}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="panel algorithm-panel">
+                <p className="muted small">
+                  Fills every day of {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))} with one random recipe,
+                  replacing whatever is planned.
+                </p>
+                <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
+                  Trust the Algorithm
+                </button>
+              </div>
+
+            </>
           )}
-          <button
-            type="button"
-            className={`copy-plan-button ${copied ? 'copied' : ''}`}
-            onClick={handleCopy}
-            disabled={loading}
-            title="Copy this week's plan as text to paste into a message"
-          >
-            <CopyIcon />
-            {copied ? 'Copied!' : 'Copy meal plan'}
-          </button>
-        </div>
+        </CollapsibleSection>
       </div>
 
-      {error && <p className="error">{error}</p>}
-      {loading ? (
-        <p className="muted">Loading week…</p>
-      ) : (
-        <>
-          <div className="list-summary">
-            <p className="muted small">
-              {plannedCount === 0
-                ? 'Nothing planned this week yet — add recipes below or use a randomizer for ideas.'
-                : `${plannedCount} meal${plannedCount === 1 ? '' : 's'} planned this week.`}
-            </p>
-          </div>
-          <div className="week-grid">
-            {DAY_NAMES.map((name, i) => {
-              const date = addDays(weekStart, i)
-              const isToday = toKey(date) === todayKey
-              return (
-                <div key={name} className={`day-panel ${isToday ? 'today' : ''}`}>
-                  <div className="day-title">
-                    {name} <span className="muted small">{shortDate(date)}</span>
-                  </div>
-                  <ul className="day-list">
-                    {(days[i] || []).map((entry, index) => (
-                      <li key={index}>
-                        {typeof entry === 'string' ? (
-                          recipeById[entry] ? (
-                            <Link to={`/recipes/${entry}`}>{recipeById[entry].title}</Link>
-                          ) : (
-                            <span className="muted">Removed recipe</span>
-                          )
-                        ) : (
-                          <span>{entry.text}</span>
-                        )}
-                        <button
-                          type="button"
-                          className="remove-button"
-                          onClick={() => removeFromDay(i, index)}
-                          aria-label={`Remove from ${name}`}
-                        >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <ItemCombobox
-                    items={recipes}
-                    onAdd={(entry) => addToDay(i, entry)}
-                    label={`Add a meal to ${name}`}
-                  />
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="panel algorithm-panel">
-            <p className="muted small">
-              Fills every day of {shortDate(weekStart)} – {shortDate(addDays(weekStart, 6))} with one random recipe,
-              replacing whatever is planned.
-            </p>
-            <button type="button" className="primary" onClick={trustTheAlgorithm} disabled={recipes.length === 0}>
-              Trust the Algorithm
-            </button>
-          </div>
-
+      {!loading && (
           <div className="panel">
             <CollapsibleSection
               title={
@@ -240,7 +255,6 @@ export default function MealPlan() {
               <GroceryListSection />
             </CollapsibleSection>
           </div>
-        </>
       )}
     </section>
   )

@@ -1618,7 +1618,7 @@ code {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: none;
   padding: 7px;
   color: var(--muted);
@@ -2291,4 +2291,73 @@ code {
 
 .meal-ideas-modal > .modal-title {
   margin-bottom: 20px;
+}
+
+.nav-menu {
+  position: relative;
+}
+
+.nav-menu-links {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.home-filters .home-filter-icon {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+  line-height: 0;
+}
+
+.home-filter-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 600px) {
+  .home-filters input,
+  .home-filters select,
+  .home-filters button,
+  .home-filters .tag-filter-option {
+    font-size: 1rem;
+  }
+
+  .home-filters > input,
+  .home-filters > select,
+  .home-filters > button,
+  .home-filters .tag-filter-toggle {
+    min-height: 44px;
+  }
+}
+
+.nav-links .nav-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  line-height: 0;
+}
+
+.nav-links .nav-menu-toggle:hover {
+  color: var(--text);
+}
+
+.home-filters > .chip {
+  height: 44px;
+  border-radius: var(--radius);
 }

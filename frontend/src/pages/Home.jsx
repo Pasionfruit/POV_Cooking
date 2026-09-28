@@ -57,6 +57,7 @@ export default function Home() {
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
   const [ideasOpen, setIdeasOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
@@ -113,14 +114,65 @@ export default function Home() {
           {matching.length} of {recipes.length}
         </span>
       </div>
-      <div className="filters">
+      <div className="filters home-filters">
         <input
           className="search"
           type="search"
+          aria-label="Search recipes"
           placeholder="Search title, tag, ingredient…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <button
+          type="button"
+          className={`chip home-filter-icon ${cuisine || mealType || maxTime || tags.length ? 'active' : ''}`}
+          onClick={() => setFiltersOpen((open) => !open)}
+          aria-label={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
+          title={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
+          aria-expanded={filtersOpen}
+          aria-controls="recipe-filter-panel"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 4h18l-7 8v7l-4 2v-9z" />
+          </svg>
+        </button>
+        {user && (
+          <>
+            <button
+              type="button"
+              className={`chip ${neverCooked ? 'active' : ''}`}
+              onClick={() => setNeverCooked(!neverCooked)}
+              title="Show only recipes you have never cooked"
+              aria-pressed={neverCooked}
+            >
+              Never cooked
+            </button>
+            <button
+              type="button"
+              className={`chip home-filter-icon ${savedOnly ? 'active' : ''}`}
+              onClick={() => setSavedOnly(!savedOnly)}
+              title="Show only recipes you saved"
+              aria-label="Saved only"
+              aria-pressed={savedOnly}
+            >
+              <HeartIcon filled size={20} />
+            </button>
+          </>
+        )}
+        <button
+          type="button"
+          className="chip home-filter-icon"
+          onClick={() => setIdeasOpen(true)}
+          aria-label="Open randomizer and meal builder"
+          title="Randomize or build a meal"
+          aria-haspopup="dialog"
+        >
+          <DiceIcon />
+        </button>
+      </div>
+      {filtersOpen && (
+        <div id="recipe-filter-panel" className="panel">
+          <div className="filters home-filters">
         <select value={mealType} onChange={(e) => setMealType(e.target.value)} aria-label="Filter by meal type">
           <option value="">All meal types</option>
           {MEAL_TYPES.map((t) => (
@@ -145,39 +197,6 @@ export default function Home() {
           ))}
         </select>
         <TagFilter tags={allTags} selected={tags} onChange={setTags} />
-        {user && (
-          <>
-            <button
-              type="button"
-              className={`chip ${savedOnly ? 'active' : ''}`}
-              onClick={() => setSavedOnly(!savedOnly)}
-              title="Show only recipes you saved"
-              aria-label="Saved only"
-              aria-pressed={savedOnly}
-            >
-              <HeartIcon filled />
-            </button>
-            <button
-              type="button"
-              className={`chip ${neverCooked ? 'active' : ''}`}
-              onClick={() => setNeverCooked(!neverCooked)}
-              title="Show only recipes you have never cooked"
-              aria-pressed={neverCooked}
-            >
-              Never cooked
-            </button>
-          </>
-        )}
-        <button
-          type="button"
-          className="icon-button"
-          onClick={() => setIdeasOpen(true)}
-          aria-label="Open randomizer and meal builder"
-          title="Randomize or build a meal"
-          aria-haspopup="dialog"
-        >
-          <DiceIcon />
-        </button>
         {filtersActive && (
           <button
             type="button"
@@ -195,7 +214,9 @@ export default function Home() {
             Clear
           </button>
         )}
-      </div>
+          </div>
+        </div>
+      )}
       {visible.length === 0 ? (
         <p className="muted">No recipes match these filters.</p>
       ) : (
