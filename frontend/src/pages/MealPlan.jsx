@@ -67,7 +67,6 @@ export default function MealPlan() {
   const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
   const copyTimer = useRef(null)
-  const [groceryOpen, setGroceryOpen] = useState(false)
   const [mealPlanOpen, setMealPlanOpen] = useState(true)
 
   const weekKey = toKey(weekStart)
@@ -272,18 +271,7 @@ export default function MealPlan() {
         </CollapsibleSection>
       </div>
 
-      {!loading && (
-          <div className="panel">
-            <CollapsibleSection
-              title="Grocery List"
-              open={groceryOpen}
-              onToggle={() => setGroceryOpen((o) => !o)}
-              id="grocery-list-body"
-            >
-              <GroceryListSection mealPlanIngredients={mealPlanIngredients(days, recipeById)} />
-            </CollapsibleSection>
-          </div>
-      )}
+      {!loading && <GroceryListSection mealPlanIngredients={mealPlanIngredients(days, recipeById)} />}
     </section>
   )
 }

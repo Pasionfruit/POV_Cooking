@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import { useAuth } from '../contexts/AuthContext'
+import CollapsibleSection from './CollapsibleSection'
 import ItemCombobox from './ItemCombobox'
 import Toast from './Toast'
 
@@ -56,6 +57,7 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
+  const [open, setOpen] = useState(false)
 
   function refresh() {
     return api
@@ -153,6 +155,17 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
     })
   }
 
+  function handleClearAll() {
+    if (items.length === 0) return
+    if (!window.confirm('Remove everything from your grocery list?')) return
+    const cleared = items
+    setItems([])
+    Promise.all(cleared.map((i) => api.deleteGroceryItem(token, i.id))).catch((err) => {
+      setError(err.message)
+      refresh()
+    })
+  }
+
   const uncheckedCount = items.filter((i) => !i.checked).length
   const checkedCount = items.length - uncheckedCount
   // Unchecked items first (in the order added), checked ones sink to the
@@ -160,55 +173,70 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
   const sorted = [...items].sort((a, b) => Number(a.checked) - Number(b.checked))
 
   return (
-    <>
-      {error && <p className="error">{error}</p>}
-      <div className="grocery-toolbar">
-        <ItemCombobox
-          items={catalog}
-          getLabel={(c) => c.name}
-          onAdd={handleAdd}
-          label="Add a grocery item"
-          placeholder="+ Add item or type your own"
-        />
-        <button
-          type="button"
-          onClick={handlePopulateFromMealPlan}
-          disabled={mealPlanIngredients.length === 0}
-          title="Add every ingredient from this week's planned recipes"
-        >
-          Populate from meal plan
-        </button>
-      </div>
-      {loading ? (
-        <p className="muted small">Loading your list…</p>
-      ) : items.length === 0 ? (
-        <p className="muted small">Nothing on your list yet — add items above.</p>
-      ) : (
-        <>
-          <div className="list-summary">
-            <p className="muted small">
-              {uncheckedCount} to get{checkedCount > 0 ? `, ${checkedCount} checked off` : ''}.
-            </p>
-            {checkedCount > 0 && (
-              <button type="button" onClick={handleClearChecked}>
-                Clear checked
-              </button>
-            )}
-          </div>
-          <ul className="grocery-list">
-            {sorted.map((item) => (
-              <GroceryRow
-                key={item.id}
-                item={item}
-                onToggle={handleToggle}
-                onSaveQuantity={handleSaveQuantity}
-                onDelete={handleDelete}
-              />
-            ))}
-          </ul>
-        </>
-      )}
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
-    </>
+    <div className="panel">
+      <CollapsibleSection
+        title="Grocery List"
+        open={open}
+        onToggle={() => setOpen((o) => !o)}
+        id="grocery-list-body"
+        actions={
+          <>
+            <button type="button" className="header-action-button" onClick={handleClearAll} disabled={items.length === 0}>
+              Clear all
+            </button>
+            <button
+              type="button"
+              className="header-action-button"
+              onClick={handlePopulateFromMealPlan}
+              disabled={mealPlanIngredients.length === 0}
+              title="Add every ingredient from this week's planned recipes"
+            >
+              Populate from meal plan
+            </button>
+          </>
+        }
+      >
+        {error && <p className="error">{error}</p>}
+        <div className="grocery-toolbar">
+          <ItemCombobox
+            items={catalog}
+            getLabel={(c) => c.name}
+            onAdd={handleAdd}
+            label="Add a grocery item"
+            placeholder="+ Add item or type your own"
+          />
+        </div>
+        {loading ? (
+          <p className="muted small">Loading your list…</p>
+        ) : items.length === 0 ? (
+          <p className="muted small">Nothing on your list yet — add items above.</p>
+        ) : (
+          <>
+            <div className="list-summary">
+              <p className="muted small">
+                {uncheckedCount} to get{checkedCount > 0 ? `, ${checkedCount} checked off` : ''}.
+              </p>
+              {checkedCount > 0 && (
+                <button type="button" onClick={handleClearChecked}>
+                  Clear checked
+                </button>
+              )}
+            </div>
+            <ul className="grocery-list">
+              {sorted.map((item) => (
+                <GroceryRow
+                  key={item.id}
+                  item={item}
+                  onToggle={handleToggle}
+                  onSaveQuantity={handleSaveQuantity}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+        {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+      </CollapsibleSection>
+    </div>
   )
 }

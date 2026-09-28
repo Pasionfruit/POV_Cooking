@@ -595,6 +595,13 @@ code {
   align-items: flex-start;
 }
 
+/* .card-body's flex-start alignment shrinks children to content width by
+   default; force full width here so the meta row has room to push location
+   and quantity to the card's right edge. */
+.pantry-card .card-meta {
+  width: 100%;
+}
+
 .pantry-card-head {
   display: flex;
   flex-wrap: wrap;
@@ -607,13 +614,6 @@ code {
 .pantry-card-name {
   font-weight: 600;
   overflow-wrap: anywhere;
-}
-
-.pantry-select-checkbox {
-  width: auto;
-  flex-shrink: 0;
-  accent-color: var(--accent);
-  cursor: pointer;
 }
 
 .select-toggle.active {
@@ -715,6 +715,7 @@ code {
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 8px;
+  padding-top: 12px;
   margin-bottom: 12px;
 }
 
@@ -722,14 +723,14 @@ code {
   flex: 1 1 220px;
 }
 
-.grocery-toolbar > button {
-  flex-shrink: 0;
-}
-
+/* Scrolls once the list runs past roughly 10 rows, instead of growing the
+   page indefinitely. */
 .grocery-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  max-height: 560px;
+  overflow-y: auto;
 }
 
 .grocery-item {
@@ -920,6 +921,11 @@ code {
   font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
+}
+
+.pantry-meta-right {
+  display: flex;
+  gap: 10px;
   margin-left: auto;
 }
 
@@ -1628,6 +1634,10 @@ code {
   margin-bottom: 12px;
 }
 
+.form-mode-row .chip {
+  border-radius: var(--radius);
+}
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -1841,7 +1851,11 @@ code {
 }
 
 .week-nav button {
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 12px;
   font-size: 0.85rem;
 }
 
@@ -1875,7 +1889,8 @@ code {
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
-  padding: 6px 12px;
+  height: 32px;
+  padding: 0 12px;
   font-size: 0.85rem;
 }
 
@@ -2132,6 +2147,7 @@ code {
 /* Shared by every collapsible section (spinner, pantry add-item, what-can-I-make) */
 .collapsible-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -2143,9 +2159,17 @@ code {
 
 .collapsible-head-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* Matches the 32px height of the adjacent .collapse-toggle (18px icon + 6px
+   padding + 1px border, each side). */
+.header-action-button {
+  padding: 5px 12px;
+  font-size: 0.85rem;
 }
 
 .add-item-button {
@@ -2193,6 +2217,7 @@ code {
 .wheel-head-controls .chip {
   font-size: 0.82rem;
   padding: 4px 12px;
+  border-radius: var(--radius);
 }
 
 .wheel-panel .wheel-wrap {
@@ -2347,6 +2372,10 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.font-option {
+  border-radius: var(--radius);
 }
 
 /* -------------------------------------------------------------------- group */

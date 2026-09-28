@@ -415,26 +415,21 @@ export default function Pantry() {
                     selectMode && selectedIds.has(item.id) ? 'selected' : ''
                   }`}
                   onClick={selectMode ? () => toggleSelected(item.id) : undefined}
+                  role={selectMode ? 'checkbox' : undefined}
+                  aria-checked={selectMode ? selectedIds.has(item.id) : undefined}
+                  aria-label={selectMode ? `Select ${item.name}` : undefined}
                 >
                   <div className="card-body">
                     <div className="pantry-card-head">
-                      {selectMode && (
-                        <input
-                          type="checkbox"
-                          className="pantry-select-checkbox"
-                          checked={selectedIds.has(item.id)}
-                          onChange={() => toggleSelected(item.id)}
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label={`Select ${item.name}`}
-                        />
-                      )}
                       <span className="pantry-card-name">{item.name}</span>
                       <span className="pantry-type">{item.type || 'Other'}</span>
                     </div>
                     <div className="card-meta">
-                      <span>{item.location}</span>
-                      {item.quantity && <span>{item.quantity}</span>}
                       <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
+                      <span className="pantry-meta-right">
+                        <span>{item.location}</span>
+                        {item.quantity && <span>{item.quantity}</span>}
+                      </span>
                     </div>
                     {!selectMode && (
                       <div className="card-actions pantry-actions">

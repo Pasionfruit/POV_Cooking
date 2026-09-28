@@ -1,54 +1,6 @@
 [
   {
-    "id": "b9537b88-d1f3-4a9b-b656-6c5c7ee2442e",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "250 g pizza dough",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.611Z",
-    "updatedAt": "2026-09-28T02:46:28.611Z"
-  },
-  {
-    "id": "5a0f72ed-7788-414e-8798-d6cda97487dd",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "6 fresh basil leaves",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.615Z",
-    "updatedAt": "2026-09-28T02:46:28.615Z"
-  },
-  {
-    "id": "d57b3a48-6908-49d2-b922-364a5daf44a2",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "1 tbsp olive oil",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.617Z",
-    "updatedAt": "2026-09-28T02:46:28.617Z"
-  },
-  {
-    "id": "372fbc65-fa40-44c6-aab9-858b7eecc258",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "Pinch of salt",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.619Z",
-    "updatedAt": "2026-09-28T02:46:28.619Z"
-  },
-  {
-    "id": "749039be-f175-4966-b6e9-ad839936a54a",
+    "id": "78c4d184-c71b-409d-8985-db12d2814fd2",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 kg chicken thighs, bone-in",
@@ -56,47 +8,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.621Z",
-    "updatedAt": "2026-09-28T02:46:28.621Z"
+    "createdAt": "2026-09-28T02:58:59.952Z",
+    "updatedAt": "2026-09-28T02:58:59.952Z"
   },
   {
-    "id": "2f44f1d4-b64f-43c4-b8ee-0b53c2ed2e02",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "120 ml soy sauce",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.623Z",
-    "updatedAt": "2026-09-28T02:46:28.623Z"
-  },
-  {
-    "id": "6967daf0-21c9-4563-868b-e22b690c2584",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "120 ml cane or white vinegar",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.625Z",
-    "updatedAt": "2026-09-28T02:46:28.625Z"
-  },
-  {
-    "id": "a00f4bfa-c542-40c1-8a82-e3f958d38a3e",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "1 head garlic, smashed",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.627Z",
-    "updatedAt": "2026-09-28T02:46:28.627Z"
-  },
-  {
-    "id": "2694d383-6b64-4687-9624-ff8304cf131e",
+    "id": "a3a39d35-c50b-447b-b4e7-6d66f14e1438",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "3 bay leaves",
@@ -104,11 +20,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.629Z",
-    "updatedAt": "2026-09-28T02:46:28.629Z"
+    "createdAt": "2026-09-28T02:58:59.955Z",
+    "updatedAt": "2026-09-28T02:58:59.955Z"
   },
   {
-    "id": "e6e9deaf-0b75-476c-b4a9-718b2adf2a52",
+    "id": "25a8bd9f-b709-4385-aa64-3f039ca2f52e",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 tsp whole black peppercorns",
@@ -116,11 +32,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.631Z",
-    "updatedAt": "2026-09-28T02:46:28.631Z"
+    "createdAt": "2026-09-28T02:58:59.958Z",
+    "updatedAt": "2026-09-28T02:58:59.958Z"
   },
   {
-    "id": "d0b7a5a7-3a1e-48c1-afb2-f51268b23f9a",
+    "id": "df8e9a4b-bd71-4bef-9219-e9039cf9fdb4",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 tbsp brown sugar",
@@ -128,11 +44,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.633Z",
-    "updatedAt": "2026-09-28T02:46:28.633Z"
+    "createdAt": "2026-09-28T02:58:59.960Z",
+    "updatedAt": "2026-09-28T02:58:59.960Z"
   },
   {
-    "id": "efedb0d6-2cea-4a58-8cac-e4426b5587cf",
+    "id": "03688f6a-da8b-4fae-a03c-121d3ebc79ae",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 cup water",
@@ -140,35 +56,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.635Z",
-    "updatedAt": "2026-09-28T02:46:28.635Z"
+    "createdAt": "2026-09-28T02:58:59.962Z",
+    "updatedAt": "2026-09-28T02:58:59.962Z"
   },
   {
-    "id": "09e62b9a-9f75-415a-a96d-2fc17ce3be49",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "80 ml tomato passata",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.636Z",
-    "updatedAt": "2026-09-28T02:46:28.636Z"
-  },
-  {
-    "id": "9c2b594a-cdf9-43ce-8a04-b9c54b80aa7d",
-    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "groupId": null,
-    "name": "125 g fresh mozzarella, torn",
-    "catalogItemId": null,
-    "category": null,
-    "quantity": null,
-    "checked": false,
-    "createdAt": "2026-09-28T02:46:28.638Z",
-    "updatedAt": "2026-09-28T02:46:28.638Z"
-  },
-  {
-    "id": "f50fdc3a-9d26-4466-a531-b3dba99b8e15",
+    "id": "faffb3cf-52ec-46bc-8d20-2395be9a03e5",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "50 g rolled oats",
@@ -176,11 +68,47 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.640Z",
-    "updatedAt": "2026-09-28T02:46:28.640Z"
+    "createdAt": "2026-09-28T02:58:59.964Z",
+    "updatedAt": "2026-09-28T02:58:59.964Z"
   },
   {
-    "id": "091062ad-bd68-432e-b926-2bcbbddf2437",
+    "id": "07199712-7ad5-4cff-bd1e-6fdf36da2d23",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "120 ml soy sauce",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.966Z",
+    "updatedAt": "2026-09-28T02:58:59.966Z"
+  },
+  {
+    "id": "ab065a53-f2f3-4bfb-81e2-791999dd21bd",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "120 ml cane or white vinegar",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.968Z",
+    "updatedAt": "2026-09-28T02:58:59.968Z"
+  },
+  {
+    "id": "493bf4c4-1dca-439f-8221-52351445d6fd",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "1 head garlic, smashed",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.970Z",
+    "updatedAt": "2026-09-28T02:58:59.970Z"
+  },
+  {
+    "id": "687299e6-1c0a-4877-a5c2-db30eea5179f",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "120 ml milk of choice",
@@ -188,11 +116,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.642Z",
-    "updatedAt": "2026-09-28T02:46:28.642Z"
+    "createdAt": "2026-09-28T02:58:59.972Z",
+    "updatedAt": "2026-09-28T02:58:59.972Z"
   },
   {
-    "id": "9143e876-9fbc-48b8-99c8-1e38a42597cc",
+    "id": "7fd5cd09-48e5-49d4-8ea6-e60d788551be",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 tbsp peanut butter",
@@ -200,11 +128,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.644Z",
-    "updatedAt": "2026-09-28T02:46:28.644Z"
+    "createdAt": "2026-09-28T02:58:59.974Z",
+    "updatedAt": "2026-09-28T02:58:59.974Z"
   },
   {
-    "id": "086dd382-2c36-4a25-bbea-16508e24f66f",
+    "id": "bf037d26-14eb-4729-b037-56e2c0d85892",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 tsp honey or maple syrup",
@@ -212,11 +140,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.645Z",
-    "updatedAt": "2026-09-28T02:46:28.646Z"
+    "createdAt": "2026-09-28T02:58:59.976Z",
+    "updatedAt": "2026-09-28T02:58:59.976Z"
   },
   {
-    "id": "30acdc1b-762c-46c9-8923-e0cf8753d7a2",
+    "id": "21b1c46d-4a52-4762-a1a6-d9ab2ee5cd05",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "1 tbsp chia seeds",
@@ -224,11 +152,11 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.647Z",
-    "updatedAt": "2026-09-28T02:46:28.647Z"
+    "createdAt": "2026-09-28T02:58:59.978Z",
+    "updatedAt": "2026-09-28T02:58:59.978Z"
   },
   {
-    "id": "ad42a125-d000-4323-a35f-33defeddb165",
+    "id": "125199bf-d5c6-4a3c-87ef-d8a85da16f2d",
     "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
     "groupId": null,
     "name": "Banana slices, to top",
@@ -236,7 +164,79 @@
     "category": null,
     "quantity": null,
     "checked": false,
-    "createdAt": "2026-09-28T02:46:28.649Z",
-    "updatedAt": "2026-09-28T02:46:28.649Z"
+    "createdAt": "2026-09-28T02:58:59.980Z",
+    "updatedAt": "2026-09-28T02:58:59.980Z"
+  },
+  {
+    "id": "dc163cb7-15ad-4fdc-a206-81f0e6b20e49",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "250 g pizza dough",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.982Z",
+    "updatedAt": "2026-09-28T02:58:59.982Z"
+  },
+  {
+    "id": "a94cd311-4537-4d18-ae9d-e28cf118e8d5",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "80 ml tomato passata",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.984Z",
+    "updatedAt": "2026-09-28T02:58:59.984Z"
+  },
+  {
+    "id": "c35b3653-0b19-4bfc-9a11-fb25b8b0cb3d",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "125 g fresh mozzarella, torn",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.986Z",
+    "updatedAt": "2026-09-28T02:58:59.986Z"
+  },
+  {
+    "id": "45754249-efab-4ef7-a5d5-5863a3e83e03",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "6 fresh basil leaves",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.988Z",
+    "updatedAt": "2026-09-28T02:58:59.988Z"
+  },
+  {
+    "id": "547a6f69-a91a-4988-91c7-318d383eb954",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "1 tbsp olive oil",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.989Z",
+    "updatedAt": "2026-09-28T02:58:59.989Z"
+  },
+  {
+    "id": "700ee45a-0e51-41f4-b2d6-3880b007e0f0",
+    "userId": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
+    "groupId": null,
+    "name": "Pinch of salt",
+    "catalogItemId": null,
+    "category": null,
+    "quantity": null,
+    "checked": false,
+    "createdAt": "2026-09-28T02:58:59.992Z",
+    "updatedAt": "2026-09-28T02:58:59.992Z"
   }
 ]
