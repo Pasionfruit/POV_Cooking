@@ -2501,9 +2501,23 @@ code {
 
 /* Calmer, always-two-column layout on small screens */
 @media (max-width: 600px) {
+  .navbar {
+    flex-wrap: nowrap;
+  }
+
+  .brand {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   .nav-links {
-    flex: 1 1 100%;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
     justify-content: flex-end;
+    gap: 2px;
   }
 
   .page {
