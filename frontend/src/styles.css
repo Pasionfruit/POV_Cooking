@@ -1060,11 +1060,15 @@ code {
 }
 
 .heart-button.large {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
   padding: 8px;
 }
 
 /* Save toggle floats over the top-right of the card image */
 .heart-button.card-save {
+  border-radius: var(--radius);
   position: absolute;
   top: 6px;
   right: 6px;
@@ -1354,6 +1358,8 @@ code {
 }
 
 .timer-buttons {
+  width: 100%;
+  justify-content: space-between;
   display: flex;
   gap: 8px;
 }
@@ -2359,5 +2365,17 @@ code {
 
 .home-filters > .chip {
   height: 44px;
+  border-radius: var(--radius);
+}
+
+.detail-actions .pill.large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: var(--radius);
+}
+
+.timer-presets .chip {
   border-radius: var(--radius);
 }

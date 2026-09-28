@@ -239,6 +239,9 @@ export default function Timer({ presets = [] }) {
           </label>
         </div>
         <div className="timer-buttons">
+          <button type="button" onClick={reset}>
+            Reset
+          </button>
           {running ? (
             <button type="button" onClick={() => setRunning(false)}>
               Pause
@@ -248,9 +251,6 @@ export default function Timer({ presets = [] }) {
               {paused ? 'Resume' : 'Start'}
             </button>
           )}
-          <button type="button" onClick={reset}>
-            Reset
-          </button>
         </div>
       </div>
       )}
