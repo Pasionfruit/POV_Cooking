@@ -1,8 +1,22 @@
 import React from 'react'
 
 // Generic yes/no popup, same modal chrome as the rest of the app
-// (AddItemModal / ReceiptConfirmModal / BarcodeScanner).
-export default function ConfirmModal({ title, items, message, confirmLabel = 'Confirm', busy = false, onConfirm, onCancel }) {
+// (AddItemModal / ReceiptConfirmModal / BarcodeScanner). Pass `selected` +
+// `onToggleItem` to let the user uncheck individual items before confirming
+// (e.g. grocery "Clear all"); omit them for a plain confirm/cancel dialog.
+export default function ConfirmModal({
+  title,
+  items,
+  message,
+  confirmLabel = 'Confirm',
+  busy = false,
+  onConfirm,
+  onCancel,
+  selected,
+  onToggleItem,
+}) {
+  const selectable = !!selected
+  const noneSelected = selectable && selected.every((s) => !s)
   return (
     <div className="modal-backdrop" onClick={onCancel} role="presentation">
       <div
@@ -19,10 +33,19 @@ export default function ConfirmModal({ title, items, message, confirmLabel = 'Co
           {title}
         </h3>
         {items && items.length > 0 && (
-          <ul className="confirm-modal-list">
-            {items.map((name, i) => (
-              <li key={i}>{name}</li>
-            ))}
+          <ul className={`confirm-modal-list ${selectable ? 'confirm-modal-list-selectable' : ''}`}>
+            {items.map((name, i) =>
+              selectable ? (
+                <li key={i}>
+                  <label className="confirm-modal-item">
+                    <input type="checkbox" checked={selected[i]} onChange={() => onToggleItem(i)} disabled={busy} />
+                    <span>{name}</span>
+                  </label>
+                </li>
+              ) : (
+                <li key={i}>{name}</li>
+              )
+            )}
           </ul>
         )}
         {message && <p className="muted">{message}</p>}
@@ -30,7 +53,7 @@ export default function ConfirmModal({ title, items, message, confirmLabel = 'Co
           <button type="button" onClick={onCancel} disabled={busy}>
             Cancel
           </button>
-          <button type="button" className="danger primary" onClick={onConfirm} disabled={busy}>
+          <button type="button" className="danger primary" onClick={onConfirm} disabled={busy || noneSelected}>
             {busy ? 'Removing…' : confirmLabel}
           </button>
         </div>

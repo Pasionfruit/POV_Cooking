@@ -60,6 +60,7 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
   const [toast, setToast] = useState(null)
   const [open, setOpen] = useState(false)
   const [pendingClearAll, setPendingClearAll] = useState(false)
+  const [clearAllSelected, setClearAllSelected] = useState([])
   const [clearAllBusy, setClearAllBusy] = useState(false)
 
   function refresh() {
@@ -102,6 +103,7 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
   // Adds every ingredient from this week's planned recipes that isn't
   // already sitting unchecked on the list.
   function handlePopulateFromMealPlan() {
+    setOpen(true)
     const existing = new Set(
       items.filter((item) => !item.checked && !item.catalogItemId).map((item) => item.name.toLowerCase())
     )
@@ -160,14 +162,22 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
 
   function requestClearAll() {
     if (items.length === 0) return
+    setClearAllSelected(items.map(() => true))
     setPendingClearAll(true)
   }
 
+  function toggleClearAllItem(index) {
+    setClearAllSelected((sel) => sel.map((v, i) => (i === index ? !v : v)))
+  }
+
   async function confirmClearAll() {
+    const toRemove = items.filter((_, i) => clearAllSelected[i])
+    if (toRemove.length === 0) return
     setClearAllBusy(true)
     try {
-      await Promise.all(items.map((i) => api.deleteGroceryItem(token, i.id)))
-      setItems([])
+      await Promise.all(toRemove.map((i) => api.deleteGroceryItem(token, i.id)))
+      const removedIds = new Set(toRemove.map((i) => i.id))
+      setItems((list) => list.filter((i) => !removedIds.has(i.id)))
       setPendingClearAll(false)
     } catch (err) {
       setError(err.message)
@@ -250,11 +260,16 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
       </CollapsibleSection>
       {pendingClearAll && (
         <ConfirmModal
-          title={items.length === 1 ? 'Remove item?' : `Remove ${items.length} items?`}
+          title={(() => {
+            const n = clearAllSelected.filter(Boolean).length
+            return n === 1 ? 'Remove item?' : `Remove ${n} item${n === 1 ? '' : 's'}?`
+          })()}
           items={items.map((i) => i.name)}
           message="This cannot be undone."
           confirmLabel="Remove"
           busy={clearAllBusy}
+          selected={clearAllSelected}
+          onToggleItem={toggleClearAllItem}
           onConfirm={confirmClearAll}
           onCancel={() => setPendingClearAll(false)}
         />

@@ -54,6 +54,7 @@ export default function Pantry() {
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(() => new Set())
   const [pendingDelete, setPendingDelete] = useState(null)
+  const [pendingDeleteSelected, setPendingDeleteSelected] = useState([])
   const [deleteBusy, setDeleteBusy] = useState(false)
 
   useEffect(() => {
@@ -107,24 +108,33 @@ export default function Pantry() {
 
   function requestDelete(item) {
     setPendingDelete({ items: [item] })
+    setPendingDeleteSelected([true])
   }
 
   function requestBulkDelete() {
     const targets = items.filter((item) => selectedIds.has(item.id))
     if (targets.length === 0) return
     setPendingDelete({ items: targets })
+    setPendingDeleteSelected(targets.map(() => true))
+  }
+
+  function togglePendingDeleteItem(index) {
+    setPendingDeleteSelected((sel) => sel.map((v, i) => (i === index ? !v : v)))
   }
 
   async function confirmDelete() {
     if (!pendingDelete) return
+    const toRemove = pendingDelete.items.filter((_, i) => pendingDeleteSelected[i])
+    if (toRemove.length === 0) return
     setDeleteBusy(true)
     try {
-      await Promise.all(pendingDelete.items.map((item) => api.deletePantryItem(token, item.id)))
-      const deletedIds = new Set(pendingDelete.items.map((item) => item.id))
+      await Promise.all(toRemove.map((item) => api.deletePantryItem(token, item.id)))
+      const deletedIds = new Set(toRemove.map((item) => item.id))
+      const batchIds = new Set(pendingDelete.items.map((item) => item.id))
       if (editing && deletedIds.has(editing.id)) setEditing(null)
       setSelectedIds((prev) => {
         const next = new Set(prev)
-        deletedIds.forEach((id) => next.delete(id))
+        batchIds.forEach((id) => next.delete(id))
         return next
       })
       setPendingDelete(null)
@@ -337,7 +347,7 @@ export default function Pantry() {
                   className={`link-button select-toggle ${selectMode ? 'active' : ''}`}
                   onClick={toggleSelectMode}
                 >
-                  {selectMode ? 'Cancel' : 'Select'}
+                  {selectMode ? 'Cancel' : 'Remove Many'}
                 </button>
               )}
               <button
@@ -523,11 +533,16 @@ export default function Pantry() {
       )}
       {pendingDelete && (
         <ConfirmModal
-          title={pendingDelete.items.length === 1 ? 'Remove item?' : `Remove ${pendingDelete.items.length} items?`}
+          title={(() => {
+            const n = pendingDeleteSelected.filter(Boolean).length
+            return n === 1 ? 'Remove item?' : `Remove ${n} item${n === 1 ? '' : 's'}?`
+          })()}
           items={pendingDelete.items.map((item) => item.name)}
           message="This cannot be undone."
           confirmLabel="Remove"
           busy={deleteBusy}
+          selected={pendingDeleteSelected}
+          onToggleItem={togglePendingDeleteItem}
           onConfirm={confirmDelete}
           onCancel={() => setPendingDelete(null)}
         />
