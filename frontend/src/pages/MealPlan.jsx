@@ -74,8 +74,8 @@ export default function MealPlan() {
   const recipeById = Object.fromEntries(recipes.map((r) => [r.id, r]))
 
   useEffect(() => {
-    api.getRecipes().then(({ recipes }) => setRecipes(recipes))
-  }, [])
+    api.getRecipes(token).then(({ recipes }) => setRecipes(recipes))
+  }, [token])
 
   useEffect(() => {
     setLoading(true)

@@ -12,6 +12,7 @@ import Profile from './pages/Profile'
 import Group from './pages/Group'
 import JoinGroup from './pages/JoinGroup'
 import Admin from './pages/Admin'
+import MyRecipes from './pages/MyRecipes'
 
 export default function App() {
   return (
@@ -43,6 +44,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Suggest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-recipes"
+            element={
+              <ProtectedRoute>
+                <MyRecipes />
               </ProtectedRoute>
             }
           />

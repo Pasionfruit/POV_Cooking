@@ -29,11 +29,11 @@ export default function RecipeDetail() {
 
   useEffect(() => {
     api
-      .getRecipe(id)
+      .getRecipe(id, token)
       .then(({ recipe }) => setRecipe(recipe))
       .catch((err) => setError(err.message))
     setChecked(loadChecklist(id))
-  }, [id])
+  }, [id, token])
 
   useEffect(() => {
     localStorage.setItem(`pov_checklist_${id}`, JSON.stringify(checked))
@@ -60,6 +60,7 @@ export default function RecipeDetail() {
   if (!recipe) return <p className="muted">Loading…</p>
 
   const isSaved = savedIds.has(recipe.id)
+  const isOwnPersonalRecipe = Boolean(recipe.personal && user && recipe.createdBy === user.id)
   const ingredients = recipe.ingredients || []
   const steps = recipe.steps || []
   const anyChecked = checked.ingredients.length > 0 || checked.steps.length > 0
@@ -98,6 +99,16 @@ export default function RecipeDetail() {
           {isAdmin && (
             <>
               <Link className="button" to={`/admin?edit=${recipe.id}`}>
+                Edit
+              </Link>
+              <button className="danger" onClick={handleDelete}>
+                Delete
+              </button>
+            </>
+          )}
+          {isOwnPersonalRecipe && (
+            <>
+              <Link className="button" to={`/my-recipes?edit=${recipe.id}`}>
                 Edit
               </Link>
               <button className="danger" onClick={handleDelete}>

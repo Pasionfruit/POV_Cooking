@@ -27,7 +27,7 @@ export default function Admin() {
   const [catalogError, setCatalogError] = useState(null)
 
   function refresh() {
-    return api.getRecipes().then(({ recipes }) => setRecipes(recipes))
+    return api.getRecipes(token).then(({ recipes }) => setRecipes(recipes))
   }
 
   function refreshCatalog() {

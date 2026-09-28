@@ -45,7 +45,7 @@ function FeaturedBanner({ recipe }) {
 }
 
 export default function Home() {
-  const { user } = useAuth()
+  const { user, token } = useAuth()
   const [recipes, setRecipes] = useState(null)
   const [featured, setFeatured] = useState(null)
   const [error, setError] = useState(null)
@@ -56,6 +56,7 @@ export default function Home() {
   const [tags, setTags] = useState([])
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
+  const [personalOnly, setPersonalOnly] = useState(false)
   const [ideasOpen, setIdeasOpen] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [page, setPage] = useState(1)
@@ -65,18 +66,18 @@ export default function Home() {
 
   useEffect(() => {
     api
-      .getRecipes()
+      .getRecipes(token)
       .then(({ recipes }) => setRecipes(recipes))
       .catch((err) => setError(err.message))
     api
       .getFeatured()
       .then(({ recipe }) => setFeatured(recipe))
       .catch(() => setFeatured(null))
-  }, [])
+  }, [token])
 
   useEffect(() => {
     setPage(1)
-  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, pageSize])
+  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, personalOnly, pageSize])
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
@@ -87,6 +88,7 @@ export default function Home() {
   const matching = recipes.filter((r) => {
     if (savedOnly && !savedIds.has(r.id)) return false
     if (neverCooked && triedIds.has(r.id)) return false
+    if (personalOnly && !(r.personal && r.createdBy === user?.id)) return false
     if (mealType && r.mealType !== mealType) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
@@ -102,7 +104,7 @@ export default function Home() {
   const currentPage = Math.min(page, totalPages)
   const visible = matching.slice((currentPage - 1) * pageSize, currentPage * pageSize)
   const filtersActive = Boolean(
-    query || cuisine || mealType || maxTime || tags.length || savedOnly || neverCooked
+    query || cuisine || mealType || maxTime || tags.length || savedOnly || neverCooked || personalOnly
   )
 
   return (
@@ -139,17 +141,30 @@ export default function Home() {
           </button>
         </div>
         <div className="home-filters-secondary">
-          {user && (
-            <button
-              type="button"
-              className={`chip ${neverCooked ? 'active' : ''}`}
-              onClick={() => setNeverCooked(!neverCooked)}
-              title="Show only recipes you have never cooked"
-              aria-pressed={neverCooked}
-            >
-              Never cooked
-            </button>
-          )}
+          <div className="home-filters-left">
+            {user && (
+              <button
+                type="button"
+                className={`chip ${neverCooked ? 'active' : ''}`}
+                onClick={() => setNeverCooked(!neverCooked)}
+                title="Show only recipes you have never cooked"
+                aria-pressed={neverCooked}
+              >
+                Never cooked
+              </button>
+            )}
+            {user && (
+              <button
+                type="button"
+                className={`chip ${personalOnly ? 'active' : ''}`}
+                onClick={() => setPersonalOnly(!personalOnly)}
+                title="Show only recipes you added yourself"
+                aria-pressed={personalOnly}
+              >
+                Personal
+              </button>
+            )}
+          </div>
           <div className="home-filters-right">
             {user && (
               <button
@@ -215,6 +230,7 @@ export default function Home() {
               setTags([])
               setSavedOnly(false)
               setNeverCooked(false)
+              setPersonalOnly(false)
             }}
           >
             Clear

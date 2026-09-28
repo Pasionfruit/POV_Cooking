@@ -77,6 +77,7 @@ export default function NavBar() {
               <div className="nav-menu-links" id="account-menu-links">
                 <NavLink to="/profile" onClick={() => setMenuOpen(false)}>Profile</NavLink>
                 <NavLink to="/group" onClick={() => setMenuOpen(false)}>Group</NavLink>
+                <NavLink to="/my-recipes" onClick={() => setMenuOpen(false)}>My Recipes</NavLink>
                 <NavLink to="/suggest" onClick={() => setMenuOpen(false)}>Suggest a recipe</NavLink>
               </div>
             )}

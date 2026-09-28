@@ -75,7 +75,7 @@ export default function Pantry() {
 
   useEffect(() => {
     refresh()
-    api.getRecipes().then(({ recipes }) => setRecipes(recipes))
+    api.getRecipes(token).then(({ recipes }) => setRecipes(recipes))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 

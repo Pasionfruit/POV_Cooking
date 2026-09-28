@@ -37,8 +37,8 @@ export const deleteAccount = (token) => request('/auth/me', { method: 'DELETE', 
 export const refreshToken = (token) => request('/auth/refresh', { method: 'POST', token })
 
 // recipes
-export const getRecipes = () => request('/recipes')
-export const getRecipe = (id) => request(`/recipes/${id}`)
+export const getRecipes = (token) => request('/recipes', { token })
+export const getRecipe = (id, token) => request(`/recipes/${id}`, { token })
 export const createRecipe = (token, recipe) => request('/recipes', { method: 'POST', token, body: recipe })
 export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { method: 'PUT', token, body: recipe })
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })

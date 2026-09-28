@@ -16,12 +16,14 @@ function parseSourceUrl(input) {
   }
 }
 
-// Shared recipe editor: used for admin CRUD, reviewing an imported link, and
-// user suggestions. "Form" mode covers the common fields; "JSON" mode exposes
-// the full semi-structured document for anything else. context="suggest" trades
-// the Image URL field for the source website the recipe came from.
+// Shared recipe editor: used for admin CRUD, reviewing an imported link, user
+// suggestions, and personal recipes. "Form" mode covers the common fields;
+// "JSON" mode exposes the full semi-structured document for anything else.
+// context="suggest" trades the Image URL field for the source website the
+// recipe came from; context="personal" drops the Image URL field entirely.
 export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLabel, cancelLabel, context }) {
   const isSuggestion = context === 'suggest'
+  const isPersonal = context === 'personal'
   const [mode, setMode] = useState('form')
   const [error, setError] = useState(null)
   const [fields, setFields] = useState(() => ({
@@ -133,7 +135,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
                 placeholder="Where you found it, e.g. seriouseats.com/…"
               />
             </label>
-          ) : (
+          ) : isPersonal ? null : (
             <label>
               Image URL
               <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />

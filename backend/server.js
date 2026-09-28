@@ -99,6 +99,31 @@ function authMiddleware(req, res, next) {
   }
 }
 
+// Like authMiddleware, but never rejects — attaches req.user when a valid
+// token is present, otherwise leaves it undefined. Used on the public recipe
+// routes so a personal recipe's owner sees it while everyone else does not.
+function optionalAuth(req, res, next) {
+  const header = req.headers.authorization || ''
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null
+  if (token) {
+    try {
+      const payload = jwt.verify(token, JWT_SECRET)
+      req.user = users.findById(payload.sub) || undefined
+    } catch {
+      req.user = undefined
+    }
+  }
+  next()
+}
+
+function canVisitRecipe(user, recipe) {
+  return !recipe.personal || (user && recipe.createdBy === user.id)
+}
+
+function canManageRecipe(user, recipe) {
+  return user.role === 'admin' || (recipe.personal && recipe.createdBy === user.id)
+}
+
 function adminMiddleware(req, res, next) {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' })
   next()
@@ -461,37 +486,47 @@ function normalizeRecipe(input, userId, existing) {
 
 // ---------------------------------------------------------------- recipe routes
 
-app.get('/recipes', (req, res) => {
-  res.json({ recipes: recipes.all() })
+app.get('/recipes', optionalAuth, (req, res) => {
+  res.json({ recipes: recipes.all().filter((r) => canVisitRecipe(req.user, r)) })
 })
 
-app.get('/recipes/:id', (req, res) => {
+app.get('/recipes/:id', optionalAuth, (req, res) => {
   const recipe = recipes.findById(req.params.id)
-  if (!recipe) return res.status(404).json({ error: 'Recipe not found' })
+  if (!recipe || !canVisitRecipe(req.user, recipe)) return res.status(404).json({ error: 'Recipe not found' })
   res.json({ recipe })
 })
 
-app.post('/recipes', authMiddleware, adminMiddleware, (req, res) => {
+// Admins create full cookbook recipes. Everyone else can create a personal
+// recipe instead — same form, minus the image field, visible only to them.
+app.post('/recipes', authMiddleware, (req, res) => {
+  const isAdmin = req.user.role === 'admin'
+  const body = isAdmin ? req.body : { ...req.body, personal: true, image: null }
   try {
-    const recipe = recipes.insert(normalizeRecipe(req.body, req.user.id))
+    const recipe = recipes.insert(normalizeRecipe(body, req.user.id))
     res.status(201).json({ recipe })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
 })
 
-app.put('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
+app.put('/recipes/:id', authMiddleware, (req, res) => {
   const existing = recipes.findById(req.params.id)
   if (!existing) return res.status(404).json({ error: 'Recipe not found' })
+  if (!canManageRecipe(req.user, existing)) return res.status(403).json({ error: 'Not allowed to edit this recipe' })
+  const isAdmin = req.user.role === 'admin'
+  const body = isAdmin ? req.body : { ...req.body, personal: true, image: null }
   try {
-    const updated = recipes.update(existing.id, normalizeRecipe(req.body, req.user.id, existing))
+    const updated = recipes.update(existing.id, normalizeRecipe(body, req.user.id, existing))
     res.json({ recipe: updated })
   } catch (err) {
     res.status(400).json({ error: err.message })
   }
 })
 
-app.delete('/recipes/:id', authMiddleware, adminMiddleware, (req, res) => {
+app.delete('/recipes/:id', authMiddleware, (req, res) => {
+  const existing = recipes.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Recipe not found' })
+  if (!canManageRecipe(req.user, existing)) return res.status(403).json({ error: 'Not allowed to delete this recipe' })
   const removed = recipes.remove((r) => r.id === req.params.id)
   if (!removed) return res.status(404).json({ error: 'Recipe not found' })
   saved.remove((s) => s.recipeId === req.params.id)

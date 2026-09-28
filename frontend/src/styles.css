@@ -2609,10 +2609,12 @@ code {
   height: 20px;
 }
 
-/* Wraps "Never cooked" + the saved/random group as a unit so the mobile rule
-   below can split them to opposite ends of their own row. `display: contents`
-   keeps them ordinary flex children of .home-filters everywhere else. */
+/* Wraps "Never cooked"/"Personal" + the saved/random group as units so the
+   mobile rule below can split them to opposite ends of their own row.
+   `display: contents` keeps them ordinary flex children of .home-filters
+   everywhere else. */
 .home-filters-secondary,
+.home-filters-left,
 .home-filters-right {
   display: contents;
 }
@@ -2639,6 +2641,7 @@ code {
     align-items: center;
   }
 
+  .home-filters-left,
   .home-filters-right {
     display: flex;
     gap: 8px;
