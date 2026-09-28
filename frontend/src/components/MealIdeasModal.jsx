@@ -51,7 +51,7 @@ export default function MealIdeasModal({ recipes, filteredRecipes, filtersActive
         onClick={(event) => event.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
-        <button type="button" className="modal-close" onClick={onClose} aria-label="Close meal ideas">?</button>
+        <button type="button" className="modal-close" onClick={onClose} aria-label="Close meal ideas">×</button>
         <h2 id="meal-ideas-title" className="modal-title">Meal ideas</h2>
         <RecipeSpinner recipes={recipes} filteredRecipes={filteredRecipes} filtersActive={filtersActive} initiallyOpen />
         <div className="panel">

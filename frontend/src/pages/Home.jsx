@@ -115,29 +115,31 @@ export default function Home() {
         </span>
       </div>
       <div className="filters home-filters">
-        <input
-          className="search"
-          type="search"
-          aria-label="Search recipes"
-          placeholder="Search title, tag, ingredient…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button
-          type="button"
-          className={`chip home-filter-icon ${cuisine || mealType || maxTime || tags.length ? 'active' : ''}`}
-          onClick={() => setFiltersOpen((open) => !open)}
-          aria-label={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
-          title={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
-          aria-expanded={filtersOpen}
-          aria-controls="recipe-filter-panel"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M3 4h18l-7 8v7l-4 2v-9z" />
-          </svg>
-        </button>
-        {user && (
-          <>
+        <div className="search-bar">
+          <input
+            className="search"
+            type="search"
+            aria-label="Search recipes"
+            placeholder="Search title, tag, ingredient…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            type="button"
+            className={`chip home-filter-icon ${cuisine || mealType || maxTime || tags.length ? 'active' : ''}`}
+            onClick={() => setFiltersOpen((open) => !open)}
+            aria-label={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
+            title={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
+            aria-expanded={filtersOpen}
+            aria-controls="recipe-filter-panel"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 4h18l-7 8v7l-4 2v-9z" />
+            </svg>
+          </button>
+        </div>
+        <div className="home-filters-secondary">
+          {user && (
             <button
               type="button"
               className={`chip ${neverCooked ? 'active' : ''}`}
@@ -147,28 +149,32 @@ export default function Home() {
             >
               Never cooked
             </button>
+          )}
+          <div className="home-filters-right">
+            {user && (
+              <button
+                type="button"
+                className={`chip home-filter-icon ${savedOnly ? 'active' : ''}`}
+                onClick={() => setSavedOnly(!savedOnly)}
+                title="Show only recipes you saved"
+                aria-label="Saved only"
+                aria-pressed={savedOnly}
+              >
+                <HeartIcon filled size={20} />
+              </button>
+            )}
             <button
               type="button"
-              className={`chip home-filter-icon ${savedOnly ? 'active' : ''}`}
-              onClick={() => setSavedOnly(!savedOnly)}
-              title="Show only recipes you saved"
-              aria-label="Saved only"
-              aria-pressed={savedOnly}
+              className="chip home-filter-icon"
+              onClick={() => setIdeasOpen(true)}
+              aria-label="Open randomizer and meal builder"
+              title="Randomize or build a meal"
+              aria-haspopup="dialog"
             >
-              <HeartIcon filled size={20} />
+              <DiceIcon />
             </button>
-          </>
-        )}
-        <button
-          type="button"
-          className="chip home-filter-icon"
-          onClick={() => setIdeasOpen(true)}
-          aria-label="Open randomizer and meal builder"
-          title="Randomize or build a meal"
-          aria-haspopup="dialog"
-        >
-          <DiceIcon />
-        </button>
+          </div>
+        </div>
       </div>
       {filtersOpen && (
         <div id="recipe-filter-panel" className="panel">

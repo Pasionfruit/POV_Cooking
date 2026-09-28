@@ -150,6 +150,21 @@ a {
   width: auto;
 }
 
+/* Keeps the search box and its filter icon on one row at every width, so the
+   icon never wraps onto its own line where it'd anchor its popup off-screen. */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 2 1 200px;
+  min-width: 0;
+}
+
+.search-bar .search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 /* --------------------------------------------------- tag multiselect filter */
 .tag-filter {
   position: relative;
@@ -226,6 +241,49 @@ a {
   font-size: 0.85rem;
 }
 
+/* ------------------------------------------------- pantry location/type/duration filter */
+.pantry-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pantry-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
+  color: var(--muted);
+}
+
+.pantry-filter-toggle.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pantry-filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 200px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.pantry-filter-clear {
+  display: block;
+  padding: 4px 0 0;
+  width: 100%;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
 input,
 textarea,
 select,
@@ -279,6 +337,12 @@ button.primary,
 
 button.danger {
   color: var(--danger);
+}
+
+button.danger.primary {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
 }
 
 button:disabled {
@@ -462,7 +526,8 @@ code {
 }
 
 .pantry-card .card-body {
-  gap: 8px;
+  padding: 8px 10px;
+  gap: 4px;
   align-items: flex-start;
 }
 
@@ -478,6 +543,25 @@ code {
 .pantry-card-name {
   font-weight: 600;
   overflow-wrap: anywhere;
+}
+
+.pantry-select-checkbox {
+  width: auto;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.select-toggle.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 /* A colour bar down the leading edge carries the expiry status. */
@@ -503,11 +587,40 @@ code {
 
 .pantry-card .pantry-actions {
   margin-top: auto;
+  align-self: flex-end;
 }
 
-.pantry-card .pantry-actions button {
-  padding: 4px 10px;
-  font-size: 0.82rem;
+.pantry-card .expiry-badge {
+  align-self: flex-end;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.icon-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.icon-button.danger {
+  color: var(--danger);
+}
+
+.icon-button.danger:hover {
+  border-color: var(--danger);
 }
 
 .pantry-type {
@@ -738,23 +851,28 @@ code {
 }
 
 .expiry-badge.warning {
-  background: #a1710a;
-  border-color: #a1710a;
-  color: #fff;
+  background: #a1710a1a;
+  border-color: #a1710a55;
+  color: #a1710a;
 }
 
 .expiry-badge.expired {
-  background: var(--danger);
-  border-color: var(--danger);
-  color: #fff;
+  background: #b3261e1a;
+  border-color: #b3261e55;
+  color: var(--danger);
 }
 
 :root[data-theme='dark'] .expiry-badge.fresh {
   color: #7fc79b;
 }
 
-:root[data-theme='dark'] .expiry-badge.soon {
+:root[data-theme='dark'] .expiry-badge.soon,
+:root[data-theme='dark'] .expiry-badge.warning {
   color: #e0b458;
+}
+
+:root[data-theme='dark'] .expiry-badge.expired {
+  color: #ff8a80;
 }
 
 .match-heading {
@@ -1647,6 +1765,7 @@ code {
 
 .week-nav button {
   padding: 6px 12px;
+  font-size: 0.85rem;
 }
 
 .week-label {
@@ -1904,7 +2023,7 @@ code {
 }
 
 .wheel-pointer {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   color: var(--accent);
   line-height: 1;
   margin-bottom: -6px;
@@ -1912,7 +2031,7 @@ code {
 }
 
 .wheel {
-  width: min(320px, 80vw);
+  width: min(220px, 60vw);
   height: auto;
   will-change: transform;
 }
@@ -1945,6 +2064,30 @@ code {
   margin: 0 0 10px;
 }
 
+.collapsible-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.add-item-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
 .section-title-icon {
   display: inline-flex;
   align-items: center;
@@ -1958,7 +2101,7 @@ code {
   flex-shrink: 0;
   padding: 6px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: none;
   color: var(--muted);
   cursor: pointer;
@@ -2232,7 +2375,7 @@ code {
     padding: 3px 9px;
   }
 
-  .filters .search {
+  .filters .search-bar {
     flex-basis: 100%;
   }
 
@@ -2288,6 +2431,14 @@ code {
   margin-top: 8px;
 }
 
+.pantry-items-panel .collapsible-head {
+  margin-top: 8px;
+}
+
+#pantry-items-body {
+  margin-top: 16px;
+}
+
 .meal-ideas-modal {
   width: min(760px, 100%);
   max-height: calc(100dvh - 32px);
@@ -2332,6 +2483,14 @@ code {
   height: 20px;
 }
 
+/* Wraps "Never cooked" + the saved/random group as a unit so the mobile rule
+   below can split them to opposite ends of their own row. `display: contents`
+   keeps them ordinary flex children of .home-filters everywhere else. */
+.home-filters-secondary,
+.home-filters-right {
+  display: contents;
+}
+
 @media (max-width: 600px) {
   .home-filters input,
   .home-filters select,
@@ -2340,11 +2499,23 @@ code {
     font-size: 1rem;
   }
 
-  .home-filters > input,
-  .home-filters > select,
-  .home-filters > button,
+  .home-filters input,
+  .home-filters select,
+  .home-filters button,
   .home-filters .tag-filter-toggle {
     min-height: 44px;
+  }
+
+  .home-filters-secondary {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .home-filters-right {
+    display: flex;
+    gap: 8px;
   }
 }
 
@@ -2363,7 +2534,7 @@ code {
   color: var(--text);
 }
 
-.home-filters > .chip {
+.home-filters .chip {
   height: 44px;
   border-radius: var(--radius);
 }

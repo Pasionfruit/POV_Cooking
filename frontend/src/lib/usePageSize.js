@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 
-// 6 cards per page on phones, 12 on larger screens. Shared by the recipe grid
-// and the pantry grid so both paginate the same way.
-export function usePageSize() {
+// 6 cards per page on phones, `desktopSize` on larger screens. Shared by the
+// recipe grid and the pantry grid so both paginate the same way, with the
+// desktop count adjustable per grid.
+export function usePageSize(desktopSize = 12) {
   const [small, setSmall] = useState(() => window.matchMedia('(max-width: 600px)').matches)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 600px)')
@@ -10,5 +11,5 @@ export function usePageSize() {
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])
-  return small ? 6 : 12
+  return small ? 6 : desktopSize
 }

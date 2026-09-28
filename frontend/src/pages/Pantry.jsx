@@ -4,8 +4,12 @@ import * as api from '../api'
 import AddItemModal from '../components/AddItemModal'
 import BarcodeScanner from '../components/BarcodeScanner'
 import CollapsibleSection from '../components/CollapsibleSection'
+import ConfirmModal from '../components/ConfirmModal'
+import PantryFilterMenu from '../components/PantryFilterMenu'
+import PencilIcon from '../components/PencilIcon'
 import ReceiptConfirmModal from '../components/ReceiptConfirmModal'
 import ReceiptScanner from '../components/ReceiptScanner'
+import TrashIcon from '../components/TrashIcon'
 import { useAuth } from '../contexts/AuthContext'
 import { ITEM_TYPES } from '../lib/itemTypes'
 import { STAPLES, daysUntilExpiry, expiryLabel, expiryStatus, matchRecipes } from '../lib/pantryMatch'
@@ -39,7 +43,7 @@ export default function Pantry() {
   const [scanStatus, setScanStatus] = useState(null)
   const [prefill, setPrefill] = useState(null)
   const [page, setPage] = useState(1)
-  const pageSize = usePageSize()
+  const pageSize = usePageSize(8)
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [makeOpen, setMakeOpen] = useState(false)
   const [pantryOpen, setPantryOpen] = useState(true)
@@ -47,6 +51,10 @@ export default function Pantry() {
   const [receiptScanning, setReceiptScanning] = useState(false)
   const [receiptCandidates, setReceiptCandidates] = useState(null)
   const [receiptBusy, setReceiptBusy] = useState(false)
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState(() => new Set())
+  const [pendingDelete, setPendingDelete] = useState(null)
+  const [deleteBusy, setDeleteBusy] = useState(false)
 
   useEffect(() => {
     setPage(1)
@@ -97,10 +105,49 @@ export default function Pantry() {
     }
   }
 
-  async function handleDelete(item) {
-    await api.deletePantryItem(token, item.id)
-    if (editing?.id === item.id) setEditing(null)
-    refresh()
+  function requestDelete(item) {
+    setPendingDelete({ items: [item] })
+  }
+
+  function requestBulkDelete() {
+    const targets = items.filter((item) => selectedIds.has(item.id))
+    if (targets.length === 0) return
+    setPendingDelete({ items: targets })
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) return
+    setDeleteBusy(true)
+    try {
+      await Promise.all(pendingDelete.items.map((item) => api.deletePantryItem(token, item.id)))
+      const deletedIds = new Set(pendingDelete.items.map((item) => item.id))
+      if (editing && deletedIds.has(editing.id)) setEditing(null)
+      setSelectedIds((prev) => {
+        const next = new Set(prev)
+        deletedIds.forEach((id) => next.delete(id))
+        return next
+      })
+      setPendingDelete(null)
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setDeleteBusy(false)
+    }
+  }
+
+  function toggleSelectMode() {
+    setSelectMode((v) => !v)
+    setSelectedIds(new Set())
+  }
+
+  function toggleSelected(id) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }
 
   async function handleAddSamples() {
@@ -274,54 +321,63 @@ export default function Pantry() {
         </div>
       )}
 
-      <div className="panel">
+      <div className="panel pantry-items-panel">
         <CollapsibleSection
-          title="Pantry items"
+          title="Pantry Items"
           open={pantryOpen}
           onToggle={() => setPantryOpen((open) => !open)}
           id="pantry-items-body"
+          actions={
+            <>
+              {items.length > 0 && (
+                <button
+                  type="button"
+                  className={`link-button select-toggle ${selectMode ? 'active' : ''}`}
+                  onClick={toggleSelectMode}
+                >
+                  {selectMode ? 'Cancel' : 'Select'}
+                </button>
+              )}
+              <button
+                type="button"
+                className="add-item-button"
+                aria-label="Add item"
+                title="Add item"
+                onClick={() => {
+                  setEditing(null)
+                  setPrefill(null)
+                  setScanStatus(null)
+                  setAddModalOpen(true)
+                }}
+              >
+                +
+              </button>
+            </>
+          }
         >
-          <div className="filters">
-            <button type="button" className="primary" onClick={() => {
-              setEditing(null)
-              setPrefill(null)
-              setScanStatus(null)
-              setAddModalOpen(true)
-            }}>Add item</button>
-          </div>
           {items.length > 0 && (
             <div className="filters">
-              <input
-                className="search"
-                type="search"
-                placeholder="Search items…"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                aria-label="Search pantry items"
-              />
-              <select value={location} onChange={(e) => setLocation(e.target.value)} aria-label="Filter by location">
-                <option value="">All locations</option>
-                {LOCATIONS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-              <select value={type} onChange={(e) => setType(e.target.value)} aria-label="Filter by type">
-                <option value="">All types</option>
-                {TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              <select value={duration} onChange={(e) => setDuration(e.target.value)} aria-label="Filter by duration left">
-                {DURATIONS.map((d) => (
-                  <option key={d.value} value={d.value}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
+              <div className="search-bar">
+                <input
+                  className="search"
+                  type="search"
+                  placeholder="Search items…"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label="Search pantry items"
+                />
+                <PantryFilterMenu
+                  locations={LOCATIONS}
+                  types={TYPES}
+                  durations={DURATIONS}
+                  location={location}
+                  type={type}
+                  duration={duration}
+                  onLocationChange={setLocation}
+                  onTypeChange={setType}
+                  onDurationChange={setDuration}
+                />
+              </div>
               {filtersActive && (
                 <button
                   type="button"
@@ -339,12 +395,30 @@ export default function Pantry() {
             </div>
           )}
 
+          {selectMode && (
+            <div className="bulk-actions">
+              <span className="muted small">{selectedIds.size} selected</span>
+              <button type="button" className="danger primary" disabled={selectedIds.size === 0} onClick={requestBulkDelete}>
+                Remove selected
+              </button>
+            </div>
+          )}
+
           {pageItems.length > 0 && (
             <div className="card-grid pantry-grid">
               {pageItems.map(({ item, days }) => (
                 <div key={item.id} className={`card pantry-card ${expiryStatus(days)}`}>
                   <div className="card-body">
                     <div className="pantry-card-head">
+                      {selectMode && (
+                        <input
+                          type="checkbox"
+                          className="pantry-select-checkbox"
+                          checked={selectedIds.has(item.id)}
+                          onChange={() => toggleSelected(item.id)}
+                          aria-label={`Select ${item.name}`}
+                        />
+                      )}
                       <span className="pantry-card-name">{item.name}</span>
                       <span className="pantry-type">{item.type || 'Other'}</span>
                     </div>
@@ -353,15 +427,28 @@ export default function Pantry() {
                       {item.quantity && <span>{item.quantity}</span>}
                     </div>
                     <span className={`expiry-badge ${expiryStatus(days)}`}>{expiryLabel(days)}</span>
-                    <span className="muted small">Added {item.purchasedAt}</span>
-                    <div className="card-actions pantry-actions">
-                      <button type="button" onClick={() => setEditing(item)}>
-                        Edit
-                      </button>
-                      <button type="button" className="danger" onClick={() => handleDelete(item)}>
-                        Remove
-                      </button>
-                    </div>
+                    {!selectMode && (
+                      <div className="card-actions pantry-actions">
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => setEditing(item)}
+                          aria-label={`Edit ${item.name}`}
+                          title="Edit"
+                        >
+                          <PencilIcon />
+                        </button>
+                        <button
+                          type="button"
+                          className="icon-button danger"
+                          onClick={() => requestDelete(item)}
+                          aria-label={`Remove ${item.name}`}
+                          title="Remove"
+                        >
+                          <TrashIcon />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -428,6 +515,20 @@ export default function Pantry() {
           onConfirm={handleReceiptConfirm}
           onCancel={() => setReceiptCandidates(null)}
           busy={receiptBusy}
+        />
+      )}
+      {pendingDelete && (
+        <ConfirmModal
+          title={
+            pendingDelete.items.length === 1
+              ? `Remove “${pendingDelete.items[0].name}”?`
+              : `Remove ${pendingDelete.items.length} items?`
+          }
+          message="This cannot be undone."
+          confirmLabel="Remove"
+          busy={deleteBusy}
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
         />
       )}
     </section>
