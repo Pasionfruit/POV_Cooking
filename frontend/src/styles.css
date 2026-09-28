@@ -2262,3 +2262,22 @@ code {
     flex-basis: 100%;
   }
 }
+
+/* Keep the pantry popup comfortable on narrow and short screens. */
+.add-item-modal {
+  width: min(680px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+
+.warning-banner .collapsible-head {
+  margin-bottom: 0;
+}
+
+.warning-banner .collapsible-head h2 {
+  font-size: 1rem;
+}
+
+#expiry-warning-body {
+  margin-top: 8px;
+}
