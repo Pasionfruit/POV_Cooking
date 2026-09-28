@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import * as api from '../api'
+import ConfirmModal from '../components/ConfirmModal'
+import PencilIcon from '../components/PencilIcon'
 import RecipeForm from '../components/RecipeForm'
+import TrashIcon from '../components/TrashIcon'
 import { useAuth } from '../contexts/AuthContext'
 
 // A stripped-down version of the Admin recipe manager, scoped to the recipes
@@ -16,6 +19,8 @@ export default function MyRecipes() {
   const [editing, setEditing] = useState(null) // 'new' | recipe object | null
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState(null)
+  const [pendingDelete, setPendingDelete] = useState(null)
+  const [deleteBusy, setDeleteBusy] = useState(false)
 
   function refresh() {
     return api
@@ -59,11 +64,21 @@ export default function MyRecipes() {
     }
   }
 
-  async function handleDelete(recipe) {
-    if (!window.confirm(`Delete “${recipe.title}”?`)) return
-    await api.deleteRecipe(token, recipe.id)
-    setNotice(`Deleted “${recipe.title}”`)
-    refresh()
+  function requestDelete(recipe) {
+    setPendingDelete(recipe)
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) return
+    setDeleteBusy(true)
+    try {
+      await api.deleteRecipe(token, pendingDelete.id)
+      setNotice(`Deleted “${pendingDelete.title}”`)
+      setPendingDelete(null)
+      await refresh()
+    } finally {
+      setDeleteBusy(false)
+    }
   }
 
   return (
@@ -103,9 +118,23 @@ export default function MyRecipes() {
                 <li key={recipe.id}>
                   <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
                   <span className="admin-actions">
-                    <button onClick={() => setEditing(recipe)}>Edit</button>
-                    <button className="danger" onClick={() => handleDelete(recipe)}>
-                      Delete
+                    <button
+                      type="button"
+                      className="icon-button"
+                      onClick={() => setEditing(recipe)}
+                      aria-label={`Edit ${recipe.title}`}
+                      title="Edit"
+                    >
+                      <PencilIcon />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-button danger"
+                      onClick={() => requestDelete(recipe)}
+                      aria-label={`Delete ${recipe.title}`}
+                      title="Delete"
+                    >
+                      <TrashIcon />
                     </button>
                   </span>
                 </li>
@@ -113,6 +142,17 @@ export default function MyRecipes() {
             </ul>
           )}
         </div>
+      )}
+      {pendingDelete && (
+        <ConfirmModal
+          title="Delete recipe?"
+          items={[pendingDelete.title]}
+          message="This cannot be undone."
+          confirmLabel="Delete"
+          busy={deleteBusy}
+          onConfirm={confirmDelete}
+          onCancel={() => setPendingDelete(null)}
+        />
       )}
     </section>
   )

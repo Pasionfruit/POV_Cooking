@@ -110,23 +110,5 @@
     "createdAt": "2026-08-07T00:00:00.000Z",
     "updatedAt": "2026-08-07T00:00:00.000Z",
     "mealType": "Breakfast"
-  },
-  {
-    "title": "Test",
-    "description": "",
-    "image": null,
-    "cuisine": null,
-    "mealType": null,
-    "servings": 0,
-    "prepTimeMinutes": 0,
-    "cookTimeMinutes": 0,
-    "tags": [],
-    "ingredients": [],
-    "steps": [],
-    "personal": true,
-    "id": "ef3b143c-81ab-4a61-99cf-5d1249944181",
-    "createdBy": "4e347127-f4b7-4b95-90d6-5f081edfcc39",
-    "createdAt": "2026-09-28T03:18:25.274Z",
-    "updatedAt": "2026-09-28T03:18:25.274Z"
   }
 ]

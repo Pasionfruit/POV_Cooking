@@ -1821,6 +1821,10 @@ code {
   font-size: 0.85rem;
 }
 
+.admin-actions .icon-button {
+  padding: 0;
+}
+
 /* --------------------------------------------------------------- dark theme */
 :root[data-theme='dark'] {
   --bg: #1b1917;

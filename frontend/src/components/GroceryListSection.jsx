@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import CollapsibleSection from './CollapsibleSection'
+import ConfirmModal from './ConfirmModal'
 import ItemCombobox from './ItemCombobox'
 import Toast from './Toast'
 
@@ -58,6 +59,8 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
   const [error, setError] = useState(null)
   const [toast, setToast] = useState(null)
   const [open, setOpen] = useState(false)
+  const [pendingClearAll, setPendingClearAll] = useState(false)
+  const [clearAllBusy, setClearAllBusy] = useState(false)
 
   function refresh() {
     return api
@@ -155,15 +158,23 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
     })
   }
 
-  function handleClearAll() {
+  function requestClearAll() {
     if (items.length === 0) return
-    if (!window.confirm('Remove everything from your grocery list?')) return
-    const cleared = items
-    setItems([])
-    Promise.all(cleared.map((i) => api.deleteGroceryItem(token, i.id))).catch((err) => {
+    setPendingClearAll(true)
+  }
+
+  async function confirmClearAll() {
+    setClearAllBusy(true)
+    try {
+      await Promise.all(items.map((i) => api.deleteGroceryItem(token, i.id)))
+      setItems([])
+      setPendingClearAll(false)
+    } catch (err) {
       setError(err.message)
       refresh()
-    })
+    } finally {
+      setClearAllBusy(false)
+    }
   }
 
   const uncheckedCount = items.filter((i) => !i.checked).length
@@ -181,7 +192,7 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
         id="grocery-list-body"
         actions={
           <>
-            <button type="button" className="header-action-button" onClick={handleClearAll} disabled={items.length === 0}>
+            <button type="button" className="header-action-button" onClick={requestClearAll} disabled={items.length === 0}>
               Clear all
             </button>
             <button
@@ -237,6 +248,17 @@ export default function GroceryListSection({ mealPlanIngredients = [] }) {
         )}
         {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
       </CollapsibleSection>
+      {pendingClearAll && (
+        <ConfirmModal
+          title={items.length === 1 ? 'Remove item?' : `Remove ${items.length} items?`}
+          items={items.map((i) => i.name)}
+          message="This cannot be undone."
+          confirmLabel="Remove"
+          busy={clearAllBusy}
+          onConfirm={confirmClearAll}
+          onCancel={() => setPendingClearAll(false)}
+        />
+      )}
     </div>
   )
 }
