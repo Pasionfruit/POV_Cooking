@@ -1867,6 +1867,37 @@ code {
   border-bottom: none;
 }
 
+.admin-recipe-toolbar,
+.admin-recipe-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-recipe-toolbar {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 12px 0 4px;
+}
+
+.admin-recipe-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-recipe-select {
+  min-width: 0;
+}
+
+.admin-recipe-select input,
+.admin-recipe-toolbar input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
 .admin-list a {
   color: var(--text);
   text-decoration: none;

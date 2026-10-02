@@ -13,10 +13,13 @@ export default function Admin() {
   const { token } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [recipes, setRecipes] = useState([])
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState(() => new Set())
   const [featured, setFeaturedState] = useState(null)
   const [editing, setEditing] = useState(null) // 'new' | recipe object | null
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState(null)
+  const [recipeActionError, setRecipeActionError] = useState(null)
+  const [recipeDeleteBusy, setRecipeDeleteBusy] = useState(false)
   const [importText, setImportText] = useState('')
   const [importResult, setImportResult] = useState(null)
   const fileInputRef = useRef(null)
@@ -33,6 +36,9 @@ export default function Admin() {
   function refreshCatalog() {
     return api.getGroceryCatalog(token).then(({ items }) => setCatalog(items))
   }
+
+  const selectedRecipeCount = recipes.filter((recipe) => selectedRecipeIds.has(recipe.id)).length
+  const allRecipesSelected = recipes.length > 0 && selectedRecipeCount === recipes.length
 
   useEffect(() => {
     refresh()
@@ -81,8 +87,48 @@ export default function Admin() {
   async function handleDelete(recipe) {
     if (!window.confirm(`Delete “${recipe.title}”?`)) return
     await api.deleteRecipe(token, recipe.id)
+    setSelectedRecipeIds((selected) => {
+      const next = new Set(selected)
+      next.delete(recipe.id)
+      return next
+    })
     setNotice(`Deleted “${recipe.title}”`)
-    refresh()
+    await refresh()
+  }
+
+  function toggleRecipeSelected(id) {
+    setSelectedRecipeIds((selected) => {
+      const next = new Set(selected)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleAllRecipesSelected() {
+    setSelectedRecipeIds(allRecipesSelected ? new Set() : new Set(recipes.map((recipe) => recipe.id)))
+  }
+
+  async function handleDeleteSelected() {
+    const selected = recipes.filter((recipe) => selectedRecipeIds.has(recipe.id))
+    if (!selected.length) return
+    if (!window.confirm(`Delete ${selected.length} selected recipe${selected.length === 1 ? '' : 's'}? This cannot be undone.`)) return
+
+    setRecipeDeleteBusy(true)
+    setRecipeActionError(null)
+    try {
+      const result = await api.deleteRecipes(token, selected.map((recipe) => recipe.id))
+      setSelectedRecipeIds(new Set())
+      setNotice(`Deleted ${result.deletedCount} recipe${result.deletedCount === 1 ? '' : 's'}`)
+      if (result.missingIds.length) {
+        setRecipeActionError(`${result.missingIds.length} selected recipe${result.missingIds.length === 1 ? ' was' : 's were'} already missing.`)
+      }
+      await refresh()
+    } catch (err) {
+      setRecipeActionError(err.message)
+    } finally {
+      setRecipeDeleteBusy(false)
+    }
   }
 
   function startCatalogEdit(item) {
@@ -215,10 +261,33 @@ export default function Admin() {
 
           <div className="panel">
             <h2>Recipes ({recipes.length})</h2>
+            <div className="admin-recipe-toolbar">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={allRecipesSelected}
+                  onChange={toggleAllRecipesSelected}
+                  aria-label="Select all recipes"
+                />
+                Select all ({selectedRecipeCount}/{recipes.length})
+              </label>
+              <button className="danger" onClick={handleDeleteSelected} disabled={!selectedRecipeCount || recipeDeleteBusy}>
+                {recipeDeleteBusy ? 'Deleting…' : `Delete selected (${selectedRecipeCount})`}
+              </button>
+            </div>
+            {recipeActionError && <p className="error">{recipeActionError}</p>}
             <ul className="admin-list">
               {recipes.map((recipe) => (
                 <li key={recipe.id}>
-                  <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+                  <div className="admin-recipe-select">
+                    <input
+                      type="checkbox"
+                      checked={selectedRecipeIds.has(recipe.id)}
+                      onChange={() => toggleRecipeSelected(recipe.id)}
+                      aria-label={`Select ${recipe.title} for deletion`}
+                    />
+                    <Link to={`/recipes/${recipe.id}`}>{recipe.title}</Link>
+                  </div>
                   <span className="admin-actions">
                     <button onClick={() => setEditing(recipe)}>Edit</button>
                     <button className="danger" onClick={() => handleDelete(recipe)}>

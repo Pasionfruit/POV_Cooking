@@ -42,6 +42,7 @@ export const getRecipe = (id, token) => request(`/recipes/${id}`, { token })
 export const createRecipe = (token, recipe) => request('/recipes', { method: 'POST', token, body: recipe })
 export const updateRecipe = (token, id, recipe) => request(`/recipes/${id}`, { method: 'PUT', token, body: recipe })
 export const deleteRecipe = (token, id) => request(`/recipes/${id}`, { method: 'DELETE', token })
+export const deleteRecipes = (token, ids) => request('/recipes/bulk-delete', { method: 'POST', token, body: { ids } })
 export const importRecipes = (token, payload) => request('/recipes/import', { method: 'POST', token, body: payload })
 export const importRecipeFromUrl = (token, url) =>
   request('/recipes/import-url', { method: 'POST', token, body: { url } })

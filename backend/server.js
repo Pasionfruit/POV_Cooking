@@ -523,29 +523,53 @@ app.put('/recipes/:id', authMiddleware, (req, res) => {
   }
 })
 
-app.delete('/recipes/:id', authMiddleware, (req, res) => {
-  const existing = recipes.findById(req.params.id)
-  if (!existing) return res.status(404).json({ error: 'Recipe not found' })
-  if (!canManageRecipe(req.user, existing)) return res.status(403).json({ error: 'Not allowed to delete this recipe' })
-  const removed = recipes.remove((r) => r.id === req.params.id)
-  if (!removed) return res.status(404).json({ error: 'Recipe not found' })
-  saved.remove((s) => s.recipeId === req.params.id)
-  tried.remove((t) => t.recipeId === req.params.id)
-  // scrub the recipe from every meal plan
+function deleteRecipesAndReferences(ids) {
+  const idsToDelete = new Set(ids)
+  const deleted = recipes.filter((recipe) => idsToDelete.has(recipe.id))
+  if (!deleted.length) return []
+
+  recipes.remove((recipe) => idsToDelete.has(recipe.id))
+  saved.remove((item) => idsToDelete.has(item.recipeId))
+  tried.remove((item) => idsToDelete.has(item.recipeId))
   mealplans.all().forEach((plan) => {
     const days = {}
     let changed = false
     for (const [day, value] of Object.entries(plan.days || {})) {
       const list = Array.isArray(value) ? value : Object.values(value || {}).flat()
-      const kept = list.filter((id) => id !== req.params.id)
+      const kept = list.filter((id) => !idsToDelete.has(id))
       if (kept.length !== list.length) changed = true
       if (kept.length) days[day] = kept
     }
     if (changed) mealplans.update(plan.id, { days })
   })
   const featured = settings.findById('featured')
-  if (featured?.recipeId === req.params.id) settings.update('featured', { recipeId: null })
+  if (idsToDelete.has(featured?.recipeId)) settings.update('featured', { recipeId: null })
+
+  return deleted.map((recipe) => recipe.id)
+}
+
+app.delete('/recipes/:id', authMiddleware, (req, res) => {
+  const existing = recipes.findById(req.params.id)
+  if (!existing) return res.status(404).json({ error: 'Recipe not found' })
+  if (!canManageRecipe(req.user, existing)) return res.status(403).json({ error: 'Not allowed to delete this recipe' })
+  const deletedIds = deleteRecipesAndReferences([req.params.id])
+  if (!deletedIds.length) return res.status(404).json({ error: 'Recipe not found' })
   res.json({ ok: true })
+})
+
+app.post('/recipes/bulk-delete', authMiddleware, adminMiddleware, (req, res) => {
+  if (!Array.isArray(req.body?.ids) || req.body.ids.some((id) => typeof id !== 'string')) {
+    return res.status(400).json({ error: 'Recipe IDs must be provided as an array of strings' })
+  }
+  const ids = [...new Set(req.body.ids.map((id) => id.trim()).filter(Boolean))]
+  if (!ids.length) return res.status(400).json({ error: 'Select at least one recipe' })
+
+  const deletedIds = deleteRecipesAndReferences(ids)
+  const deletedSet = new Set(deletedIds)
+  res.json({
+    deletedCount: deletedIds.length,
+    missingIds: ids.filter((id) => !deletedSet.has(id)),
+  })
 })
 
 // Bulk import: accepts a raw array, { recipes: [...] }, or a single recipe object.
