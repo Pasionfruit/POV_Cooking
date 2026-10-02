@@ -1,0 +1,715 @@
+[
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-cheese-quesadilla",
+    "title": "Cheese Quesadilla",
+    "description": "Cheese Quesadilla made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 5,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 large flour tortilla",
+      "1/2 cup shredded cheddar",
+      "1 tsp oil",
+      "2 tbsp salsa"
+    ],
+    "steps": [
+      "Heat oil in a skillet over medium heat.",
+      "Add tortilla, scatter cheese on one half, and fold.",
+      "Cook for 2 minutes per side until golden and melted. Serve with salsa."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-tuna-salad-wrap",
+    "title": "Tuna Salad Wrap",
+    "description": "Tuna Salad Wrap made with simple ingredients.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "1 small can tuna, drained",
+      "1 tbsp mayonnaise",
+      "1 tsp lemon juice",
+      "2 lettuce leaves",
+      "Black pepper"
+    ],
+    "steps": [
+      "Mix tuna, mayonnaise, lemon juice, and pepper.",
+      "Place lettuce and tuna on the tortilla, fold in the sides, and roll tightly."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-microwave-loaded-nachos",
+    "title": "Microwave Loaded Nachos",
+    "description": "Microwave Loaded Nachos made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 2,
+    "mealType": "Snack",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 cups tortilla chips",
+      "1/2 cup shredded cheddar",
+      "1/3 cup canned black beans, drained and rinsed",
+      "2 tbsp salsa",
+      "1 tbsp sour cream"
+    ],
+    "steps": [
+      "Spread chips on a microwave-safe plate; top with beans and cheese.",
+      "Microwave for 60 to 90 seconds until cheese melts. Add salsa and sour cream."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-grilled-cheese-sandwich",
+    "title": "Grilled Cheese Sandwich",
+    "description": "Grilled Cheese Sandwich made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 6,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 slices bread",
+      "2 slices cheddar",
+      "2 tsp softened butter"
+    ],
+    "steps": [
+      "Butter one side of each bread slice and sandwich cheese between the unbuttered sides.",
+      "Cook in a skillet over medium-low heat for about 3 minutes per side, until golden and melted."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-rotisserie-chicken-tacos",
+    "title": "Rotisserie Chicken Tacos",
+    "description": "Rotisserie Chicken Tacos made with simple ingredients.",
+    "prepTimeMinutes": 4,
+    "cookTimeMinutes": 3,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "2 small tortillas",
+      "3/4 cup cooked rotisserie chicken, shredded",
+      "2 tbsp salsa",
+      "1/4 avocado, sliced",
+      "1 lime wedge"
+    ],
+    "steps": [
+      "Heat chicken with salsa in a skillet for 2 minutes until steaming hot.",
+      "Warm tortillas in the microwave for 20 seconds. Fill with chicken and avocado; squeeze lime on top."
+    ],
+    "notes": "Uses ready-cooked rotisserie chicken; cooking chicken from raw is not included in the 7-minute total."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-egg-and-cheese-breakfast-sandwich",
+    "title": "Egg and Cheese Breakfast Sandwich",
+    "description": "Egg and Cheese Breakfast Sandwich made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 5,
+    "mealType": "Breakfast",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 English muffin, split",
+      "1 egg",
+      "1 slice cheese",
+      "1 tsp butter",
+      "Salt and pepper"
+    ],
+    "steps": [
+      "Toast the muffin while heating butter in a small skillet.",
+      "Beat the egg with salt and pepper. Pour into the skillet and cook until set, folding to fit the muffin.",
+      "Top the egg with cheese, let melt, and sandwich in the toasted muffin."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-hummus-veggie-pita",
+    "title": "Hummus Veggie Pita",
+    "description": "Hummus Veggie Pita made with simple ingredients.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian",
+      "no-cook"
+    ],
+    "ingredients": [
+      "1 pita bread",
+      "1/4 cup hummus",
+      "1/4 cucumber, sliced",
+      "1/2 tomato, diced",
+      "Handful of baby spinach",
+      "1 tbsp crumbled feta"
+    ],
+    "steps": [
+      "Cut the pita in half and open the pockets.",
+      "Spread hummus inside and fill with cucumber, tomato, spinach, and feta."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-buffalo-chicken-wrap",
+    "title": "Buffalo Chicken Wrap",
+    "description": "Buffalo Chicken Wrap made with simple ingredients.",
+    "prepTimeMinutes": 4,
+    "cookTimeMinutes": 2,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "3/4 cup cooked chicken, shredded",
+      "1 tbsp buffalo sauce",
+      "1 tbsp ranch dressing",
+      "1/4 cup shredded lettuce"
+    ],
+    "steps": [
+      "Mix chicken and buffalo sauce. Microwave in a covered microwave-safe bowl until steaming hot, about 1 to 2 minutes.",
+      "Spread ranch on the tortilla, add lettuce and chicken, fold in sides, and roll."
+    ],
+    "notes": "Start with ready-cooked chicken; allow extra time if cooking chicken from raw."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-microwave-pizza-tortilla",
+    "title": "Microwave Pizza Tortilla",
+    "description": "Microwave Pizza Tortilla made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 2,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "2 tbsp pizza sauce",
+      "1/3 cup shredded mozzarella",
+      "6 slices ready-to-eat pepperoni",
+      "Pinch dried oregano"
+    ],
+    "steps": [
+      "Place tortilla on a microwave-safe plate. Spread sauce and top with mozzarella, pepperoni, and oregano.",
+      "Microwave for 60 to 90 seconds until cheese melts. Fold and serve."
+    ],
+    "notes": "A soft pizza-style tortilla; microwaving does not produce a crisp pizza crust."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-peanut-sesame-noodles",
+    "title": "Peanut Sesame Noodles",
+    "description": "Peanut Sesame Noodles made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 5,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "85 g quick-cooking noodles (3-minute variety)",
+      "1 tbsp peanut butter",
+      "1 tsp soy sauce",
+      "1 tsp lime juice",
+      "1/2 tsp sesame oil",
+      "1 tbsp warm water",
+      "1 spring onion, sliced"
+    ],
+    "steps": [
+      "Bring a small saucepan of water to a boil while mixing peanut butter, soy sauce, lime juice, sesame oil, and warm water.",
+      "Cook the quick noodles for 3 minutes according to the package, then drain.",
+      "Toss noodles with the sauce and spring onion."
+    ],
+    "notes": "Use noodles labeled for a 3-minute cook and a small amount of water or an electric kettle to stay within the 8-minute total."
+  },
+  {
+    "image": null,
+    "servings": 4,
+    "cuisine": "Filipino",
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-pancit-bihon",
+    "title": "Pancit Bihon",
+    "description": "Filipino stir-fried rice noodles with chicken, cabbage, and carrots.",
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "mealType": "Dinner",
+    "tags": [
+      "filipino",
+      "noodles",
+      "chicken"
+    ],
+    "ingredients": [
+      "200 g rice vermicelli (bihon)",
+      "250 g boneless chicken, thinly sliced",
+      "2 tbsp oil",
+      "1 small onion, sliced",
+      "3 cloves garlic, minced",
+      "1 carrot, julienned",
+      "2 cups shredded cabbage",
+      "2 cups chicken stock",
+      "3 tbsp soy sauce",
+      "Calamansi or lemon wedges"
+    ],
+    "steps": [
+      "Soak noodles in warm water for 10 minutes, then drain; slice vegetables while soaking.",
+      "Heat oil in a wok. Cook onion and garlic for 2 minutes, then add chicken and stir-fry until cooked through.",
+      "Add carrots and cabbage and stir-fry for 3 minutes.",
+      "Pour in stock and soy sauce; bring to a simmer. Add noodles and toss for 5 to 7 minutes until tender and the liquid is absorbed.",
+      "Check chicken is fully cooked and serve with calamansi or lemon."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 3,
+    "cuisine": "Filipino",
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "seed-garlic-fried-rice-sinangag",
+    "title": "Garlic Fried Rice (Sinangag)",
+    "description": "Filipino garlic fried rice, a savory breakfast staple.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 8,
+    "mealType": "Breakfast",
+    "tags": [
+      "filipino",
+      "rice",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "3 cups chilled cooked rice",
+      "6 cloves garlic, minced",
+      "2 tbsp neutral oil",
+      "1/2 tsp salt",
+      "Black pepper to taste"
+    ],
+    "steps": [
+      "Break up clumps in the chilled cooked rice.",
+      "Heat oil in a large skillet over medium heat. Fry garlic for 2 minutes until light golden; reserve a spoonful for topping.",
+      "Add rice and stir-fry for 5 to 6 minutes until piping hot throughout. Season and top with reserved garlic."
+    ],
+    "notes": "Uses rice cooked ahead of time and promptly refrigerated. The 13-minute total excludes cooking and chilling rice."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11007",
+    "title": "Margarita",
+    "description": "A classic Margarita cocktail, served in a cocktail glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "1 1/2 oz Tequila",
+      "1/2 oz Triple sec",
+      "1 oz Lime juice",
+      "Salt"
+    ],
+    "steps": [
+      "Rub the rim of the glass with the lime slice to make the salt stick to it. Take care to moisten only the outer rim and sprinkle the salt on it. The salt should present to the lips of the imbiber and never mix into the cocktail. Shake the other ingredients with ice, then carefully pour into the glass."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11007"
+    },
+    "externalId": "cocktaildb:11007",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/metwgh1606770327.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11000",
+    "title": "Mojito",
+    "description": "A classic Mojito cocktail, served in a highball glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2-3 oz Light rum",
+      "Juice of 1 Lime",
+      "2 tsp Sugar",
+      "2-4 Mint",
+      "Soda water"
+    ],
+    "steps": [
+      "Muddle mint leaves with sugar and lime juice. Add a splash of soda water and fill the glass with cracked ice. Pour the rum and top with soda water. Garnish and serve with straw."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11000"
+    },
+    "externalId": "cocktaildb:11000",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11001",
+    "title": "Old Fashioned",
+    "description": "A classic Old Fashioned cocktail, served in a old-fashioned glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "4.5 cL Bourbon",
+      "2 dashes Angostura bitters",
+      "1 cube Sugar",
+      "dash Water"
+    ],
+    "steps": [
+      "Place sugar cube in old fashioned glass and saturate with bitters, add a dash of plain water. Muddle until dissolved.\r\nFill the glass with ice cubes and add whiskey.\r\n\r\nGarnish with orange twist, and a cocktail cherry."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11001"
+    },
+    "externalId": "cocktaildb:11001",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11003",
+    "title": "Negroni",
+    "description": "A classic Negroni cocktail, served in a old-fashioned glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "1 oz Gin",
+      "1 oz Campari",
+      "1 oz Sweet Vermouth"
+    ],
+    "steps": [
+      "Stir into glass over ice, garnish and serve."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11003"
+    },
+    "externalId": "cocktaildb:11003",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/mrz9091589574515.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11006",
+    "title": "Daiquiri",
+    "description": "A classic Daiquiri cocktail, served in a cocktail glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "1 1/2 oz Light rum",
+      "Juice of 1/2 Lime",
+      "1 tsp Powdered sugar"
+    ],
+    "steps": [
+      "Pour all ingredients into shaker with ice cubes. Shake well. Strain in chilled cocktail glass."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11006"
+    },
+    "externalId": "cocktaildb:11006",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11004",
+    "title": "Whiskey Sour",
+    "description": "A classic Whiskey Sour cocktail, served in a old-fashioned glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2 oz Blended whiskey",
+      "Juice of 1/2 Lemon",
+      "1/2 tsp Powdered sugar",
+      "1 Cherry",
+      "1/2 slice Lemon"
+    ],
+    "steps": [
+      "Shake with ice. Strain into chilled glass, garnish and serve. If served 'On the rocks', strain ingredients into old-fashioned glass filled with ice."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11004"
+    },
+    "externalId": "cocktaildb:11004",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/kpsajh1504368362.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-17196",
+    "title": "Cosmopolitan",
+    "description": "A classic Cosmopolitan cocktail, served in a cocktail glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "1 1/4 oz Vodka",
+      "1/4 oz Lime juice",
+      "1/4 oz Cointreau",
+      "1/4 cup Cranberry juice"
+    ],
+    "steps": [
+      "Add all ingredients into cocktail shaker filled with ice. Shake well and double strain into large cocktail glass. Garnish with lime wheel."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/17196"
+    },
+    "externalId": "cocktaildb:17196",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/3pylqc1504370988.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11009",
+    "title": "Moscow Mule",
+    "description": "A classic Moscow Mule cocktail, served in a copper mug.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2 oz Vodka",
+      "2 oz Lime juice",
+      "8 oz Ginger ale"
+    ],
+    "steps": [
+      "Combine vodka and ginger beer in a highball glass filled with ice. Add lime juice. Stir gently. Garnish."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11009"
+    },
+    "externalId": "cocktaildb:11009",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/yk70e31606771240.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11008",
+    "title": "Manhattan",
+    "description": "A classic Manhattan cocktail, served in a cocktail glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "3/4 oz Sweet Vermouth",
+      "2 1/2 oz Blended Bourbon",
+      "dash Angostura bitters",
+      "2 or 3 Ice",
+      "1 Maraschino cherry",
+      "1 twist of Orange peel"
+    ],
+    "steps": [
+      "Stirred over ice, strained into a chilled glass, garnished, and served up."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11008"
+    },
+    "externalId": "cocktaildb:11008",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/k0508k1668422436.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "seed",
+    "createdAt": "2026-10-02T02:07:59.804Z",
+    "updatedAt": "2026-10-02T02:07:59.804Z",
+    "id": "cocktaildb-11403",
+    "title": "Gin And Tonic",
+    "description": "A classic Gin And Tonic cocktail, served in a highball glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2 oz Gin",
+      "5 oz Tonic water",
+      "1 Lime"
+    ],
+    "steps": [
+      "Pour the gin and the tonic water into a highball glass almost filled with ice cubes. Stir well. Garnish with the lime wedge."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11403"
+    },
+    "externalId": "cocktaildb:11403",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  }
+]

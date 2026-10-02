@@ -3,7 +3,7 @@
     "id": "seed-margherita-pizza",
     "title": "Classic Margherita Pizza",
     "description": "Neapolitan-style pizza with tomato, fresh mozzarella, and basil. Minimal toppings, maximum flavor.",
-    "image": null,
+    "image": "https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg",
     "servings": 2,
     "prepTimeMinutes": 20,
     "cookTimeMinutes": 12,
@@ -39,14 +39,18 @@
     },
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Dinner"
+    "updatedAt": "2026-10-02T02:08:36.417Z",
+    "mealType": "Dinner",
+    "imageSource": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53014"
+    }
   },
   {
     "id": "seed-chicken-adobo",
     "title": "Chicken Adobo",
     "description": "Filipino braised chicken in soy sauce, vinegar, and garlic — savory, tangy, and better the next day.",
-    "image": null,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/1/14/Chicken_Adobo.jpg",
     "servings": 4,
     "prepTimeMinutes": 10,
     "cookTimeMinutes": 45,
@@ -76,17 +80,21 @@
     "notes": "Adobo keeps for days and the flavor deepens — make a double batch.",
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Dinner"
+    "updatedAt": "2026-10-02T02:08:36.422Z",
+    "mealType": "Dinner",
+    "imageSource": {
+      "name": "Witchy2006 / Wikimedia Commons (public domain)",
+      "url": "https://commons.wikimedia.org/wiki/File:Chicken_Adobo.jpg"
+    }
   },
   {
     "id": "seed-overnight-oats",
     "title": "Peanut Butter Overnight Oats",
     "description": "No-cook breakfast: assemble a jar the night before, grab it in the morning.",
-    "image": null,
+    "image": "https://www.purelykaylie.com/wp-content/uploads/2022/08/peanut-butter-overnight-oats-6.jpg",
     "servings": 1,
     "prepTimeMinutes": 5,
-    "cookTimeMinutes": null,
+    "cookTimeMinutes": 0,
     "cuisine": null,
     "tags": [
       "breakfast",
@@ -108,8 +116,12 @@
     ],
     "createdBy": "seed",
     "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Breakfast"
+    "updatedAt": "2026-10-02T02:08:36.427Z",
+    "mealType": "Breakfast",
+    "imageSource": {
+      "name": "Purely Kaylie",
+      "url": "https://www.purelykaylie.com/peanut-butter-overnight-oats/"
+    }
   },
   {
     "title": "Tandoori chicken",
@@ -2481,5 +2493,1435 @@
     "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
     "createdAt": "2026-10-02T01:57:24.029Z",
     "updatedAt": "2026-10-02T01:57:24.029Z"
+  },
+  {
+    "title": "Mojito",
+    "description": "A classic Mojito cocktail served in a highball glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/metwgh1606770327.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "contemporaryclassic",
+      "alcoholic",
+      "usa",
+      "asia",
+      "vegan",
+      "citrus",
+      "brunch",
+      "hangover",
+      "mild"
+    ],
+    "ingredients": [
+      "2-3 oz Light rum",
+      "Juice of 1 Lime",
+      "2 tsp Sugar",
+      "2-4 Mint",
+      "Soda water"
+    ],
+    "steps": [
+      "Muddle mint leaves with sugar and lime juice. Add a splash of soda water and fill the glass with cracked ice. Pour the rum and top with soda water. Garnish and serve with straw."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11000"
+    },
+    "externalId": "thecocktaildb:11000",
+    "glass": "Highball glass",
+    "imageSource": {
+      "name": "anilaha https://pixabay.com/users/anilaha-16242978/",
+      "url": "https://pixabay.com/photos/cocktail-mojito-cocktail-recipe-5096281/"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "9be84552-4f4c-456a-a0cc-89b81b770148",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.727Z",
+    "updatedAt": "2026-10-02T02:08:21.727Z"
+  },
+  {
+    "title": "Margarita",
+    "description": "A classic Margarita cocktail served in a cocktail glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/5noda61589575158.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "contemporaryclassic"
+    ],
+    "ingredients": [
+      "1 1/2 oz Tequila",
+      "1/2 oz Triple sec",
+      "1 oz Lime juice",
+      "Salt"
+    ],
+    "steps": [
+      "Rub the rim of the glass with the lime slice to make the salt stick to it. Take care to moisten only the outer rim and sprinkle the salt on it. The salt should present to the lips of the imbiber and never mix into the cocktail. Shake the other ingredients with ice, then carefully pour into the glass."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11007"
+    },
+    "externalId": "thecocktaildb:11007",
+    "glass": "Cocktail glass",
+    "imageSource": {
+      "name": "Cocktailmarler",
+      "url": "https://commons.wikimedia.org/wiki/File:Klassiche_Margarita.jpg"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "662a2e55-e9c4-4904-84b3-921b2521a110",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.729Z",
+    "updatedAt": "2026-10-02T02:08:21.729Z"
+  },
+  {
+    "title": "Old Fashioned",
+    "description": "A classic Old Fashioned cocktail served in a old-fashioned glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/vrwquq1478252802.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "classic",
+      "alcoholic",
+      "expensive",
+      "savory"
+    ],
+    "ingredients": [
+      "4.5 cL Bourbon",
+      "2 dashes Angostura bitters",
+      "1 cube Sugar",
+      "Dash Water"
+    ],
+    "steps": [
+      "Place sugar cube in old fashioned glass and saturate with bitters, add a dash of plain water. Muddle until dissolved.",
+      "Fill the glass with ice cubes and add whiskey.",
+      "Garnish with orange twist, and a cocktail cherry."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11001"
+    },
+    "externalId": "thecocktaildb:11001",
+    "glass": "Old-fashioned glass",
+    "imageSource": {
+      "name": "Dave M",
+      "url": "https://www.thecocktaildb.com/drink/11001-Old-Fashioned-Cocktail"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "e0aded3a-2fb9-4f07-95d5-3f16e326c478",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.733Z",
+    "updatedAt": "2026-10-02T02:08:21.733Z"
+  },
+  {
+    "title": "Negroni",
+    "description": "A classic Negroni cocktail served in a old-fashioned glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/qgdu971561574065.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "classic"
+    ],
+    "ingredients": [
+      "1 oz Gin",
+      "1 oz Campari",
+      "1 oz Sweet Vermouth"
+    ],
+    "steps": [
+      "Stir into glass over ice, garnish and serve."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11003"
+    },
+    "externalId": "thecocktaildb:11003",
+    "glass": "Old-fashioned glass",
+    "imageSource": {
+      "name": "TheCocktailDB.com",
+      "url": "https://www.thecocktaildb.com/drink/11003"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "0f2ad7cf-021a-4cf5-b5a8-03a24ca9a9dd",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.736Z",
+    "updatedAt": "2026-10-02T02:08:21.736Z"
+  },
+  {
+    "title": "Daiquiri",
+    "description": "A classic Daiquiri cocktail served in a cocktail glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/mrz9091589574515.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "classic",
+      "beach"
+    ],
+    "ingredients": [
+      "1 1/2 oz Light rum",
+      "Juice of 1/2 Lime",
+      "1 tsp Powdered sugar"
+    ],
+    "steps": [
+      "Pour all ingredients into shaker with ice cubes. Shake well. Strain in chilled cocktail glass."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11006"
+    },
+    "externalId": "thecocktaildb:11006",
+    "glass": "Cocktail glass",
+    "imageSource": {
+      "name": "Will Shenton",
+      "url": "https://commons.wikimedia.org/wiki/File:Classic_Daiquiri_in_Cocktail_Glass.jpg"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "397caf42-89f0-42a1-aa4b-fe507d8b62d4",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.738Z",
+    "updatedAt": "2026-10-02T02:08:21.738Z"
+  },
+  {
+    "title": "Cosmopolitan",
+    "description": "A classic Cosmopolitan cocktail served in a cocktail glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/kpsajh1504368362.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "contemporaryclassic"
+    ],
+    "ingredients": [
+      "1 1/4 oz Vodka",
+      "1/4 oz Lime juice",
+      "1/4 oz Cointreau",
+      "1/4 cup Cranberry juice"
+    ],
+    "steps": [
+      "Add all ingredients into cocktail shaker filled with ice. Shake well and double strain into large cocktail glass. Garnish with lime wheel."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/17196"
+    },
+    "externalId": "thecocktaildb:17196",
+    "glass": "Cocktail glass",
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "db08c1c3-586a-4f14-8e2b-b7fd39ef122b",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.741Z",
+    "updatedAt": "2026-10-02T02:08:21.741Z"
+  },
+  {
+    "title": "Manhattan",
+    "description": "A classic Manhattan cocktail served in a cocktail glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/yk70e31606771240.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "classic",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "3/4 oz Sweet Vermouth",
+      "2 1/2 oz Blended Bourbon",
+      "Dash Angostura bitters",
+      "2 or 3 Ice",
+      "1 Maraschino cherry",
+      "1 twist of Orange peel"
+    ],
+    "steps": [
+      "Stirred over ice, strained into a chilled glass, garnished, and served up."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11008"
+    },
+    "externalId": "thecocktaildb:11008",
+    "glass": "Cocktail glass",
+    "imageSource": {
+      "name": "Sarah Stierch (CC BY 4.0)",
+      "url": "https://commons.wikimedia.org/wiki/File:Oak_Fired_Manhattan_-_Stierch_1.jpg"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "4d363bc4-3844-4a1d-b640-a19c324fc0ba",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.744Z",
+    "updatedAt": "2026-10-02T02:08:21.744Z"
+  },
+  {
+    "title": "Whiskey Sour",
+    "description": "A classic Whiskey Sour cocktail served in a old-fashioned glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/hbkfsh1589574990.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "classic",
+      "alcoholic",
+      "contemporaryclassic"
+    ],
+    "ingredients": [
+      "2 oz Blended whiskey",
+      "Juice of 1/2 Lemon",
+      "1/2 tsp Powdered sugar",
+      "1 Cherry",
+      "1/2 slice Lemon"
+    ],
+    "steps": [
+      "Shake with ice. Strain into chilled glass, garnish and serve. If served 'On the rocks', strain ingredients into old-fashioned glass filled with ice."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11004"
+    },
+    "externalId": "thecocktaildb:11004",
+    "glass": "Old-fashioned glass",
+    "imageSource": {
+      "name": "Ralf Roletschek https://www.wikidata.org/wiki/Q15080600",
+      "url": "https://commons.wikimedia.org/wiki/File:15-09-26-RalfR-WLC-0191.jpg"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "e2433745-40e2-4bb9-8b72-83553276d3fb",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.746Z",
+    "updatedAt": "2026-10-02T02:08:21.746Z"
+  },
+  {
+    "title": "Pina Colada",
+    "description": "A classic Pina Colada cocktail served in a collins glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/upgsue1668419912.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "contemporaryclassic"
+    ],
+    "ingredients": [
+      "3 oz Light rum",
+      "3 tblsp Coconut milk",
+      "3 tblsp Pineapple"
+    ],
+    "steps": [
+      "Mix with crushed ice in blender until smooth. Pour into chilled glass, garnish and serve."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/17207"
+    },
+    "externalId": "thecocktaildb:17207",
+    "glass": "Collins glass",
+    "imageSource": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/images/media/drink/upgsue1668419912.jpg"
+    },
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "69d7b0ac-b8fc-4871-a86c-bdf54846243c",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.749Z",
+    "updatedAt": "2026-10-02T02:08:21.749Z"
+  },
+  {
+    "title": "Espresso Martini",
+    "description": "A classic Espresso Martini cocktail served in a cocktail glass.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/n0sx531504372951.jpg",
+    "servings": 1,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "alcoholic",
+      "iba",
+      "newera"
+    ],
+    "ingredients": [
+      "5 cl Vodka",
+      "1 cl Kahlua",
+      "1 dash Sugar syrup"
+    ],
+    "steps": [
+      "Pour ingredients into shaker filled with ice, shake vigorously, and strain into chilled martini glass"
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/17212"
+    },
+    "externalId": "thecocktaildb:17212",
+    "glass": "Cocktail glass",
+    "notes": "Use the ingredient quantities for 1 cocktail. Preparation time is not supplied by the source.",
+    "id": "2bda0ec9-d965-4663-9daa-7c8591e05684",
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.752Z",
+    "updatedAt": "2026-10-02T02:08:21.752Z"
+  },
+  {
+    "title": "Beef Caldereta",
+    "image": "https://www.themealdb.com/images/media/meals/41cxjh1683207682.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Beef Caldereta, a beef recipe.",
+    "tags": [
+      "beef",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "2kg cut cubes Beef",
+      "1 Beef Stock",
+      "1 tbs Soy Sauce",
+      "2 cups Water",
+      "1 sliced Green Pepper",
+      "1 sliced Red Pepper",
+      "1 sliced Potatoes",
+      "1 sliced Carrots",
+      "8 ounces Tomato Puree",
+      "3  tablespoons Peanut Butter",
+      "5 Chilli Powder",
+      "1 chopped Onion",
+      "5 cloves Garlic",
+      "3 tbs Olive Oil"
+    ],
+    "steps": [
+      "0.\tHeat oil in a cooking pot. Saute onion and garlic until onion softens",
+      "1.\tAdd beef. Saute until the outer part turns light brown.",
+      "2.\tAdd soy sauce. Pour tomato sauce and water. Let boil.",
+      "3.\tAdd Knorr Beef Cube. Cover the pressure cooker. Cook for 30 minutes.",
+      "4.\tPan-fry carrot and potato until it browns. Set aside.",
+      "5.\tAdd chili pepper, liver spread and peanut butter. Stir.",
+      "6.\tAdd bell peppers, fried potato and carrot. Cover the pot. Continue cooking for 5 to 7 minutes.",
+      "7.\tSeason with salt and ground black pepper. Serve."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53070"
+    },
+    "externalId": "themealdb:53070",
+    "originalSourceUrl": "https://www.kawalingpinoy.com/beef-caldereta/",
+    "videoUrl": "https://www.youtube.com/watch?v=yI7hTz0ft5k",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "7da36dd4-571b-4c25-8991-eb3d48383533",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.754Z",
+    "updatedAt": "2026-10-02T02:08:21.754Z"
+  },
+  {
+    "title": "Beef Mechado",
+    "image": "https://www.themealdb.com/images/media/meals/cgl60b1683206581.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Beef Mechado, a beef recipe.",
+    "tags": [
+      "beef",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "3 cloves Garlic",
+      "1 sliced Onion",
+      "2 Lbs Beef",
+      "8 ounces Tomato Puree",
+      "1 cup Water",
+      "3 tbs Olive Oil",
+      "1 Slice Lemon",
+      "1 large Potatoes",
+      "1/4 cup Soy Sauce",
+      "1/2 tsp Black Pepper",
+      "2 Bay Leaves",
+      "To taste Salt"
+    ],
+    "steps": [
+      "0.\tMake the beef tenderloin marinade by combining soy sauce, vinegar, ginger, garlic, sesame oil, olive oil, sugar, salt, and ground black pepper in a large bowl. Mix well.",
+      "1.\tAdd the cubed beef tenderloin to the bowl with the beef tenderloin marinade. Gently toss to coat the beef. Let it stay for 1 hour.",
+      "2.\tUsing a metal or bamboo skewer, assemble the beef kebob by skewering the vegetables and marinated beef tenderloin.",
+      "3.\tHeat-up the grill and start grilling the beef kebobs for 3 minutes per side. This will give you a medium beef that is juicy and tender on the inside. Add more time if you want your beef well done, but it will be less tender.",
+      "4.\tTransfer to a serving plate. Serve with Saffron rice.",
+      "5.\tShare and enjoy!"
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53068"
+    },
+    "externalId": "themealdb:53068",
+    "originalSourceUrl": "https://panlasangpinoy.com/filipino-pinoy-food-tomato-sauce-beef-mechado-recipe/",
+    "videoUrl": "https://www.youtube.com/watch?v=jxW3Lj8VjyE",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "b17faf86-b1cf-42e5-a7ba-d94a585187c1",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.756Z",
+    "updatedAt": "2026-10-02T02:08:21.756Z"
+  },
+  {
+    "title": "Bistek",
+    "image": "https://www.themealdb.com/images/media/meals/4pqimk1683207418.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Bistek, a beef recipe.",
+    "tags": [
+      "beef",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "1 lb Beef",
+      "5 tablespoons Soy Sauce",
+      "1 Lemon",
+      "3 cloves Garlic",
+      "3 parts Onion",
+      "4 tbs Olive Oil",
+      "1 cup Water",
+      "1 pinch Salt"
+    ],
+    "steps": [
+      "0.\tMarinate beef in soy sauce, lemon (or calamansi), and ground black pepper for at least 1 hour. Note: marinate overnight for best result",
+      "1.\tHeat the cooking oil in a pan then pan-fry 1/2 of the onions until the texture becomes soft. Set aside",
+      "2.\tDrain the marinade from the beef. Set it aside. Pan-fry the beef on the same pan where the onions were fried for 1 minute per side. Remove from the pan. Set aside",
+      "3.\tAdd more oil if needed. Saute garlic and remaining raw onions until onion softens.",
+      "4.\tPour the remaining marinade and water. Bring to a boil.",
+      "5.\tAdd beef. Cover the pan and simmer until the meat is tender. Note: Add water as needed.",
+      "6.\tSeason with ground black pepper and salt as needed. Top with pan-fried onions.",
+      "7.\tTransfer to a serving plate. Serve hot. Share and Enjoy!"
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53069"
+    },
+    "externalId": "themealdb:53069",
+    "originalSourceUrl": "https://panlasangpinoy.com/bistek-tagalog-beefsteak-recipe/",
+    "videoUrl": "https://www.youtube.com/watch?v=xOQON5_S7as",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "c129bc83-af34-463f-9c6d-4fb7a936efd7",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.759Z",
+    "updatedAt": "2026-10-02T02:08:21.759Z"
+  },
+  {
+    "title": "Crispy Eggplant",
+    "image": "https://www.themealdb.com/images/media/meals/c7lzrl1683208757.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Crispy Eggplant, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "1 large Egg Plants",
+      "1 cup Breadcrumbs",
+      "50g Sesame Seed",
+      "2 Eggs",
+      "To taste Salt",
+      "To taste Pepper",
+      "For frying Vegetable Oil"
+    ],
+    "steps": [
+      "Slice eggplant into 1 cm (0.4-inch) slices. Place them in a bowl and sprinkle them with salt. allow them to sit for 30 minutes to render some of their liquid and bitterness.",
+      "2. After 30 minutes wash eggplant slices from salt and pat dry with a kitchen towel.",
+      "3. In a large bowl/plate place breadcrumbs and sesame seeds. In another bowl beat 2 eggs with pinch salt and pepper.",
+      "4. Heal oil in a large skillet over high heat.",
+      "5. Dip eggplant slices in egg, then in crumbs, and place in hot oil. Fry 2 to 3 minutes on each side, or until golden brown. Drain on a paper towel."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53072"
+    },
+    "externalId": "themealdb:53072",
+    "originalSourceUrl": "https://yummyfood.ph/recipe/crispiest-fried-eggplant/",
+    "videoUrl": "https://www.youtube.com/watch?v=4mINk5d2hto",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "92be2a0d-f016-4a04-b545-440810e247ff",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.762Z",
+    "updatedAt": "2026-10-02T02:08:21.762Z"
+  },
+  {
+    "title": "Eggplant Adobo",
+    "image": "https://www.themealdb.com/images/media/meals/y7h0lq1683208991.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Eggplant Adobo, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "1 lb Egg Plants",
+      "2 tbs Sugar",
+      "1 tsp Salt",
+      "1 tsp Pepper",
+      "1 whole Garlic",
+      "3 tbs Olive Oil",
+      "4 oz Ground Pork",
+      "3 tbs Rice Vinegar",
+      "2 tbs Soy Sauce",
+      "2 Bay Leaf"
+    ],
+    "steps": [
+      "1.\tSlice 1 lb. small Japanese or Italian eggplant (about 3) into quarters lengthwise, then cut crosswise into 2\"-wide pieces. Place in a medium bowl. Add 1 Tbsp. sugar, 1 tsp. Diamond Crystal or ½ tsp. Morton kosher salt, and ½ tsp. freshly ground black pepper. Toss to evenly coat eggplant and let sit at room temperature at least 20 minutes and up to 2 hours.",
+      "2.\tPeel and thinly slice 8 garlic cloves. Add 3 Tbsp. vegetable oil and 1/2 of garlic to a medium Dutch oven or other heavy pot. Cook over medium-high heat, stirring constantly with a wooden spoon, until light golden and crisp, about 5 minutes. Using a slotted spoon, transfer garlic chips to a plate; season lightly with salt.",
+      "3. Place 4 oz. ground pork in same pot and break up into small pieces with wooden spoon. Season with ¼ tsp. Diamond Crystal or Morton kosher salt and cook, undisturbed, until deeply browned underneath, about 5 minutes. Using a slotted spoon, transfer to another plate, leaving fat behind in the pot.",
+      "4. Place eggplant on a clean kitchen towel and blot away any moisture the salt has drawn out.",
+      "5. Working in batches and adding more oil if needed, cook eggplant in the same pot until lightly browned, about 3 minutes per side. Transfer to a plate with pork.",
+      "6. Pour 1½ cups of water into the pot and scrape up browned bits from the bottom with a wooden spoon. Add remaining garlic, 3 Tbsp. coconut vinegar or unseasoned rice vinegar, 2 Tbsp. soy sauce, 2 bay leaves, 1 tsp. freshly ground black pepper, and remaining 1 Tbsp. sugar. Bring to a simmer, then return pork and eggplant to pot. Reduce heat to medium-low, partially cover, and simmer until eggplant is tender and silky and sauce is reduced by 1/2, 20–25 minutes. Taste and season with more salt and pepper and add a little more sugar if needed.",
+      "7. Top with garlic chips and serve with cooked white rice."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53073"
+    },
+    "externalId": "themealdb:53073",
+    "originalSourceUrl": "https://salu-salo.com/eggplant-adobo/",
+    "videoUrl": "https://www.youtube.com/watch?v=pKXACYjwMns",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "8f3f8648-384c-4793-a663-0e7401d55ae2",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.765Z",
+    "updatedAt": "2026-10-02T02:08:21.765Z"
+  },
+  {
+    "title": "Grilled eggplant with coconut milk",
+    "image": "https://www.themealdb.com/images/media/meals/bopa2i1683209167.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Grilled eggplant with coconut milk, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "6 Egg Plants",
+      "1 can Coconut Milk",
+      "1 tbs Lemon Juice",
+      "1 tsp Salt",
+      "To taste Red Pepper Flakes",
+      "4 Sticks Onions"
+    ],
+    "steps": [
+      ".  Prepare the eggplants for grilling by pricking them all over with a fork.  This is so it won’t burst during the grilling process as the natural water in it heats up.",
+      "2.  Grill the eggplants, turning them over frequently to ensure even cooking.  Grill until the skins are dark brown, even black and the eggplant is soft when you touch it.",
+      "3.  Soak the grilled eggplant in a bowl of water to cool it down.  Peel the skin off the eggplant.  Place the whole eggplants in a shallow dish (my mom actually cuts the eggplant into small, bite-sized pieces).",
+      "4.  In a small mixing bowl, mix together the coconut milk or cream, lemon powder, salt and hot pepper.  Mix until the lemon powder and salt dissolve.  Taste, then adjust the amount of lemon powder, salt and hot pepper to your liking.  Pour the mixture over the eggplant.  Sprinkle the green onions over the eggplant and coconut milk.  Stir gently to combine."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53074"
+    },
+    "externalId": "themealdb:53074",
+    "originalSourceUrl": "https://simplybakings.com/grilled-eggplant-with-coconut-milk/",
+    "videoUrl": "https://www.youtube.com/watch?v=ourC5IhljB4",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "8379848f-40da-4cd1-8221-b753561291b7",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.768Z",
+    "updatedAt": "2026-10-02T02:08:21.768Z"
+  },
+  {
+    "title": "Tortang Talong",
+    "image": "https://www.themealdb.com/images/media/meals/va668f1683209318.jpg",
+    "cuisine": "Filipino",
+    "mealType": "Dinner",
+    "description": "Tortang Talong, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "dinner",
+      "filipino"
+    ],
+    "ingredients": [
+      "4 Egg Plants",
+      "2 Eggs",
+      "1 tsp Salt",
+      "4 tsp Olive Oil"
+    ],
+    "steps": [
+      "0.\tGrill the eggplant until the color of skin turns almost black",
+      "1.\tLet the eggplant cool for a while then peel off the skin. Set aside.",
+      "2.\tCrack the eggs and place in a bowl",
+      "3.\tAdd salt and beat",
+      "4.\tPlace the eggplant on a flat surface and flatten using a fork.",
+      "5.\tDip the flattened eggplant in the beaten egg mixture",
+      "6.\tHeat the pan and pour the cooking oil",
+      "7.\tFry the eggplant (that was dipped in the beaten mixture). Make sure that both sides are cooked. Frying time will take you about 3 to 4 minutes per side on medium heat."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53075"
+    },
+    "externalId": "themealdb:53075",
+    "originalSourceUrl": "https://www.sainsburysmagazine.co.uk/recipes/mains/tortang-talong",
+    "videoUrl": "https://www.youtube.com/watch?v=eLl8ekOu1MM",
+    "notes": "Serving yield and preparation/cooking times are not supplied by the source.",
+    "id": "683dd2a8-5012-4ca3-ac34-d6c5aa498721",
+    "servings": null,
+    "prepTimeMinutes": null,
+    "cookTimeMinutes": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.770Z",
+    "updatedAt": "2026-10-02T02:08:21.770Z"
+  },
+  {
+    "title": "French Omelette",
+    "image": "https://www.themealdb.com/images/media/meals/yvpuuy1511797244.jpg",
+    "cuisine": "France",
+    "mealType": "Breakfast",
+    "description": "French Omelette, a miscellaneous recipe.",
+    "tags": [
+      "miscellaneous",
+      "quick",
+      "fast-meals",
+      "breakfast"
+    ],
+    "ingredients": [
+      "3 Eggs",
+      "2 knobs Butter",
+      "1 tsp Parmesan",
+      "3 chopped Tarragon Leaves",
+      "1 tbs chopped Parsley",
+      "1 tbs chopped Chives",
+      "4 tbs Gruyère"
+    ],
+    "steps": [
+      "Get everything ready. Warm a 20cm (measured across the top) non-stick frying pan on a medium heat. Crack the eggs into a bowl and beat them with a fork so they break up and mix, but not as completely as you would for scrambled egg. With the heat on medium-hot, drop 1 knob of butter into the pan. It should bubble and sizzle, but not brown. Season the eggs with the Parmesan and a little salt and pepper, and pour into the pan.",
+      "Let the eggs bubble slightly for a couple of seconds, then take a wooden fork or spatula and gently draw the mixture in from the sides of the pan a few times, so it gathers in folds in the centre. Leave for a few seconds, then stir again to lightly combine uncooked egg with cooked. Leave briefly again, and when partly cooked, stir a bit faster, stopping while there’s some barely cooked egg left. With the pan flat on the heat, shake it back and forth a few times to settle the mixture. It should slide easily in the pan and look soft and moist on top. A quick burst of heat will brown the underside.",
+      "Grip the handle underneath. Tilt the pan down away from you and let the omelette fall to the edge. Fold the side nearest to you over by a third with your fork, and keep it rolling over, so the omelette tips onto a plate – or fold it in 1/2, if that’s easier. For a neat finish, cover the omelette with a piece of kitchen paper and plump it up a bit with your fingers. Rub the other knob of butter over to glaze. Serve immediately."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/52915"
+    },
+    "externalId": "themealdb:52915",
+    "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/1669/ultimate-french-omelette",
+    "videoUrl": "https://www.youtube.com/watch?v=qXPhVYpQLPA",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 5,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source.  Serving yield is not supplied by the source.",
+    "id": "964f24d2-756f-4fda-8e13-3fa0fac690d0",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.773Z",
+    "updatedAt": "2026-10-02T02:08:21.773Z"
+  },
+  {
+    "title": "Bread omelette",
+    "image": "https://www.themealdb.com/images/media/meals/hqaejl1695738653.jpg",
+    "cuisine": "India",
+    "mealType": "Breakfast",
+    "description": "Bread omelette, a breakfast recipe.",
+    "tags": [
+      "breakfast",
+      "quick",
+      "fast-meals",
+      "breakfast"
+    ],
+    "ingredients": [
+      "2 Bread",
+      "2 Egg",
+      "0.5 Salt"
+    ],
+    "steps": [
+      "Make and enjoy"
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53076"
+    },
+    "externalId": "themealdb:53076",
+    "originalSourceUrl": null,
+    "videoUrl": null,
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 7,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source.  Serving yield is not supplied by the source.",
+    "id": "1a460610-6942-44ee-a3f1-194eb9b449db",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.776Z",
+    "updatedAt": "2026-10-02T02:08:21.776Z"
+  },
+  {
+    "title": "Sesame Cucumber Salad",
+    "image": "https://www.themealdb.com/images/media/meals/93iok31766436070.jpg",
+    "cuisine": "Chinese",
+    "mealType": "Lunch",
+    "description": "Sesame Cucumber Salad, a side recipe.",
+    "tags": [
+      "side",
+      "quick",
+      "fast-meals",
+      "lunch"
+    ],
+    "ingredients": [
+      "2 medium Cucumber",
+      "1/2 tsp Salt",
+      "2 tsp Sesame Seed Oil",
+      "2 tablespoons Rice Vinegar",
+      "6 Basil Leaves",
+      "1/2 tsp Red Chilli Flakes",
+      "2 tsp Sesame Seed"
+    ],
+    "steps": [
+      "Prep the cucumbers:",
+      "Peel the cucumbers. Cut them into quarters, lengthwise. (If the seeds are bitter, scrape out the seeds and discard.) Cut the cucumbers again, crosswise, into 1/2-inch thick pieces.",
+      "Toss the salad:",
+      "Place cucumbers into a serving bowl. Sprinkle with salt. Toss with sesame oil, seasoned rice vinegar, basil (if using), and chili flakes. Sprinkle with toasted sesame seeds if using."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53378"
+    },
+    "externalId": "themealdb:53378",
+    "originalSourceUrl": "https://www.simplyrecipes.com/recipes/sesame_cucumber_salad/",
+    "videoUrl": "https://www.youtube.com/watch?v=q37qn81lg5c",
+    "prepTimeMinutes": 8,
+    "cookTimeMinutes": 0,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source.  Serving yield is not supplied by the source.",
+    "id": "af532a13-9ab7-4b9b-ba6f-3b3a50b1ad9e",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.778Z",
+    "updatedAt": "2026-10-02T02:08:21.778Z"
+  },
+  {
+    "title": "Shopska Salad",
+    "image": "https://www.themealdb.com/images/media/meals/bqx8mc1782684286.jpg",
+    "cuisine": "International",
+    "mealType": "Lunch",
+    "description": "Shopska Salad, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "quick",
+      "fast-meals",
+      "lunch"
+    ],
+    "ingredients": [
+      "1 sliced Cucumber",
+      "3 Cups Tomatoes",
+      "1/4 Red Onions",
+      "1 chopped Green Pepper",
+      "1 tsp Salt",
+      "1/4 cup Olive Oil",
+      "1/3 cup Feta",
+      "2 tbs chopped Parsley"
+    ],
+    "steps": [
+      "Combine vegetables in a bowl and sprinkle salt on top. Let it stand for 5 minutes. Add the oil. Top with feta and parsley. Serve."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53491"
+    },
+    "externalId": "themealdb:53491",
+    "originalSourceUrl": "https://cookinglsl.com/shopska-salad-recipe-bulgarian-tomato-and-cucumber-salad/#wprm-recipe-container-35244",
+    "videoUrl": null,
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 5,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source. The 5-minute standing time is included in the total. Serving yield is not supplied by the source.",
+    "id": "d8c9181f-a71c-4b4b-83b0-6ba3a797bf68",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.781Z",
+    "updatedAt": "2026-10-02T02:08:21.781Z"
+  },
+  {
+    "title": "Bulgarian Green Salad",
+    "image": "https://www.themealdb.com/images/media/meals/6awyvm1782685205.jpg",
+    "cuisine": "International",
+    "mealType": "Lunch",
+    "description": "Bulgarian Green Salad, a side recipe.",
+    "tags": [
+      "side",
+      "quick",
+      "fast-meals",
+      "lunch"
+    ],
+    "ingredients": [
+      "1/2 Lettuce",
+      "7 Radish",
+      "1 sliced Cucumber",
+      "4 Chopped Scallions",
+      "To taste Salt",
+      "2 tablespoons Apple Cider Vinegar",
+      "1/8 cup Olive Oil",
+      "Garnish Dill",
+      "Garnish Parsley"
+    ],
+    "steps": [
+      "Place sliced lettuce in a large bowl.",
+      "Add radishes, cucumber, and scallions.",
+      "Drizzle with vinegar and olive oil.",
+      "Season with salt and gently toss to combine.",
+      "Top with sliced hard-boiled eggs, olives, dill and (or) parsley if using and serve immediately."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53492"
+    },
+    "externalId": "themealdb:53492",
+    "originalSourceUrl": "https://cookinglsl.com/bulgarian-green-salad-recipe/#wprm-recipe-container-24454",
+    "videoUrl": null,
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source. Use eggs that are already hard-boiled and cooled; cooking eggs from raw requires extra time. Serving yield is not supplied by the source.",
+    "id": "da9d8a2b-c70b-42bc-a4b8-749ef8a6a26c",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.784Z",
+    "updatedAt": "2026-10-02T02:08:21.784Z"
+  },
+  {
+    "title": "Pomegranate salad",
+    "image": "https://www.themealdb.com/images/media/meals/fqpqml1764359125.jpg",
+    "cuisine": "Polish",
+    "mealType": "Lunch",
+    "description": "Pomegranate salad, a vegetarian recipe.",
+    "tags": [
+      "vegetarian",
+      "quick",
+      "fast-meals",
+      "lunch"
+    ],
+    "ingredients": [
+      "60 ml Olive Oil",
+      "2 tablespoons Lemon Juice",
+      "1 tablespoon Honey",
+      "2 sprigs Thyme",
+      "100g Baby Lettuce Leaves",
+      "250g Cherry Tomatoes",
+      "3 chopped Spring Onions",
+      "1 chopped Red Chilli",
+      "1 Pomegranate (use ready-separated seeds)",
+      "50g Feta"
+    ],
+    "steps": [
+      "Combine the olive oil, lemon juice, honey and thyme leaves in a large bowl. Season well, then tip in the lettuce, tomatoes, spring onions and chilli, and toss to combine.",
+      "Scoop out the pomegranate seeds over a bowl and remove any white membrane. Arrange the dressed salad on a platter, then scatter over the pomegranate seeds and feta."
+    ],
+    "source": {
+      "name": "TheMealDB",
+      "url": "https://www.themealdb.com/meal/53297"
+    },
+    "externalId": "themealdb:53297",
+    "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/pomegranate-salad",
+    "videoUrl": "https://www.youtube.com/watch?v=wTqashUAid8",
+    "prepTimeMinutes": 10,
+    "cookTimeMinutes": 0,
+    "timeIsEstimate": true,
+    "notes": "Preparation and cooking times are estimates, not supplied by the source. Use ready-separated pomegranate seeds to keep preparation within 10 minutes. Serving yield is not supplied by the source.",
+    "id": "4f5ba98d-6983-4a82-832a-2c7cfbcde919",
+    "servings": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:21.786Z",
+    "updatedAt": "2026-10-02T02:08:21.786Z"
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.373Z",
+    "updatedAt": "2026-10-02T02:08:36.373Z",
+    "id": "6c09c78e-0f1d-4c60-abfc-ac4e6eab0b3d",
+    "title": "Cheese Quesadilla",
+    "description": "Cheese Quesadilla made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 5,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 large flour tortilla",
+      "1/2 cup shredded cheddar",
+      "1 tsp oil",
+      "2 tbsp salsa"
+    ],
+    "steps": [
+      "Heat oil in a skillet over medium heat.",
+      "Add tortilla, scatter cheese on 1 1/2, and fold.",
+      "Cook for 2 minutes per side until golden and melted. Serve with salsa."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.376Z",
+    "updatedAt": "2026-10-02T02:08:36.376Z",
+    "id": "027eb605-93c5-4fa5-8e8b-e3f33ca39a28",
+    "title": "Tuna Salad Wrap",
+    "description": "Tuna Salad Wrap made with simple ingredients.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "1 small can tuna, drained",
+      "1 tbsp mayonnaise",
+      "1 tsp lemon juice",
+      "2 lettuce leaves",
+      "Black pepper"
+    ],
+    "steps": [
+      "Mix tuna, mayonnaise, lemon juice, and pepper.",
+      "Place lettuce and tuna on the tortilla, fold in the sides, and roll tightly."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.379Z",
+    "updatedAt": "2026-10-02T02:08:36.379Z",
+    "id": "799895c4-8865-48e4-a8c4-38a3c606fbd1",
+    "title": "Microwave Loaded Nachos",
+    "description": "Microwave Loaded Nachos made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 2,
+    "mealType": "Snack",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 cups tortilla chips",
+      "1/2 cup shredded cheddar",
+      "1/3 cup canned black beans, drained and rinsed",
+      "2 tbsp salsa",
+      "1 tbsp sour cream"
+    ],
+    "steps": [
+      "Spread chips on a microwave-safe plate; top with beans and cheese.",
+      "Microwave for 60 to 90 seconds until cheese melts. Add salsa and sour cream."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.382Z",
+    "updatedAt": "2026-10-02T02:08:36.382Z",
+    "id": "deffb09e-386b-4dce-be87-34d7e7ecb2eb",
+    "title": "Grilled Cheese Sandwich",
+    "description": "Grilled Cheese Sandwich made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 6,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "2 slices bread",
+      "2 slices cheddar",
+      "2 tsp softened butter"
+    ],
+    "steps": [
+      "Butter 1 side of each bread slice and sandwich cheese between the unbuttered sides.",
+      "Cook in a skillet over medium-low heat for about 3 minutes per side, until golden and melted."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.384Z",
+    "updatedAt": "2026-10-02T02:08:36.384Z",
+    "id": "b95e6cae-ab59-4aba-af0c-f5329ff299f9",
+    "title": "Rotisserie Chicken Tacos",
+    "description": "Rotisserie Chicken Tacos made with simple ingredients.",
+    "prepTimeMinutes": 4,
+    "cookTimeMinutes": 3,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "2 small tortillas",
+      "3/4 cup cooked rotisserie chicken, shredded",
+      "2 tbsp salsa",
+      "1/4 avocado, sliced",
+      "1 lime wedge"
+    ],
+    "steps": [
+      "Heat chicken with salsa in a skillet for 2 minutes until steaming hot.",
+      "Warm tortillas in the microwave for 20 seconds. Fill with chicken and avocado; squeeze lime on top."
+    ],
+    "notes": "Uses ready-cooked rotisserie chicken; cooking chicken from raw is not included in the 7-minute total."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.387Z",
+    "updatedAt": "2026-10-02T02:08:36.387Z",
+    "id": "a6cad07b-3357-4fbb-a37c-9e78d3dba07a",
+    "title": "Egg and Cheese Breakfast Sandwich",
+    "description": "Egg and Cheese Breakfast Sandwich made with simple ingredients.",
+    "prepTimeMinutes": 2,
+    "cookTimeMinutes": 5,
+    "mealType": "Breakfast",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 English muffin, split",
+      "1 egg",
+      "1 slice cheese",
+      "1 tsp butter",
+      "Salt and pepper"
+    ],
+    "steps": [
+      "Toast the muffin while heating butter in a small skillet.",
+      "Beat the egg with salt and pepper. Pour into the skillet and cook until set, folding to fit the muffin.",
+      "Top the egg with cheese, let melt, and sandwich in the toasted muffin."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.390Z",
+    "updatedAt": "2026-10-02T02:08:36.390Z",
+    "id": "88152dfd-49a4-4b06-9185-c9047a890bab",
+    "title": "Hummus Veggie Pita",
+    "description": "Hummus Veggie Pita made with simple ingredients.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian",
+      "no-cook"
+    ],
+    "ingredients": [
+      "1 pita bread",
+      "1/4 cup hummus",
+      "1/4 cucumber, sliced",
+      "1/2 tomato, diced",
+      "Handful of baby spinach",
+      "1 tbsp crumbled feta"
+    ],
+    "steps": [
+      "Cut the pita in 1/2 and open the pockets.",
+      "Spread hummus inside and fill with cucumber, tomato, spinach, and feta."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.393Z",
+    "updatedAt": "2026-10-02T02:08:36.393Z",
+    "id": "d12451ae-0294-4f20-8b80-72a21fce19e3",
+    "title": "Buffalo Chicken Wrap",
+    "description": "Buffalo Chicken Wrap made with simple ingredients.",
+    "prepTimeMinutes": 4,
+    "cookTimeMinutes": 2,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "3/4 cup cooked chicken, shredded",
+      "1 tbsp buffalo sauce",
+      "1 tbsp ranch dressing",
+      "1/4 cup shredded lettuce"
+    ],
+    "steps": [
+      "Mix chicken and buffalo sauce. Microwave in a covered microwave-safe bowl until steaming hot, about 1 to 2 minutes.",
+      "Spread ranch on the tortilla, add lettuce and chicken, fold in sides, and roll."
+    ],
+    "notes": "Start with ready-cooked chicken; allow extra time if cooking chicken from raw."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.395Z",
+    "updatedAt": "2026-10-02T02:08:36.395Z",
+    "id": "2227688e-e463-4e4d-9ea3-82a990692ea1",
+    "title": "Microwave Pizza Tortilla",
+    "description": "Microwave Pizza Tortilla made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 2,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food"
+    ],
+    "ingredients": [
+      "1 flour tortilla",
+      "2 tbsp pizza sauce",
+      "1/3 cup shredded mozzarella",
+      "6 slices ready-to-eat pepperoni",
+      "Pinch dried oregano"
+    ],
+    "steps": [
+      "Place tortilla on a microwave-safe plate. Spread sauce and top with mozzarella, pepperoni, and oregano.",
+      "Microwave for 60 to 90 seconds until cheese melts. Fold and serve."
+    ],
+    "notes": "A soft pizza-style tortilla; microwaving does not produce a crisp pizza crust."
+  },
+  {
+    "image": null,
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.399Z",
+    "updatedAt": "2026-10-02T02:08:36.399Z",
+    "id": "1cbda6fc-58f4-4055-9d1e-25033d283275",
+    "title": "Peanut Sesame Noodles",
+    "description": "Peanut Sesame Noodles made with simple ingredients.",
+    "prepTimeMinutes": 3,
+    "cookTimeMinutes": 5,
+    "mealType": "Lunch",
+    "tags": [
+      "quick",
+      "fast-food",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "85 g quick-cooking noodles (3-minute variety)",
+      "1 tbsp peanut butter",
+      "1 tsp soy sauce",
+      "1 tsp lime juice",
+      "1/2 tsp sesame oil",
+      "1 tbsp warm water",
+      "1 spring onion, sliced"
+    ],
+    "steps": [
+      "Bring a small saucepan of water to a boil while mixing peanut butter, soy sauce, lime juice, sesame oil, and warm water.",
+      "Cook the quick noodles for 3 minutes according to the package, then drain.",
+      "Toss noodles with the sauce and spring onion."
+    ],
+    "notes": "Use noodles labeled for a 3-minute cook and a small amount of water or an electric kettle to stay within the 8-minute total."
+  },
+  {
+    "image": null,
+    "servings": 4,
+    "cuisine": "Filipino",
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.402Z",
+    "updatedAt": "2026-10-02T02:08:36.402Z",
+    "id": "9fb0a134-240f-4267-bdaa-47bbf22d9c44",
+    "title": "Pancit Bihon",
+    "description": "Filipino stir-fried rice noodles with chicken, cabbage, and carrots.",
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 20,
+    "mealType": "Dinner",
+    "tags": [
+      "filipino",
+      "noodles",
+      "chicken"
+    ],
+    "ingredients": [
+      "200 g rice vermicelli (bihon)",
+      "250 g boneless chicken, thinly sliced",
+      "2 tbsp oil",
+      "1 small onion, sliced",
+      "3 cloves garlic, minced",
+      "1 carrot, julienned",
+      "2 cups shredded cabbage",
+      "2 cups chicken stock",
+      "3 tbsp soy sauce",
+      "Calamansi or lemon wedges"
+    ],
+    "steps": [
+      "Soak noodles in warm water for 10 minutes, then drain; slice vegetables while soaking.",
+      "Heat oil in a wok. Cook onion and garlic for 2 minutes, then add chicken and stir-fry until cooked through.",
+      "Add carrots and cabbage and stir-fry for 3 minutes.",
+      "Pour in stock and soy sauce; bring to a simmer. Add noodles and toss for 5 to 7 minutes until tender and the liquid is absorbed.",
+      "Check chicken is fully cooked and serve with calamansi or lemon."
+    ]
+  },
+  {
+    "image": null,
+    "servings": 3,
+    "cuisine": "Filipino",
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.404Z",
+    "updatedAt": "2026-10-02T02:08:36.404Z",
+    "id": "bf1a872c-3c4b-4099-b28a-44bf540e05ef",
+    "title": "Garlic Fried Rice (Sinangag)",
+    "description": "Filipino garlic fried rice, a savory breakfast staple.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 8,
+    "mealType": "Breakfast",
+    "tags": [
+      "filipino",
+      "rice",
+      "vegetarian"
+    ],
+    "ingredients": [
+      "3 cups chilled cooked rice",
+      "6 cloves garlic, minced",
+      "2 tbsp neutral oil",
+      "1/2 tsp salt",
+      "Black pepper to taste"
+    ],
+    "steps": [
+      "Break up clumps in the chilled cooked rice.",
+      "Heat oil in a large skillet over medium heat. Fry garlic for 2 minutes until light golden; reserve a spoonful for topping.",
+      "Add rice and stir-fry for 5 to 6 minutes until piping hot throughout. Season and top with reserved garlic."
+    ],
+    "notes": "Uses rice cooked ahead of time and promptly refrigerated. The 13-minute total excludes cooking and chilling rice."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/3pylqc1504370988.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.407Z",
+    "updatedAt": "2026-10-02T02:08:36.407Z",
+    "id": "718134eb-0155-45b6-a870-9fdef602afa8",
+    "title": "Moscow Mule",
+    "description": "A classic Moscow Mule cocktail, served in a copper mug.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2 oz Vodka",
+      "2 oz Lime juice",
+      "8 oz Ginger ale"
+    ],
+    "steps": [
+      "Combine vodka and ginger beer in a highball glass filled with ice. Add lime juice. Stir gently. Garnish."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11009"
+    },
+    "externalId": "cocktaildb:11009",
+    "notes": "Preparation time is an estimate; source does not specify timing."
+  },
+  {
+    "image": "https://www.thecocktaildb.com/images/media/drink/k0508k1668422436.jpg",
+    "servings": 1,
+    "cuisine": null,
+    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
+    "createdAt": "2026-10-02T02:08:36.410Z",
+    "updatedAt": "2026-10-02T02:08:36.410Z",
+    "id": "72520d00-2650-485d-bf2f-2bc24f1611c2",
+    "title": "Gin And Tonic",
+    "description": "A classic Gin And Tonic cocktail, served in a highball glass.",
+    "prepTimeMinutes": 5,
+    "cookTimeMinutes": 0,
+    "mealType": "Alcoholic",
+    "tags": [
+      "cocktail",
+      "drink",
+      "alcoholic"
+    ],
+    "ingredients": [
+      "2 oz Gin",
+      "5 oz Tonic water",
+      "1 Lime"
+    ],
+    "steps": [
+      "Pour the gin and the tonic water into a highball glass almost filled with ice cubes. Stir well. Garnish with the lime wedge."
+    ],
+    "source": {
+      "name": "TheCocktailDB",
+      "url": "https://www.thecocktaildb.com/drink/11403"
+    },
+    "externalId": "cocktaildb:11403",
+    "notes": "Preparation time is an estimate; source does not specify timing."
   }
 ]
