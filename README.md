@@ -19,7 +19,8 @@ store) later.
   carb, protein, sauce, and vegetable
 - **Pantry & Fridge** — track what you have with a purchase/made date and shelf
   life, get a countdown per item plus a "use soon" warning, and see
-  **What can I make right now** — recipes matched against your unexpired items
+  **What can I make right now** — recipes matched against your unexpired items;
+  add several items from a receipt photo, then review and edit the detected rows
 - **Login** — email + password (emails stored encrypted, passwords bcrypt-hashed) or Google Sign-In
 - **Light/dark mode** — follows your system by default, toggle in the navbar
 - **Suggest a recipe** — any logged-in user can submit a recipe for review and
@@ -147,4 +148,9 @@ curl http://localhost:5001/recipes         # seed recipes
 ```
 
 Then exercise the UI: register (with and without the admin code), save a
-recipe, and import one from the Admin page.
+recipe, import one from the Admin page, and test a receipt from the Pantry page:
+
+1. Select **Add item**, then select the receipt icon.
+2. Choose a clear receipt image on desktop, or take one with the phone camera.
+3. Wait for the on-device text reading to finish, correct or remove any detected
+   rows, and select **Add items to pantry**.

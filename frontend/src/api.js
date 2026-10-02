@@ -68,7 +68,6 @@ export const addPantryItem = (token, item) => request('/pantry', { method: 'POST
 export const updatePantryItem = (token, id, item) => request(`/pantry/${id}`, { method: 'PUT', token, body: item })
 export const deletePantryItem = (token, id) => request(`/pantry/${id}`, { method: 'DELETE', token })
 export const addSamplePantry = (token) => request('/pantry/sample', { method: 'POST', token })
-export const lookupBarcode = (token, code) => request(`/pantry/barcode/${encodeURIComponent(code)}`, { token })
 export const parseReceiptText = (token, text) => request('/pantry/receipt/parse', { method: 'POST', token, body: { text } })
 export const bulkAddPantryItems = (token, items) => request('/pantry/bulk', { method: 'POST', token, body: { items } })
 

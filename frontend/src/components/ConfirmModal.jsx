@@ -1,7 +1,7 @@
 import React from 'react'
 
 // Generic yes/no popup, same modal chrome as the rest of the app
-// (AddItemModal / ReceiptConfirmModal / BarcodeScanner). Pass `selected` +
+// (AddItemModal / ReceiptConfirmModal). Pass `selected` +
 // `onToggleItem` to let the user uncheck individual items before confirming
 // (e.g. grocery "Clear all"); omit them for a plain confirm/cancel dialog.
 export default function ConfirmModal({

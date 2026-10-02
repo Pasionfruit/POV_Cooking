@@ -78,12 +78,13 @@ export default function ReceiptConfirmModal({ items, onConfirm, onCancel, busy }
         <button type="button" className="modal-close" onClick={onCancel} aria-label="Close">
           ×
         </button>
-        <p className="modal-eyebrow">Review before adding</p>
+        <p className="modal-eyebrow">Review receipt items</p>
         <h3 className="modal-title">
           {rows.length} item{rows.length === 1 ? '' : 's'} found
         </h3>
         <p className="muted small modal-note">
-          Fix anything that read wrong, remove what doesn&rsquo;t belong, then add the rest to your pantry.
+          These are the items that will be added to your pantry. Fix anything that read wrong or remove anything that
+          does not belong before continuing.
         </p>
 
         <label className="receipt-purchased">

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import BarcodeIcon from './BarcodeIcon'
 import ReceiptIcon from './ReceiptIcon'
 import { ITEM_TYPES } from '../lib/itemTypes'
 
@@ -18,10 +17,9 @@ const EMPTY_FORM = {
   purchasedAt: today(),
   shelfLifeDays: 7,
   notes: '',
-  barcode: '',
 }
 
-function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan, onScanReceipt }) {
+function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScanReceipt }) {
   const [fields, setFields] = useState(initial || EMPTY_FORM)
   const [error, setError] = useState(null)
 
@@ -29,8 +27,7 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan, onScanRe
     setFields(initial || EMPTY_FORM)
   }, [initial])
 
-  // A scanned product drops straight into the fields, leaving the rest as-is
-  // so the user only has to confirm where it goes.
+  // Receipt suggestions drop straight into the fields, leaving the rest as-is.
   useEffect(() => {
     if (prefill) setFields((f) => ({ ...f, ...prefill }))
   }, [prefill])
@@ -98,30 +95,18 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan, onScanRe
           onChange={(e) => set('shelfLifeDays', e.target.value)}
         />
       </label>
-      {fields.barcode && <p className="muted small barcode-note">Barcode {fields.barcode}</p>}
       {error && <p className="error">{error}</p>}
       <div className="form-actions">
         <div className="scan-buttons">
-          {onScan && (
-            <button
-              type="button"
-              className="icon-button"
-              onClick={onScan}
-              title="Scan a barcode"
-              aria-label="Scan a barcode"
-            >
-              <BarcodeIcon />
-            </button>
-          )}
           {onScanReceipt && (
             <button
               type="button"
-              className="icon-button"
+              className="receipt-upload-button"
               onClick={onScanReceipt}
-              title="Scan a receipt to add items"
-              aria-label="Scan a receipt to add items"
+              title="Choose a receipt photo and review its items"
             >
               <ReceiptIcon />
+              Add from receipt
             </button>
           )}
         </div>
@@ -139,9 +124,9 @@ function ItemForm({ initial, onSubmit, onCancel, busy, prefill, onScan, onScanRe
 }
 
 // Popup for adding a new pantry item, or editing an existing one. Reuses the
-// same modal chrome as ReceiptConfirmModal/BarcodeScanner (.modal-backdrop /
+// same modal chrome as ReceiptConfirmModal (.modal-backdrop /
 // .modal) so every overlay in the app looks and behaves the same way.
-export default function AddItemModal({ editing, onSubmit, onClose, busy, prefill, scanStatus, onScan, onScanReceipt }) {
+export default function AddItemModal({ editing, onSubmit, onClose, busy, prefill, scanStatus, onScanReceipt }) {
   const dialogRef = useRef(null)
   useEffect(() => {
     const previous = document.activeElement
@@ -177,7 +162,6 @@ export default function AddItemModal({ editing, onSubmit, onClose, busy, prefill
     purchasedAt: editing.purchasedAt,
     shelfLifeDays: editing.shelfLifeDays,
     notes: editing.notes || '',
-    barcode: editing.barcode || '',
   }, [editing])
 
   return (
@@ -201,7 +185,6 @@ export default function AddItemModal({ editing, onSubmit, onClose, busy, prefill
         <ItemForm
           initial={initial}
           prefill={editing ? null : prefill}
-          onScan={onScan}
           onScanReceipt={editing ? null : onScanReceipt}
           onSubmit={onSubmit}
           onCancel={onClose}

@@ -741,7 +741,6 @@ function normalizePantryItem(input, user, existing) {
     PANTRY_LOCATIONS.find((l) => l.toLowerCase() === String(input.location || '').trim().toLowerCase()) || 'Pantry'
   const type = PANTRY_TYPES.find((t) => t.toLowerCase() === String(input.type || '').trim().toLowerCase()) || 'Other'
   const shelfLife = Number(input.shelfLifeDays)
-  const barcode = String(input.barcode || '').replace(/\D/g, '')
   return {
     ...(existing || {}),
     id: existing ? existing.id : crypto.randomUUID(),
@@ -753,7 +752,6 @@ function normalizePantryItem(input, user, existing) {
     purchasedAt: DATE_RE.test(input.purchasedAt || '') ? input.purchasedAt : new Date().toISOString().slice(0, 10),
     shelfLifeDays: Number.isFinite(shelfLife) && shelfLife > 0 ? Math.min(Math.round(shelfLife), 3650) : 7,
     notes: input.notes ? standardizeText(String(input.notes)) : null,
-    barcode: barcode || null,
     updatedAt: new Date().toISOString(),
   }
 }
@@ -827,75 +825,8 @@ app.post('/pantry/sample', authMiddleware, (req, res) => {
   res.status(201).json({ items: added, skipped: SAMPLE_PANTRY.length - added.length })
 })
 
-// Barcode -> product, via Open Food Facts. Proxied through the server so the
-// browser never has to deal with the third party directly.
-const OFF_TYPE_HINTS = [
-  [/dairy|milk|cheese|yogurt|yoghurt|butter|cream/, 'Dairy'],
-  [/seafood|fish|shrimp|prawn|salmon|tuna/, 'Seafood'],
-  [/meat|poultry|chicken|beef|pork|sausage|bacon/, 'Meat'],
-  [/pasta|noodle|rice|cereal|grain|flour|oat|bulgur|couscous/, 'Grains'],
-  [/bread|bakery|pastr|cake|tortilla|baguette/, 'Bakery'],
-  [/spice|herb|seasoning/, 'Spice'],
-  [/sauce|condiment|oil|vinegar|dressing|syrup|mustard|ketchup/, 'Condiment'],
-  [/canned|tinned|conserve/, 'Canned'],
-  [/snack|biscuit|chip|crisp|candy|chocolate|confection/, 'Snack'],
-  [/beverage|drink|water|juice|soda|coffee|tea/, 'Beverage'],
-  [/frozen/, 'Frozen'],
-  [/fruit|vegetable|produce|salad|fresh/, 'Produce'],
-]
-
-// Open Food Facts orders categories_tags general -> specific, and its broadest
-// umbrella tags ("plant-based-foods-and-beverages") contain words that would
-// mislead a naive substring match. So walk the tags most-specific first and
-// take the first one that maps to a type we track.
-const OFF_UMBRELLA_TAGS = /plant-based-foods-and-beverages|^en:groceries$|^en:foods?$/
-
-function guessType(categoryTags) {
-  const tags = (Array.isArray(categoryTags) ? categoryTags : [])
-    .map((t) => String(t).toLowerCase())
-    .filter((t) => !OFF_UMBRELLA_TAGS.test(t))
-  for (let i = tags.length - 1; i >= 0; i--) {
-    const hit = OFF_TYPE_HINTS.find(([re]) => re.test(tags[i]))
-    // "Frozen" is a location in this app, not a type — keep looking.
-    if (hit && hit[1] !== 'Frozen') return hit[1]
-  }
-  return 'Other'
-}
-
-app.get('/pantry/barcode/:code', authMiddleware, async (req, res) => {
-  const code = String(req.params.code || '').replace(/\D/g, '')
-  if (code.length < 6 || code.length > 14) return res.status(400).json({ error: 'That does not look like a barcode' })
-  const url =
-    `https://world.openfoodfacts.org/api/v2/product/${code}.json` +
-    '?fields=product_name,generic_name,brands,quantity,categories_tags'
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000)
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: { 'User-Agent': 'POV-Cooking/1.0 (pantry barcode lookup)' },
-    }).finally(() => clearTimeout(timeout))
-    if (!response.ok) return res.status(502).json({ error: 'Product lookup failed' })
-    const data = await response.json()
-    const product = data.status === 1 ? data.product : null
-    if (!product) return res.status(404).json({ error: 'No product found for that barcode', code })
-    const name = String(product.product_name || product.generic_name || '').trim()
-    if (!name) return res.status(404).json({ error: 'No product found for that barcode', code })
-    res.json({
-      code,
-      name,
-      brand: String(product.brands || '').split(',')[0].trim() || null,
-      quantity: product.quantity || null,
-      type: guessType(product.categories_tags),
-    })
-  } catch (err) {
-    console.error('Barcode lookup failed:', err.message)
-    res.status(502).json({ error: 'Could not reach the product database' })
-  }
-})
-
-// Typical fridge/pantry life by category, used to pre-fill a guess the user
-// can still override — same spirit as the barcode lookup's category guess.
+// Typical fridge/pantry life by category, used to pre-fill a guess users can
+// still override.
 const SHELF_LIFE_BY_TYPE = {
   Produce: 7,
   Dairy: 10,
@@ -911,9 +842,7 @@ const SHELF_LIFE_BY_TYPE = {
   Other: 14,
 }
 
-// Best-effort category guess from a receipt line's item name — same idea as
-// guessType() above, but matched against free text rather than Open Food
-// Facts category tags, since a receipt only ever gives us a name to go on.
+// Best-effort category guess from a receipt line's item name.
 const NAME_TYPE_HINTS = [
   [/\b(milk|cheese|yogurt|yoghurt|butter|cream|egg)/i, 'Dairy'],
   [/\b(chicken|beef|pork|turkey|sausage|bacon|steak)\b/i, 'Meat'],
@@ -934,7 +863,7 @@ function guessTypeFromName(name) {
   return hit ? hit[1] : 'Other'
 }
 
-// Receipts OCR into noisy text: store header/footer, prices, barcodes,
+// Receipts OCR into noisy text: store header/footer, prices, and
 // totals. This keeps only plausible item lines and guesses a quantity +
 // category for each — deliberately rough, since the confirmation popup on
 // the frontend is where the user actually corrects it before anything saves.
@@ -959,7 +888,7 @@ function parseReceiptText(text) {
   const items = []
   for (const rawLine of lines) {
     if (RECEIPT_NOISE_RE.test(rawLine)) continue
-    if (/^\d+$/.test(rawLine)) continue // a bare barcode/SKU line
+    if (/^\d+$/.test(rawLine)) continue // a bare SKU line
     if (/^[\d\s\-.:/]+$/.test(rawLine)) continue // dates, phone numbers, totals-only lines
 
     let line = rawLine

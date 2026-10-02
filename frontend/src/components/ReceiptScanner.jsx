@@ -2,11 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 
 // Captures one receipt photo — camera on mobile via the `capture` attribute,
 // a normal file picker on desktop — and OCRs it in-browser with Tesseract.js,
-// lazy-loaded so its ~2MB decoder only ships to people who use this feature
-// (same trick as BarcodeScanner's ZXing fallback). Hands the raw text up to
-// the caller via onText; parsing that text into pantry items is the server's
-// job (POST /pantry/receipt/parse), same split as the barcode scanner only
-// ever reporting a raw code and letting the page do the lookup.
+// lazy-loaded so its ~2MB decoder only ships to people who use this feature.
+// Hands the raw text up to the caller; the server parses it into pantry items.
 export default function ReceiptScanner({ onText, onClose }) {
   const inputRef = useRef(null)
   const cancelledRef = useRef(false)

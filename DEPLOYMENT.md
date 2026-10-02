@@ -14,9 +14,8 @@ free host all your recipes, accounts, and pantry would disappear overnight.
 Setting `MONGODB_URI` switches the same storage layer over to Atlas; nothing
 else in the app changes.
 
-**Why HTTPS matters here.** Installing the PWA and using the barcode scanner's
-camera both require a secure context. Both hosts give you HTTPS by default, so
-after this the phone features finally work — they can't over `http://192.168.x.x`.
+**Why HTTPS matters here.** Installing the PWA requires a secure context. Both
+hosts give you HTTPS by default, so the app can be installed after deployment.
 
 ---
 
@@ -205,8 +204,8 @@ field on the sign-up page and enter your `ADMIN_CODE`.
       Android: Chrome → menu → **Install app**
 - [ ] Home-screen icon is the chef hat, name reads "POV Cooking"
 - [ ] Opens fullscreen with no address bar
-- [ ] Pantry → **Scan barcode** → camera opens, a real barcode fills in the form
-      *(this is the payoff for HTTPS — it can't work over a LAN IP)*
+- [ ] Pantry → **Add item** → receipt button → choose or take a clear receipt photo
+      → review the detected items before adding them
 - [ ] Sign in with Google in the installed app
 - [ ] Airplane mode → reopen: the shell loads rather than a browser error page
       *(recipes won't load — see below)*

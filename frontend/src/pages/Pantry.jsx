@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as api from '../api'
 import AddItemModal from '../components/AddItemModal'
-import BarcodeScanner from '../components/BarcodeScanner'
 import CollapsibleSection from '../components/CollapsibleSection'
 import ConfirmModal from '../components/ConfirmModal'
 import PantryFilterMenu from '../components/PantryFilterMenu'
@@ -39,7 +38,6 @@ export default function Pantry() {
   const [location, setLocation] = useState('')
   const [type, setType] = useState('')
   const [duration, setDuration] = useState('')
-  const [scanning, setScanning] = useState(false)
   const [scanStatus, setScanStatus] = useState(null)
   const [prefill, setPrefill] = useState(null)
   const [page, setPage] = useState(1)
@@ -173,28 +171,8 @@ export default function Pantry() {
     }
   }
 
-  async function handleDetected(code) {
-    setScanning(false)
-    setScanStatus({ tone: 'muted', text: `Looking up ${code}…` })
-    try {
-      const product = await api.lookupBarcode(token, code)
-      setEditing(null)
-      setPrefill({
-        name: product.brand ? `${product.brand} ${product.name}` : product.name,
-        quantity: product.quantity || '',
-        type: product.type || 'Other',
-        barcode: product.code,
-      })
-      setScanStatus({ tone: 'notice', text: `Found “${product.name}” — check the details and add it.` })
-    } catch (err) {
-      // Still worth adding by hand, so keep the code in the form.
-      setPrefill({ barcode: code, name: '' })
-      setScanStatus({ tone: 'error', text: `${err.message} (barcode ${code}) — type the name yourself.` })
-    }
-  }
-
-  // The scanner only OCRs the photo into raw text; turning that into
-  // candidate items is the server's job, same split as barcode lookup.
+  // The scanner OCRs the photo into raw text; the server turns it into
+  // candidate items for the review step.
   async function handleReceiptText(text) {
     setReceiptScanning(false)
     setScanStatus({ tone: 'muted', text: 'Matching items…' })
@@ -501,7 +479,7 @@ export default function Pantry() {
         <p className={scanStatus.tone === 'muted' ? 'muted small' : scanStatus.tone}>{scanStatus.text}</p>
       )}
       {addModalOpen && (
-        <div hidden={scanning || receiptScanning || Boolean(receiptCandidates)}>
+        <div hidden={receiptScanning || Boolean(receiptCandidates)}>
         <AddItemModal
           editing={editing}
           busy={busy}
@@ -509,10 +487,6 @@ export default function Pantry() {
           scanStatus={scanStatus}
           onSubmit={handleSubmit}
           onClose={closeAddModal}
-          onScan={() => {
-            setScanStatus(null)
-            setScanning(true)
-          }}
           onScanReceipt={() => {
             setScanStatus(null)
             setReceiptScanning(true)
@@ -521,7 +495,6 @@ export default function Pantry() {
         </div>
       )}
 
-      {scanning && <BarcodeScanner onDetected={handleDetected} onClose={() => setScanning(false)} />}
       {receiptScanning && <ReceiptScanner onText={handleReceiptText} onClose={() => setReceiptScanning(false)} />}
       {receiptCandidates && (
         <ReceiptConfirmModal
