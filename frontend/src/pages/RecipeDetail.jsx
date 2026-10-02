@@ -8,6 +8,15 @@ import { ingredientToText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
 import { useTried } from '../lib/useTried'
 
+function safeVideoUrl(value) {
+  try {
+    const url = new URL(value)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null
+  } catch {
+    return null
+  }
+}
+
 // Checked-off ingredients/steps are remembered per recipe on this device.
 function loadChecklist(recipeId) {
   try {
@@ -63,6 +72,7 @@ export default function RecipeDetail() {
   const isOwnPersonalRecipe = Boolean(recipe.personal && user && recipe.createdBy === user.id)
   const ingredients = recipe.ingredients || []
   const steps = recipe.steps || []
+  const videoUrl = safeVideoUrl(recipe.videoUrl)
   const anyChecked = checked.ingredients.length > 0 || checked.steps.length > 0
   const timerPresets = [
     recipe.cookTimeMinutes ? { label: 'Cook', minutes: recipe.cookTimeMinutes } : null,
@@ -139,6 +149,13 @@ export default function RecipeDetail() {
       )}
 
       {recipe.image && <img className="detail-image" src={recipe.image} alt={recipe.title} />}
+      {videoUrl && (
+        <p>
+          <a className="button" href={videoUrl} target="_blank" rel="noopener noreferrer">
+            Watch recipe video
+          </a>
+        </p>
+      )}
 
       <Timer presets={timerPresets} />
 

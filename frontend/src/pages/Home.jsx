@@ -38,11 +38,13 @@ const QUICK_COLLECTIONS = [
     matches: (recipe) => (totalMinutes(recipe) || Infinity) <= 10,
   },
   {
-    id: 'comfort',
+    id: 'gluten-free',
     icon: 'bowl',
-    label: 'Comfort food',
-    description: 'Warm and satisfying',
-    matches: (recipe) => /comfort|cozy|hearty|one-pot|stew|soup|pasta|casserole/.test(recipeSearchText(recipe)),
+    label: 'Gluten-free',
+    description: 'Gluten-free recipes',
+    matches: (recipe) =>
+      recipe.mealType !== 'Alcoholic' &&
+      (recipe.tags || []).includes('gluten-free'),
   },
   {
     id: 'sweet',

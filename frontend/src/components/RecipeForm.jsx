@@ -3,17 +3,22 @@ import { MEAL_TYPES, ingredientToText } from '../lib/recipeUtils'
 
 // Turns whatever the user pasted into a source object, guessing the site name
 // from the hostname the way the URL importer does. Returns null if unusable.
-function parseSourceUrl(input) {
+function parseWebUrl(input) {
   const raw = input.trim()
   if (!raw) return null
   const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`
   try {
     const url = new URL(withScheme)
-    if (!url.hostname.includes('.')) return null
-    return { name: url.hostname.replace(/^www\./, ''), url: url.href }
+    if (!['http:', 'https:'].includes(url.protocol) || !url.hostname.includes('.')) return null
+    return url
   } catch {
     return null
   }
+}
+
+function parseSourceUrl(input) {
+  const url = parseWebUrl(input)
+  return url ? { name: url.hostname.replace(/^www\./, ''), url: url.href } : null
 }
 
 // Shared recipe editor: used for admin CRUD, reviewing an imported link, user
@@ -30,6 +35,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
     title: initial?.title || '',
     description: initial?.description || '',
     image: initial?.image || '',
+    videoUrl: initial?.videoUrl || '',
     sourceUrl: initial?.source?.url || '',
     cuisine: initial?.cuisine || '',
     mealType: initial?.mealType || '',
@@ -54,6 +60,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
     return {
       ...(base || {}),
       ...(f.sourceUrl.trim() ? { source } : {}),
+      ...(!isSuggestion && !isPersonal ? { videoUrl: parseWebUrl(f.videoUrl)?.href || null } : {}),
       title: f.title.trim(),
       description: f.description.trim(),
       image: f.image.trim() || null,
@@ -89,6 +96,10 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
     } else {
       if (fields.sourceUrl.trim() && !parseSourceUrl(fields.sourceUrl)) {
         setError('That website link does not look like a valid URL')
+        return
+      }
+      if (!isSuggestion && !isPersonal && fields.videoUrl.trim() && !parseWebUrl(fields.videoUrl)) {
+        setError('That video link does not look like a valid web URL')
         return
       }
       recipe = buildRecipe(fields, initial)
@@ -139,6 +150,17 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
             <label>
               Image URL
               <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />
+            </label>
+          )}
+          {!isSuggestion && !isPersonal && (
+            <label>
+              Video link (optional)
+              <input
+                value={fields.videoUrl}
+                onChange={(e) => set('videoUrl', e.target.value)}
+                inputMode="url"
+                placeholder="https://youtu.be/…"
+              />
             </label>
           )}
           <div className="field-grid">
