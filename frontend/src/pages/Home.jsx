@@ -14,12 +14,65 @@ import { useTried } from '../lib/useTried'
 
 const DURATIONS = [
   { value: '', label: 'Any time' },
+  { value: '10', label: '≤ 10 min' },
   { value: '15', label: '≤ 15 min' },
   { value: '30', label: '≤ 30 min' },
   { value: '45', label: '≤ 45 min' },
   { value: '60', label: '≤ 1 hour' },
   { value: '120', label: '≤ 2 hours' },
 ]
+
+function recipeSearchText(recipe) {
+  return [recipe.title, recipe.description, recipe.mealType, ...(recipe.tags || [])]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+}
+
+const QUICK_COLLECTIONS = [
+  {
+    id: 'fast',
+    icon: 'bolt',
+    label: 'Fast meals',
+    description: 'Ready in 10 minutes',
+    matches: (recipe) => (totalMinutes(recipe) || Infinity) <= 10,
+  },
+  {
+    id: 'comfort',
+    icon: 'bowl',
+    label: 'Comfort food',
+    description: 'Warm and satisfying',
+    matches: (recipe) => /comfort|cozy|hearty|one-pot|stew|soup|pasta|casserole/.test(recipeSearchText(recipe)),
+  },
+  {
+    id: 'sweet',
+    icon: 'treat',
+    label: 'Sweet treats',
+    description: 'Desserts and baking',
+    matches: (recipe) => recipe.mealType === 'Dessert' || /sweet|dessert|cake|cookie|brownie|bake/.test(recipeSearchText(recipe)),
+  },
+  {
+    id: 'drinks',
+    icon: 'glass',
+    label: 'Party drinks',
+    description: 'Cocktails and mocktails',
+    matches: (recipe) => recipe.mealType === 'Alcoholic' || /cocktail|drink|mocktail/.test(recipeSearchText(recipe)),
+  },
+]
+
+function CollectionIcon({ name }) {
+  const paths = {
+    bolt: <path d="m13 2-9 12h7l-1 8 9-12h-7z" />,
+    bowl: <><path d="M4 11h16a8 8 0 0 1-16 0Z" /><path d="M2 21h20M8 7c0-2 1-3 2-4M12 7c0-2 1-3 2-4M16 7c0-2 1-3 2-4" /></>,
+    treat: <><path d="M5 10h14v10H5z" /><path d="M4 10h16M8 10V7a2 2 0 0 1 4 0v3M12 10V7a2 2 0 0 1 4 0v3" /></>,
+    glass: <><path d="M5 3h14l-7 8Z" /><path d="M12 11v7M8 21h8" /></>,
+  }
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {paths[name]}
+    </svg>
+  )
+}
 
 function FeaturedBanner({ recipe }) {
   const time = totalTimeText(recipe)
@@ -57,6 +110,7 @@ export default function Home() {
   const [savedOnly, setSavedOnly] = useState(false)
   const [neverCooked, setNeverCooked] = useState(false)
   const [personalOnly, setPersonalOnly] = useState(false)
+  const [quickCollection, setQuickCollection] = useState('')
   const [ideasOpen, setIdeasOpen] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [page, setPage] = useState(1)
@@ -77,18 +131,20 @@ export default function Home() {
 
   useEffect(() => {
     setPage(1)
-  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, personalOnly, pageSize])
+  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, personalOnly, quickCollection, pageSize])
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>
 
   const cuisines = [...new Set(recipes.map((r) => r.cuisine).filter(Boolean))].sort()
   const allTags = [...new Set(recipes.flatMap((r) => r.tags || []).filter(Boolean))].sort()
+  const selectedCollection = QUICK_COLLECTIONS.find((collection) => collection.id === quickCollection)
 
   const matching = recipes.filter((r) => {
     if (savedOnly && !savedIds.has(r.id)) return false
     if (neverCooked && triedIds.has(r.id)) return false
     if (personalOnly && !(r.personal && r.createdBy === user?.id)) return false
+    if (selectedCollection && !selectedCollection.matches(r)) return false
     if (mealType && r.mealType !== mealType) return false
     if (!matchesQuery(r, query)) return false
     if (cuisine && r.cuisine !== cuisine) return false
@@ -104,14 +160,26 @@ export default function Home() {
   const currentPage = Math.min(page, totalPages)
   const visible = matching.slice((currentPage - 1) * pageSize, currentPage * pageSize)
   const filtersActive = Boolean(
-    query || cuisine || mealType || maxTime || tags.length || savedOnly || neverCooked || personalOnly
+    query || cuisine || mealType || maxTime || tags.length || savedOnly || neverCooked || personalOnly || quickCollection
   )
+
+  function selectQuickCollection(id) {
+    setQuickCollection(id)
+    setQuery('')
+    setCuisine('')
+    setMealType('')
+    setMaxTime('')
+    setTags([])
+    setSavedOnly(false)
+    setNeverCooked(false)
+    setPersonalOnly(false)
+  }
 
   return (
     <section>
       {featured && <FeaturedBanner recipe={featured} />}
       <div className="page-header">
-        <h1>All Recipes</h1>
+        <h1>{selectedCollection ? selectedCollection.label : 'All Recipes'}</h1>
         <span className="muted small">
           {matching.length} of {recipes.length}
         </span>
@@ -128,7 +196,7 @@ export default function Home() {
           />
           <button
             type="button"
-            className={`chip home-filter-icon ${cuisine || mealType || maxTime || tags.length ? 'active' : ''}`}
+            className={`chip home-filter-icon ${cuisine || mealType || maxTime || tags.length || quickCollection ? 'active' : ''}`}
             onClick={() => setFiltersOpen((open) => !open)}
             aria-label={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
             title={filtersOpen ? 'Hide recipe filters' : 'Show recipe filters'}
@@ -218,6 +286,34 @@ export default function Home() {
           ))}
         </select>
         <TagFilter tags={allTags} selected={tags} onChange={setTags} />
+        <div className="quick-filter-section">
+          <div className="quick-filter-heading">
+            <span>Fast filters</span>
+            {quickCollection && (
+              <button type="button" className="link-button" onClick={() => setQuickCollection('')}>
+                Show all recipes
+              </button>
+            )}
+          </div>
+          <div className="quick-collection-grid">
+            {QUICK_COLLECTIONS.map((collection) => (
+              <button
+                key={collection.id}
+                type="button"
+                className={`quick-collection ${quickCollection === collection.id ? 'active' : ''}`}
+                onClick={() => selectQuickCollection(collection.id)}
+                aria-pressed={quickCollection === collection.id}
+              >
+                <span className="quick-collection-icon"><CollectionIcon name={collection.icon} /></span>
+                <span className="quick-collection-copy">
+                  <span className="quick-collection-title">{collection.label}</span>
+                  <span className="quick-collection-description">{collection.description}</span>
+                </span>
+                <span className="quick-collection-count">{recipes.filter(collection.matches).length}</span>
+              </button>
+            ))}
+          </div>
+        </div>
         {filtersActive && (
           <button
             type="button"
@@ -231,6 +327,7 @@ export default function Home() {
               setSavedOnly(false)
               setNeverCooked(false)
               setPersonalOnly(false)
+              setQuickCollection('')
             }}
           >
             Clear
