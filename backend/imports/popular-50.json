@@ -1,117 +1,5 @@
 [
   {
-    "id": "seed-margherita-pizza",
-    "title": "Classic Margherita Pizza",
-    "description": "Neapolitan-style pizza with tomato, fresh mozzarella, and basil. Minimal toppings, maximum flavor.",
-    "image": null,
-    "servings": 2,
-    "prepTimeMinutes": 20,
-    "cookTimeMinutes": 12,
-    "cuisine": "Italian",
-    "tags": [
-      "pizza",
-      "vegetarian",
-      "dinner"
-    ],
-    "ingredients": [
-      "250 g pizza dough",
-      "80 ml tomato passata",
-      "125 g fresh mozzarella, torn",
-      "6 fresh basil leaves",
-      "1 tbsp olive oil",
-      "Pinch of salt"
-    ],
-    "steps": [
-      "Preheat the oven to 250°C (480°F) with a pizza stone or upside-down baking tray inside.",
-      "Stretch the dough into a 30 cm round on floured parchment.",
-      "Spread the passata thinly, leaving a 2 cm border.",
-      "Top with torn mozzarella and a pinch of salt.",
-      "Bake 10–12 minutes until the crust is blistered and the cheese bubbles.",
-      "Finish with basil leaves and a drizzle of olive oil."
-    ],
-    "source": {
-      "name": "Family recipe",
-      "url": null
-    },
-    "nutrition": {
-      "caloriesPerServing": 540,
-      "protein": "22 g"
-    },
-    "createdBy": "seed",
-    "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Dinner"
-  },
-  {
-    "id": "seed-chicken-adobo",
-    "title": "Chicken Adobo",
-    "description": "Filipino braised chicken in soy sauce, vinegar, and garlic — savory, tangy, and better the next day.",
-    "image": null,
-    "servings": 4,
-    "prepTimeMinutes": 10,
-    "cookTimeMinutes": 45,
-    "cuisine": "Filipino",
-    "tags": [
-      "chicken",
-      "dinner",
-      "one-pot"
-    ],
-    "ingredients": [
-      "1 kg chicken thighs, bone-in",
-      "120 ml soy sauce",
-      "120 ml cane or white vinegar",
-      "1 head garlic, smashed",
-      "3 bay leaves",
-      "1 tsp whole black peppercorns",
-      "1 tbsp brown sugar",
-      "1 cup water"
-    ],
-    "steps": [
-      "Combine chicken, soy sauce, and garlic in a bowl; marinate 30 minutes if you have time.",
-      "Sear the chicken skin-side down in a hot pot until browned.",
-      "Add the marinade, vinegar, water, bay leaves, peppercorns, and sugar. Do not stir yet.",
-      "Simmer uncovered 10 minutes, then cover and braise 30 minutes, turning once.",
-      "Uncover and reduce the sauce until glossy. Serve over rice."
-    ],
-    "notes": "Adobo keeps for days and the flavor deepens — make a double batch.",
-    "createdBy": "seed",
-    "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Dinner"
-  },
-  {
-    "id": "seed-overnight-oats",
-    "title": "Peanut Butter Overnight Oats",
-    "description": "No-cook breakfast: assemble a jar the night before, grab it in the morning.",
-    "image": null,
-    "servings": 1,
-    "prepTimeMinutes": 5,
-    "cookTimeMinutes": null,
-    "cuisine": null,
-    "tags": [
-      "breakfast",
-      "no-cook",
-      "vegetarian"
-    ],
-    "ingredients": [
-      "50 g rolled oats",
-      "120 ml milk of choice",
-      "1 tbsp peanut butter",
-      "1 tsp honey or maple syrup",
-      "1 tbsp chia seeds",
-      "Banana slices, to top"
-    ],
-    "steps": [
-      "Stir everything except the banana together in a jar.",
-      "Refrigerate overnight (or at least 4 hours).",
-      "Top with banana slices and an extra spoon of peanut butter before eating."
-    ],
-    "createdBy": "seed",
-    "createdAt": "2026-08-07T00:00:00.000Z",
-    "updatedAt": "2026-08-07T00:00:00.000Z",
-    "mealType": "Breakfast"
-  },
-  {
     "title": "Tandoori chicken",
     "description": "Tandoori chicken — chicken from India cuisine.",
     "image": "https://www.themealdb.com/images/media/meals/qptpvt1487339892.jpg",
@@ -130,7 +18,7 @@
       "16 skinnless chicken thighs",
       "For brushing vegetable oil",
       "300ml Greek yogurt",
-      "Large piece ginger",
+      "large piece ginger",
       "4 garlic clove",
       "¾ tsp garam masala",
       "¾ tsp ground cumin",
@@ -138,7 +26,7 @@
       "¼ tsp turmeric"
     ],
     "steps": [
-      "Mix the lemon juice with the paprika and red onions in a large shallow dish. Slash each chicken thigh 3 times, then turn them in the juice and set aside for 10 mins.",
+      "Mix the lemon juice with the paprika and red onions in a large shallow dish. Slash each chicken thigh three times, then turn them in the juice and set aside for 10 mins.",
       "Mix all of the marinade ingredients together and pour over the chicken. Give everything a good mix, then cover and chill for at least 1 hr. This can be done up to a day in advance.",
       "Heat the grill. Lift the chicken pieces onto a rack over a baking tray. Brush over a little oil and grill for 8 mins on each side or until lightly charred and completely cooked through."
     ],
@@ -149,14 +37,7 @@
     "originalSourceUrl": "http://www.bbcgoodfood.com/recipes/1660651/tandoori-chicken",
     "videoUrl": "https://www.youtube.com/watch?v=-CKvt1KNU74",
     "externalId": "themealdb:52806",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "031fc14e-dbc2-4544-87c6-88fcf0baa23a",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.939Z",
-    "updatedAt": "2026-10-02T01:57:23.939Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Kung Pao Chicken",
@@ -184,8 +65,8 @@
       "100g Peanuts"
     ],
     "steps": [
-      "Combine the sake or rice wine, soy sauce, sesame oil and cornflour dissolved in water. Divide mixture in 1/2.",
-      "In a glass dish or bowl, combine 1/2 of the sake mixture with the chicken pieces and toss to coat. Cover dish and place in refrigerator for about 30 minutes.",
+      "Combine the sake or rice wine, soy sauce, sesame oil and cornflour dissolved in water. Divide mixture in half.",
+      "In a glass dish or bowl, combine half of the sake mixture with the chicken pieces and toss to coat. Cover dish and place in refrigerator for about 30 minutes.",
       "In a medium frying pan, combine remaining sake mixture, chillies, vinegar and sugar. Mix together and add spring onion, garlic, water chestnuts and peanuts. Heat sauce slowly over medium heat until aromatic.",
       "Meanwhile, remove chicken from marinade and sauté in a large frying pan until juices run clear. When sauce is aromatic, add sautéed chicken and let simmer together until sauce thickens."
     ],
@@ -196,14 +77,7 @@
     "originalSourceUrl": "http://allrecipes.co.uk/recipe/1773/kung-pao-chicken.aspx",
     "videoUrl": "https://www.youtube.com/watch?v=QqdcCHQlOe0",
     "externalId": "themealdb:52945",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "1667461d-fe4c-4d78-aa5d-b3b2e45b5c72",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.940Z",
-    "updatedAt": "2026-10-02T01:57:23.940Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Chicken Karaage",
@@ -239,14 +113,7 @@
     "originalSourceUrl": "https://norecipes.com/karaage-recipe",
     "videoUrl": "https://www.youtube.com/watch?v=XivddFddthc",
     "externalId": "themealdb:52831",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "7258b33d-ed67-4237-8713-9bea7f043588",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.942Z",
-    "updatedAt": "2026-10-02T01:57:23.942Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Chicken Handi",
@@ -280,10 +147,10 @@
       "Take a large pot or wok, big enough to cook all the chicken, and heat the oil in it. Once the oil is hot, add sliced onion and fry them until deep golden brown. Then take them out on a plate and set aside.",
       "To the same pot, add the chopped garlic and sauté for a minute. Then add the chopped tomatoes and cook until tomatoes turn soft. This would take about 5 minutes.",
       "Then return the fried onion to the pot and stir. Add ginger paste and sauté well.",
-      "Now add the cumin seeds, 1/2 of the coriander seeds and chopped green chillies. Give them a quick stir.",
+      "Now add the cumin seeds, half of the coriander seeds and chopped green chillies. Give them a quick stir.",
       "Next goes in the spices – turmeric powder and red chilli powder. Sauté the spices well for couple of minutes.",
       "Add the chicken pieces to the wok, season it with salt to taste and cook the chicken covered on medium-low heat until the chicken is almost cooked through. This would take about 15 minutes. Slowly sautéing the chicken will enhance the flavor, so do not expedite this step by putting it on high heat.",
-      "When the oil separates from the spices, add the beaten yogurt keeping the heat on lowest so that the yogurt doesn’t split. Sprinkle the remaining coriander seeds and add 1/2 of the dried fenugreek leaves. Mix well.",
+      "When the oil separates from the spices, add the beaten yogurt keeping the heat on lowest so that the yogurt doesn’t split. Sprinkle the remaining coriander seeds and add half of the dried fenugreek leaves. Mix well.",
       "Finally add the cream and give a final mix to combine everything well.",
       "Sprinkle the remaining kasuri methi and garam masala and serve the chicken handi hot with naan or rotis. Enjoy!"
     ],
@@ -294,14 +161,7 @@
     "originalSourceUrl": null,
     "videoUrl": "https://www.youtube.com/watch?v=IO0issT0Rmc",
     "externalId": "themealdb:52795",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "dd985f7f-646b-4a42-8514-5decd10a76be",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.943Z",
-    "updatedAt": "2026-10-02T01:57:23.943Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Brown Stew Chicken",
@@ -331,7 +191,7 @@
     ],
     "steps": [
       "Squeeze lime over chicken and rub well. Drain off excess lime juice.",
-      "Combine tomato, scallion, onion, garlic, pepper, thyme, pimento and soy sauce in a large bowl with the chicken pieces. Cover and marinate at least 1 hour.",
+      "Combine tomato, scallion, onion, garlic, pepper, thyme, pimento and soy sauce in a large bowl with the chicken pieces. Cover and marinate at least one hour.",
       "Heat oil in a dutch pot or large saucepan. Shake off the seasonings as you remove each piece of chicken from the marinade. Reserve the marinade for sauce.",
       "Lightly brown the chicken a few pieces at a time in very hot oil. Place browned chicken pieces on a plate to rest while you brown the remaining pieces.",
       "Drain off excess oil and return the chicken to the pan. Pour the marinade over the chicken and add the carrots. Stir and cook over medium heat for 10 minutes.",
@@ -344,14 +204,7 @@
     "originalSourceUrl": "http://www.geniuskitchen.com/recipe/authentic-jamaican-brown-stew-chicken-347996",
     "videoUrl": "https://www.youtube.com/watch?v=_gFB1fkNhXs",
     "externalId": "themealdb:52940",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "9837ea97-5cbc-413a-9e3a-b683ca841f0d",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.945Z",
-    "updatedAt": "2026-10-02T01:57:23.945Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Chicken Couscous",
@@ -367,7 +220,7 @@
       "1 tbsp Olive Oil",
       "1 chopped Onion",
       "200g Chicken Breast",
-      "Pinch Ginger",
+      "pinch Ginger",
       "2 tblsp Harissa Spice",
       "10 Dried Apricots",
       "220g Chickpeas",
@@ -386,14 +239,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/13139/onepan-chicken-couscous",
     "videoUrl": "https://www.youtube.com/watch?v=GZQGy9oscVk",
     "externalId": "themealdb:52850",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "57069d00-2269-48e5-b483-fd7d1935ec85",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.946Z",
-    "updatedAt": "2026-10-02T01:57:23.946Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "General Tsos Chicken",
@@ -449,14 +295,7 @@
     "originalSourceUrl": "https://www.skinnytaste.com/general-tsos-chicken/",
     "videoUrl": "https://www.youtube.com/watch?v=wWGwz0iBmvU",
     "externalId": "themealdb:52951",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "fdeeeed0-69c3-4217-92d4-2bee494c034e",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.948Z",
-    "updatedAt": "2026-10-02T01:57:23.948Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Sweet and Sour Chicken",
@@ -490,7 +329,7 @@
       "Whisk together the pineapple juice, vinegar, ketchup, 1/2 teaspoon kosher salt, and brown sugar.",
       "Stir-fry the chicken over high heat:",
       "Heat a large frying pan or wok over high heat until a bead of water instantly sizzles and evaporates. Pour in 1 tablespoon of cooking oil and swirl to coat. It's important that the pan is very hot.",
-      "Add the chicken and spread the pieces out in 1 layer. Let the chicken fry untouched for 1 minute, until the bottoms are browned.",
+      "Add the chicken and spread the pieces out in one layer. Let the chicken fry untouched for 1 minute, until the bottoms are browned.",
       "Flip and fry the other side for 1 minute. The chicken should still be pinkish in the middle. Dish out the chicken onto a clean plate, leaving as much oil in the pan as possible.",
       "Stir-fry the bell pepper and ginger:",
       "Reduce the heat to medium and add the remaining 1 teaspoon of cooking oil. Let the oil heat up before adding the bell pepper chunks and ginger. Fry for 1 minute.",
@@ -508,14 +347,7 @@
     "originalSourceUrl": "https://www.simplyrecipes.com/recipes/sweet_and_sour_chicken/",
     "videoUrl": "https://www.youtube.com/watch?v=cblsP5S9PhU",
     "externalId": "themealdb:53376",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "7fbd3300-d365-497f-9441-f63c27721660",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.949Z",
-    "updatedAt": "2026-10-02T01:57:23.949Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Beef Bourguignon",
@@ -539,8 +371,8 @@
       "750 ml Red Wine",
       "600g Celeriac",
       "2 tbs Olive Oil",
-      "Sprigs of fresh Thyme",
-      "Sprigs of fresh Rosemary",
+      "sprigs of fresh Thyme",
+      "sprigs of fresh Rosemary",
       "2 Bay Leaf",
       "4 Cardamom"
     ],
@@ -550,7 +382,7 @@
       "Pour over the wine and about 100ml water so the meat bobs up from the liquid, but isn’t completely covered. Bring to the boil and use a spoon to scrape the caramelised cooking juices from the bottom of the pan – this will give the stew more flavour.",
       "Heat oven to 150C/fan 130C/gas 2. Make a cartouche: tear off a square of foil slightly larger than the casserole, arrange it in the pan so it covers the top of the stew and trim away any excess foil. Then cook for 3 hrs. If the sauce looks watery, remove the beef and veg with a slotted spoon, and set aside. Cook the sauce over a high heat for a few mins until the sauce has thickened a little, then return the beef and vegetables to the pan.",
       "To make the celeriac mash, peel the celeriac and cut into cubes. Heat the olive oil in a large frying pan. Tip in the celeriac and fry for 5 mins until it turns golden. Season well with salt and pepper. Stir in the rosemary, thyme, bay and cardamom pods, then pour over 200ml water, enough to nearly cover the celeriac. Turn the heat to low, partially cover the pan and leave to simmer for 25-30 mins.",
-      "After 25-30 mins, the celeriac should be soft and most of the water will have evaporated. Drain away any remaining water, then remove the herb sprigs, bay and cardamom pods. Lightly crush with a potato masher, then finish with a glug of olive oil and season to taste. Spoon the beef bourguignon into serving bowls and place a large spoonful of the celeriac mash on top. Garnish with 1 of the bay leaves, if you like."
+      "After 25-30 mins, the celeriac should be soft and most of the water will have evaporated. Drain away any remaining water, then remove the herb sprigs, bay and cardamom pods. Lightly crush with a potato masher, then finish with a glug of olive oil and season to taste. Spoon the beef bourguignon into serving bowls and place a large spoonful of the celeriac mash on top. Garnish with one of the bay leaves, if you like."
     ],
     "source": {
       "name": "TheMealDB",
@@ -559,14 +391,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/5032/beef-bourguignon",
     "videoUrl": "https://www.youtube.com/watch?v=SQnr4Z-7rok",
     "externalId": "themealdb:52904",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "ea20836b-25d8-44e6-bd5c-4aeca71dade0",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.951Z",
-    "updatedAt": "2026-10-02T01:57:23.951Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Beef stroganoff",
@@ -602,14 +427,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/beef-stroganoff",
     "videoUrl": "https://www.youtube.com/watch?v=PQHgQX1Ss74",
     "externalId": "themealdb:52834",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "4b5fd335-6521-4749-9cfb-0159467a01a5",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.953Z",
-    "updatedAt": "2026-10-02T01:57:23.953Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Lasagne",
@@ -641,7 +459,7 @@
     "steps": [
       "Heat the oil in a large saucepan. Use kitchen scissors to snip the bacon into small pieces, or use a sharp knife to chop it on a chopping board. Add the bacon to the pan and cook for just a few mins until starting to turn golden. Add the onion, celery and carrot, and cook over a medium heat for 5 mins, stirring occasionally, until softened.",
       "Add the garlic and cook for 1 min, then tip in the mince and cook, stirring and breaking it up with a wooden spoon, for about 6 mins until browned all over.",
-      "Stir in the tomato purée and cook for 1 min, mixing in well with the beef and vegetables. Tip in the chopped tomatoes. Fill each can 1/2 full with water to rinse out any tomatoes left in the can, and add to the pan. Add the honey and season to taste. Simmer for 20 mins.",
+      "Stir in the tomato purée and cook for 1 min, mixing in well with the beef and vegetables. Tip in the chopped tomatoes. Fill each can half full with water to rinse out any tomatoes left in the can, and add to the pan. Add the honey and season to taste. Simmer for 20 mins.",
       "Heat oven to 200C/180C fan/gas 6. To assemble the lasagne, ladle a little of the ragu sauce into the bottom of the roasting tin or casserole dish, spreading the sauce all over the base. Place 2 sheets of lasagne on top of the sauce overlapping to make it fit, then repeat with more sauce and another layer of pasta. Repeat with a further 2 layers of sauce and pasta, finishing with a layer of pasta.",
       "Put the crème fraîche in a bowl and mix with 2 tbsp water to loosen it and make a smooth pourable sauce. Pour this over the top of the pasta, then top with the mozzarella. Sprinkle Parmesan over the top and bake for 25–30 mins until golden and bubbling. Serve scattered with basil, if you like."
     ],
@@ -652,14 +470,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/classic-lasagne",
     "videoUrl": "https://www.youtube.com/watch?v=gfhfsBPt46s",
     "externalId": "themealdb:52844",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "b8ff96e0-ce9f-4107-9947-2cc859a4e02c",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.955Z",
-    "updatedAt": "2026-10-02T01:57:23.955Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Pad Thai",
@@ -689,7 +500,7 @@
     "steps": [
       "Put the noodles in a large heatproof bowl, pour boiling water over them and leave for 4 minutes, then drain and refresh under cold running water.",
       "Put the lime juice, cayenne, sugar and fish sauce in a bowl and mix well. Have all the other ingredients ready by the cooker.",
-      "Heat the oil and fry the prawns until warmed through. Add the spring onions and noodles and toss around. Tip in the lime juice mixture, then stir in the beansprouts and 1/2 the peanuts and coriander. Cook for 1 minute until everything is heated through.",
+      "Heat the oil and fry the prawns until warmed through. Add the spring onions and noodles and toss around. Tip in the lime juice mixture, then stir in the beansprouts and half the peanuts and coriander. Cook for 1 minute until everything is heated through.",
       "Pile into a large dish, scatter with the rest of the peanuts and coriander, and serve with lime wedges and sweet chilli sauce."
     ],
     "source": {
@@ -699,14 +510,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/easy-pad-thai",
     "videoUrl": "https://www.youtube.com/watch?v=F86GfZIph8o",
     "externalId": "themealdb:53191",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "a7598f24-5a35-4d38-8794-4b3a57dac823",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.956Z",
-    "updatedAt": "2026-10-02T01:57:23.956Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Sushi",
@@ -735,9 +539,9 @@
       "Stick down the sides like a stamp. When you get to the edge without any rice, brush with a little water and continue to roll into a tight roll.",
       "Wrap in cling film. Remove the mat and roll tightly in cling film before a grown-up cuts the sushi into thick slices, then unravel the cling film.",
       "TO MAKE PRESSED SUSHI: Layer over some smoked salmon. Line a loaf tin with cling film, then place a thin layer of smoked salmon inside on top of the cling film.",
-      "Cover with rice and press down. Press about 3cm of rice over the fish, fold the cling film over and press down as much as you can, using another tin if you have 1.",
+      "Cover with rice and press down. Press about 3cm of rice over the fish, fold the cling film over and press down as much as you can, using another tin if you have one.",
       "Tip it out like a sandcastle. Turn block of sushi onto a chopping board. Get a grown-up to cut into fingers, then remove the cling film.",
-      "TO MAKE SUSHI BALLS: Choose your topping. Get a small square of cling film and place a topping, like 1/2 a prawn or a small piece of smoked salmon, on it. Use damp hands to roll walnut-sized balls of rice and place on the topping.",
+      "TO MAKE SUSHI BALLS: Choose your topping. Get a small square of cling film and place a topping, like half a prawn or a small piece of smoked salmon, on it. Use damp hands to roll walnut-sized balls of rice and place on the topping.",
       "Make into tight balls. Bring the corners of the cling film together and tighten into balls by twisting it up, then unwrap and serve."
     ],
     "source": {
@@ -747,14 +551,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/simple-sushi",
     "videoUrl": "https://www.youtube.com/watch?v=ub68OxEypaY",
     "externalId": "themealdb:53065",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "c56f59ba-7403-4297-a398-58d004356eda",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.958Z",
-    "updatedAt": "2026-10-02T01:57:23.958Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Moussaka",
@@ -787,14 +584,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/must-make-moussaka",
     "videoUrl": "https://www.youtube.com/watch?v=8U_29i9Qp5U",
     "externalId": "themealdb:53006",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "003c54fd-0f3a-4653-b432-3e2280d119cb",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.960Z",
-    "updatedAt": "2026-10-02T01:57:23.960Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Paella",
@@ -836,14 +626,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/next-level-paella",
     "videoUrl": "https://www.youtube.com/watch?v=vNBuXsTY15E",
     "externalId": "themealdb:53151",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "3bab4b69-c4ef-49a4-bfb9-4370a24bc60f",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.961Z",
-    "updatedAt": "2026-10-02T01:57:23.961Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Ratatouille",
@@ -870,10 +653,10 @@
       "1 tsp Sugar"
     ],
     "steps": [
-      "Cut the aubergines in 1/2 lengthways. Place them on the board, cut side down, slice in 1/2 lengthways again and then across into 1.5cm chunks. Cut off the courgettes ends, then across into 1.5cm slices. Peel the peppers from stalk to bottom. Hold upright, cut around the stalk, then cut into 3 pieces. Cut away any membrane, then chop into bite-size chunks.",
-      "Score a small cross on the base of each tomato, then put them into a heatproof bowl. Pour boiling water over the tomatoes, leave for 20 secs, then remove. Pour the water away, replace the tomatoes and cover with cold water. Leave to cool, then peel the skin away. 1/4 the tomatoes, scrape away the seeds with a spoon, then roughly chop the flesh.",
+      "Cut the aubergines in half lengthways. Place them on the board, cut side down, slice in half lengthways again and then across into 1.5cm chunks. Cut off the courgettes ends, then across into 1.5cm slices. Peel the peppers from stalk to bottom. Hold upright, cut around the stalk, then cut into 3 pieces. Cut away any membrane, then chop into bite-size chunks.",
+      "Score a small cross on the base of each tomato, then put them into a heatproof bowl. Pour boiling water over the tomatoes, leave for 20 secs, then remove. Pour the water away, replace the tomatoes and cover with cold water. Leave to cool, then peel the skin away. Quarter the tomatoes, scrape away the seeds with a spoon, then roughly chop the flesh.",
       "Set a sauté pan over medium heat and when hot, pour in 2 tbsp olive oil. Brown the aubergines for 5 mins on each side until the pieces are soft. Set them aside and fry the courgettes in another tbsp oil for 5 mins, until golden on both sides. Repeat with the peppers. Don’t overcook the vegetables at this stage, as they have some more cooking left in the next step.",
-      "Tear up the basil leaves and set aside. Cook the onion in the pan for 5 mins. Add the garlic and fry for a further min. Stir in the vinegar and sugar, then tip in the tomatoes and 1/2 the basil. Return the vegetables to the pan with some salt and pepper and cook for 5 mins. Serve with basil."
+      "Tear up the basil leaves and set aside. Cook the onion in the pan for 5 mins. Add the garlic and fry for a further min. Stir in the vinegar and sugar, then tip in the tomatoes and half the basil. Return the vegetables to the pan with some salt and pepper and cook for 5 mins. Serve with basil."
     ],
     "source": {
       "name": "TheMealDB",
@@ -882,14 +665,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/2903/ratatouille",
     "videoUrl": "https://www.youtube.com/watch?v=BFdQUgAFtGU",
     "externalId": "themealdb:52908",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "76f7602f-fc2d-45d2-844c-b40c2ed99454",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.963Z",
-    "updatedAt": "2026-10-02T01:57:23.963Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Shakshuka",
@@ -916,7 +692,7 @@
     ],
     "steps": [
       "Heat the oil in a frying pan that has a lid, then soften the onions, chilli, garlic and coriander stalks for 5 mins until soft. Stir in the tomatoes and sugar, then bubble for 8-10 mins until thick. Can be frozen for 1 month.",
-      "Using the back of a large spoon, make 4 dips in the sauce, then crack an egg into each 1. Put a lid on the pan, then cook over a low heat for 6-8 mins, until the eggs are done to your liking. Scatter with the coriander leaves and serve with crusty bread."
+      "Using the back of a large spoon, make 4 dips in the sauce, then crack an egg into each one. Put a lid on the pan, then cook over a low heat for 6-8 mins, until the eggs are done to your liking. Scatter with the coriander leaves and serve with crusty bread."
     ],
     "source": {
       "name": "TheMealDB",
@@ -925,14 +701,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/7573/spicy-tomato-baked-eggs",
     "videoUrl": "https://www.youtube.com/watch?v=C-3_jYrfdBU",
     "externalId": "themealdb:52963",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "f87f166b-103e-4bc9-8d3a-2615e16b8927",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.965Z",
-    "updatedAt": "2026-10-02T01:57:23.965Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Falafel",
@@ -965,14 +734,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/spicy-falafels",
     "videoUrl": "https://www.youtube.com/watch?v=NZcWedPKysk",
     "externalId": "themealdb:53266",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "be113464-9320-49c5-b227-286e6ae219e8",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.968Z",
-    "updatedAt": "2026-10-02T01:57:23.968Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Hummus",
@@ -989,7 +751,7 @@
       "1 tablespoon Tahini Paste",
       "1 large Garlic Clove",
       "3  tablespoons Greek Yogurt",
-      "Juice of 1/2 Lemon"
+      "Juice of half Lemon"
     ],
     "steps": [
       "Drain the chickpeas into a sieve set over a bowl or jug to catch the liquid. Tip the chickpeas, tahini, garlic and yogurt into a food processor or blender and whizz to smooth.",
@@ -1003,14 +765,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/easy-hummus-recipe",
     "videoUrl": "https://www.youtube.com/watch?v=EsZFJEjANiA",
     "externalId": "themealdb:53269",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "5d9e6d30-18f8-4bbd-83f0-aa02bf500304",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.969Z",
-    "updatedAt": "2026-10-02T01:57:23.969Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Dal fry",
@@ -1043,11 +798,11 @@
       "1/4 tsp Garam Masala"
     ],
     "steps": [
-      "Wash and soak toor dal in approx. 3 cups of water, for at least 1 hours. Dal will be double in volume after soaking. Drain the water.",
+      "Wash and soak toor dal in approx. 3 cups of water, for at least one hours. Dal will be double in volume after soaking. Drain the water.",
       "Cook dal with 2-1/2 cups water and add salt, turmeric, on medium high heat, until soft in texture (approximately 30 mins) it should be like thick soup.",
       "In a frying pan, heat the ghee. Add cumin seeds, and mustard seeds. After the seeds crack, add bay leaves, green chili, ginger and chili powder. Stir for a few seconds.",
       "Add tomatoes, salt and sugar stir and cook until tomatoes are tender and mushy.",
-      "Add cilantro and garam masala cook for about 1 minute.",
+      "Add cilantro and garam masala cook for about one minute.",
       "Pour the seasoning over dal mix it well and cook for another minute.",
       "Serve with Naan."
     ],
@@ -1058,14 +813,7 @@
     "originalSourceUrl": "https://www.instagram.com/p/BO21bpYD3Fu",
     "videoUrl": "https://www.youtube.com/watch?v=J4D855Q9-jg",
     "externalId": "themealdb:52785",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "81307a3d-4a62-4e24-ad6c-cb9cfdbb3eca",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.971Z",
-    "updatedAt": "2026-10-02T01:57:23.971Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Pancakes",
@@ -1085,9 +833,9 @@
       "2 large Eggs",
       "300ml Milk",
       "1 tbls Sunflower Oil",
-      "To serve Sugar",
-      "To serve Raspberries",
-      "To serve Blueberries"
+      "to serve Sugar",
+      "to serve Raspberries",
+      "to serve Blueberries"
     ],
     "steps": [
       "Put the flour, eggs, milk, 1 tbsp oil and a pinch of salt into a bowl or large jug, then whisk to a smooth batter. Set aside for 30 mins to rest if you have time, or start cooking straight away.",
@@ -1101,14 +849,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/2907669/easy-pancakes",
     "videoUrl": "https://www.youtube.com/watch?v=LWuuCndtJr0",
     "externalId": "themealdb:52854",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "b0839741-2dfc-4e1f-a524-55297828e2a3",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.972Z",
-    "updatedAt": "2026-10-02T01:57:23.972Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "New York cheesecake",
@@ -1141,7 +882,7 @@
     "steps": [
       "Position an oven shelf in the middle of the oven. Preheat the oven to fan 160C/conventional 180C/gas 4. Line the base of a 23cm springform cake tin with parchment paper. For the crust, melt the butter in a medium pan. Stir in the biscuit crumbs and sugar so the mixture is evenly moistened. Press the mixture into the bottom of the pan and bake for 10 minutes. Cool on a wire rack while preparing the filling.",
       "For the filling, increase the oven temperature to fan 200C/conventional 240C/gas 9. In a table top mixer fitted with the paddle attachment, beat the soft cheese at medium-low speed until creamy, about 2 minutes. With the mixer on low, gradually add the sugar, then the flour and a pinch of salt, scraping down the sides of the bowl and the paddle twice.",
-      "Swap the paddle attachment for the whisk. Continue by adding the vanilla, lemon zest and juice. Whisk in the eggs and yolk, 1 at a time, scraping the bowl and whisk at least twice. Stir the 284ml carton of soured cream until smooth, then measure 200ml/7fl oz (just over 3⁄4 of the carton). Continue on low speed as you add the measured soured cream (reserve the rest). Whisk to blend, but don't over-beat. The batter should be smooth, light and somewhat airy.",
+      "Swap the paddle attachment for the whisk. Continue by adding the vanilla, lemon zest and juice. Whisk in the eggs and yolk, one at a time, scraping the bowl and whisk at least twice. Stir the 284ml carton of soured cream until smooth, then measure 200ml/7fl oz (just over 3⁄4 of the carton). Continue on low speed as you add the measured soured cream (reserve the rest). Whisk to blend, but don't over-beat. The batter should be smooth, light and somewhat airy.",
       "Brush the sides of the springform tin with melted butter and put on a baking sheet. Pour in the filling - if there are any lumps, sink them using a knife - the top should be as smooth as possible. Bake for 10 minutes. Reduce oven temperature to fan 90C/conventional 110C/gas 1⁄4 and bake for 25 minutes more. If you gently shake the tin, the filling should have a slight wobble. Turn off the oven and open the oven door for a cheesecake that's creamy in the centre, or leave it closed if you prefer a drier texture. Let cool in the oven for 2 hours. The cheesecake may get a slight crack on top as it cools.",
       "Combine the reserved soured cream with the 142ml carton, the sugar and lemon juice for the topping. Spread over the cheesecake right to the edges. Cover loosely with foil and refrigerate for at least 8 hours or overnight.",
       "Run a round-bladed knife around the sides of the tin to loosen any stuck edges. Unlock the side, slide the cheesecake off the bottom of the tin onto a plate, then slide the parchment paper out from underneath."
@@ -1153,14 +894,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/2869/new-york-cheesecake",
     "videoUrl": "https://www.youtube.com/watch?v=tspdJ6hxqnc",
     "externalId": "themealdb:52858",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "0d6726b7-2f00-49ec-b8d5-c4a54f5489b6",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.974Z",
-    "updatedAt": "2026-10-02T01:57:23.974Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "French Onion Soup",
@@ -1188,7 +922,7 @@
     "steps": [
       "Melt the butter with the oil in a large heavy-based pan. Add the onions and fry with the lid on for 10 mins until soft. Sprinkle in the sugar and cook for 20 mins more, stirring frequently, until caramelised. The onions should be really golden, full of flavour and soft when pinched between your fingers. Take care towards the end to ensure that they don’t burn.",
       "Add the garlic for the final few mins of the onions’ cooking time, then sprinkle in the flour and stir well. Increase the heat and keep stirring as you gradually add the wine, followed by the hot stock. Cover and simmer for 15-20 mins.",
-      "To serve, turn on the grill, and toast the bread. Ladle the soup into heatproof bowls. Put a slice or 2 of toast on top of the bowls of soup, and pile on the cheese. Grill until melted. Alternatively, you can complete the toasts under the grill, then serve them on top."
+      "To serve, turn on the grill, and toast the bread. Ladle the soup into heatproof bowls. Put a slice or two of toast on top of the bowls of soup, and pile on the cheese. Grill until melted. Alternatively, you can complete the toasts under the grill, then serve them on top."
     ],
     "source": {
       "name": "TheMealDB",
@@ -1197,14 +931,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/3020694/french-onion-soup",
     "videoUrl": "https://www.youtube.com/watch?v=-DLDMQucqDI",
     "externalId": "themealdb:52903",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "35f255cf-ce89-49ae-84f6-904bce9441d2",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.976Z",
-    "updatedAt": "2026-10-02T01:57:23.976Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Thai Green Curry",
@@ -1229,11 +956,11 @@
       "1 tsp Sugar",
       "450g boneless Chicken",
       "2 fresh kaffir leaves lime",
-      "Handfull basil",
+      "handfull basil",
       "Boiled Rice"
     ],
     "steps": [
-      "Put the potatoes in a pan of boiling water and cook for 5 minutes. Throw in the beans and cook for a further 3 minutes, by which time both should be just tender but not too soft. Drain and put to 1 side.",
+      "Put the potatoes in a pan of boiling water and cook for 5 minutes. Throw in the beans and cook for a further 3 minutes, by which time both should be just tender but not too soft. Drain and put to one side.",
       "In a wok or large frying pan, heat the oil until very hot, then drop in the garlic and cook until golden, this should take only a few seconds. Don’t let it go very dark or it will spoil the taste. Spoon in the curry paste and stir it around for a few seconds to begin to cook the spices and release all the flavours. Next, pour in the coconut milk and let it come to a bubble.",
       "Stir in the fish sauce and sugar, then the pieces of chicken. Turn the heat down to a simmer and cook, covered, for about 8 minutes until the chicken is cooked.",
       "Tip in the potatoes and beans and let them warm through in the hot coconut milk, then add a lovely citrussy flavour by stirring in the shredded lime leaves (or lime zest). The basil leaves go in next, but only leave them briefly on the heat or they will quickly lose their brightness. Scatter with the lime garnish and serve immediately with boiled rice."
@@ -1245,14 +972,7 @@
     "originalSourceUrl": "http://www.bbcgoodfood.com/recipes/3235/thai-green-chicken-curry",
     "videoUrl": "https://www.youtube.com/watch?v=LIbKVpBQKJI",
     "externalId": "themealdb:52814",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "ed794c1a-3525-4f10-b688-270811685be5",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.977Z",
-    "updatedAt": "2026-10-02T01:57:23.977Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Massaman Beef curry",
@@ -1278,11 +998,11 @@
       "1 tbsp palm or soft light Brown sugar",
       "1 tbsp Fish Sauce",
       "1 red deseeded and finely sliced, to serve chilli",
-      "To serve Jasmine Rice"
+      "to serve Jasmine Rice"
     ],
     "steps": [
       "Heat oven to 200C/180C fan/gas 6, then roast the peanuts on a baking tray for 5 mins until golden brown. When cool enough to handle, roughly chop. Reduce oven to 180C/160C fan/gas 4.",
-      "Heat 2 tbsp coconut cream in a large casserole dish with a lid. Add the curry paste and fry for 1 min, then stir in the beef and fry until well coated and sealed. Stir in the rest of the coconut with 1/2 a can of water, the potatoes, onion, lime leaves, cinnamon, tamarind, sugar, fish sauce and most of the peanuts. Bring to a simmer, then cover and cook for 2 hrs in the oven until the beef is tender.",
+      "Heat 2 tbsp coconut cream in a large casserole dish with a lid. Add the curry paste and fry for 1 min, then stir in the beef and fry until well coated and sealed. Stir in the rest of the coconut with half a can of water, the potatoes, onion, lime leaves, cinnamon, tamarind, sugar, fish sauce and most of the peanuts. Bring to a simmer, then cover and cook for 2 hrs in the oven until the beef is tender.",
       "Sprinkle with sliced chilli and the remaining peanuts, then serve straight from the dish with jasmine rice."
     ],
     "source": {
@@ -1292,14 +1012,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/420631/beef-massaman-curry",
     "videoUrl": "https://www.youtube.com/watch?v=mVxgZSCU9_g",
     "externalId": "themealdb:52827",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "8ff09f53-9d37-414d-bf15-714caed768ef",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.979Z",
-    "updatedAt": "2026-10-02T01:57:23.979Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Bai Sach Chrouk – Grilled Pork with Rice",
@@ -1346,14 +1059,7 @@
     "originalSourceUrl": "https://recipes-for-life.com/cambodian-recipes/",
     "videoUrl": null,
     "externalId": "themealdb:53496",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "2f17b9b5-24db-4667-b960-875586f58924",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.981Z",
-    "updatedAt": "2026-10-02T01:57:23.981Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Broccoli & Stilton soup",
@@ -1391,14 +1097,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/1940679/broccoli-and-stilton-soup",
     "videoUrl": "https://www.youtube.com/watch?v=_HgVLpmNxTY",
     "externalId": "themealdb:52842",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "4cea45eb-a3fb-4eca-8331-887a25a1c84e",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.983Z",
-    "updatedAt": "2026-10-02T01:57:23.983Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Dutch poffertjes (mini pancakes)",
@@ -1424,7 +1123,7 @@
       "Mix the dry yeast with some of the luke warm milk en stir until dissolved.",
       "Place buckwheat and the flour together in a bowl and make a small circle in the middle. Add the yeast mixture into it. Add the milk and stir until you have a smooth batter.",
       "Add the eggs, salt and vanille sugar and stir through. Leave to stand and rise for about 45 minutes.",
-      "Heat the poffertjespan and add a bit of butter into each hole. Fill halfway with batter and first bake 1 side until you can see the top dry out a little. Turn the poffertjes around with a small fork and bake the other side until cooked and golden brown.",
+      "Heat the poffertjespan and add a bit of butter into each hole. Fill halfway with batter and first bake one side until you can see the top dry out a little. Turn the poffertjes around with a small fork and bake the other side until cooked and golden brown.",
       "Serve the poffertjes with butter and icing sugar"
     ],
     "source": {
@@ -1434,14 +1133,7 @@
     "originalSourceUrl": "https://insimoneskitchen.com/old-dutch-poffertjes/#recipe",
     "videoUrl": "https://www.youtube.com/watch?v=gK1b5gymAUY",
     "externalId": "themealdb:53379",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "e1b7e0b6-aa87-4696-ade8-9662ce3d3cb7",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.984Z",
-    "updatedAt": "2026-10-02T01:57:23.984Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Shakshuka Feta Cheese",
@@ -1482,14 +1174,7 @@
     "originalSourceUrl": "https://cookpad.com/eng/recipes/22551672?ref=search&search_term=saudi+arabia",
     "videoUrl": "https://www.youtube.com/watch?v=xaBo3BxKzp8",
     "externalId": "themealdb:53219",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "ad76d511-c170-437a-ae7b-165e20c97b71",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.986Z",
-    "updatedAt": "2026-10-02T01:57:23.986Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Tunisian Lamb Soup",
@@ -1530,14 +1215,7 @@
     "originalSourceUrl": "http://allrecipes.co.uk/recipe/16694/tunisian-lamb-soup.aspx",
     "videoUrl": "https://www.youtube.com/watch?v=w1qgTQmLRe4",
     "externalId": "themealdb:52972",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "6fab39a3-47c7-4386-b9f7-cfa4af719a0a",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.988Z",
-    "updatedAt": "2026-10-02T01:57:23.988Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Oatmeal pancakes",
@@ -1574,14 +1252,7 @@
     "originalSourceUrl": "https://goya.es/en/recipes/oatmeal-pancakes",
     "videoUrl": "https://www.youtube.com/watch?v=kkrRFWN4LG4",
     "externalId": "themealdb:53331",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "cad84fdc-1c31-4b25-9344-c8538c57565a",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.990Z",
-    "updatedAt": "2026-10-02T01:57:23.990Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Rice paper dumplings",
@@ -1612,7 +1283,7 @@
     ],
     "steps": [
       "Tip the cabbage into a food processor and blitz until finely chopped. Season with ½ tsp salt, toss well and set aside for 15 mins. Tip into a clean tea towel and squeeze out as much water as you can. Tip into a bowl with the carrot, mushrooms, pork mince, garlic, ginger, soy sauce, sesame oil and spring onions. Season with black pepper. Scrunch everything together using your hands, mixing well until everything is combined.",
-      "Soak the spring roll sheets for a couple of seconds in a shallow dish of warm water, then transfer to an oiled chopping board. Working with 1 sheet at a time, spoon 1 heaped tbsp of the filling into the middle, then fold the bottom up and over the filling. Fold down the top of the sheet, then the sides to fully encase and make a neat square. If the dumpling feels a little fragile, soak another sheet and wrap it again. Repeat with the remaining sheets and filling, transferring the dumplings to an oiled plate as you go.",
+      "Soak the spring roll sheets for a couple of seconds in a shallow dish of warm water, then transfer to an oiled chopping board. Working with one sheet at a time, spoon 1 heaped tbsp of the filling into the middle, then fold the bottom up and over the filling. Fold down the top of the sheet, then the sides to fully encase and make a neat square. If the dumpling feels a little fragile, soak another sheet and wrap it again. Repeat with the remaining sheets and filling, transferring the dumplings to an oiled plate as you go.",
       "Heat the oil in a large, non-stick frying pan (ensuring it is no more than a third full) over a medium-high heat and fry the dumplings for 3-5 mins until golden brown. Use a slotted spoon or spider to turn them, then cover with a lid and cook for another 3-4 mins until golden. Remove the lid and cook for 1-2 mins.",
       "Meanwhile, combine all the dipping sauce ingredients in small bowl. Serve the dumplings with the dipping sauce on the side."
     ],
@@ -1623,14 +1294,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/rice-paper-dumplings",
     "videoUrl": "https://www.youtube.com/shorts/YU09jIusxo4",
     "externalId": "themealdb:53227",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "936dc144-058d-486d-b5d9-004390f07cb3",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.992Z",
-    "updatedAt": "2026-10-02T01:57:23.992Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Syrian Rice with Meat",
@@ -1667,14 +1331,7 @@
     "originalSourceUrl": "https://www.allrecipes.com/recipe/272233/syrian-rice-with-meat/",
     "videoUrl": null,
     "externalId": "themealdb:53095",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "01475cd1-a669-49e8-8305-939768988b95",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.993Z",
-    "updatedAt": "2026-10-02T01:57:23.993Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Jamaican Curry Goat",
@@ -1720,14 +1377,7 @@
     "originalSourceUrl": "https://www.myforkinglife.com/jamaican-curry-goat/#recipe",
     "videoUrl": "https://www.youtube.com/watch?v=SrX2KMsWbF4",
     "externalId": "themealdb:53354",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "91097bae-a6b3-43dc-9572-1342fe7e6462",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.996Z",
-    "updatedAt": "2026-10-02T01:57:23.996Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Roast fennel and aubergine paella",
@@ -1748,18 +1398,18 @@
       "1 finely chopped Onion",
       "300g Paella Rice",
       "1 tsp Paprika",
-      "Pinch Saffron",
+      "pinch Saffron",
       "200ml White Wine",
       "700ml Vegetable Stock",
       "100g Frozen Peas",
       "1 chopped Lemon",
       "Handful Parsley",
-      "Pinch Salt",
-      "Pinch Black Pepper"
+      "pinch Salt",
+      "pinch Black Pepper"
     ],
     "steps": [
       "1 Put the fennel, aubergine, pepper and courgette in a roasting tray. Add a glug of olive oil, season with salt and pepper and toss around to coat the veggies in the oil. Roast in the oven for 20 minutes, turning a couple of times until the veg are pretty much cooked through and turning golden.",
-      "2 Meanwhile, heat a paella pan or large frying pan over a low– medium heat and add a glug of olive oil. Sauté the onion for 8–10 minutes until softened. Increase the heat to medium and stir in the rice, paprika and saffron. Cook for around 1 minute to start toasting the rice, then add the white wine. Reduce by about 1/2 before stirring in 2-thirds of the stock. Reduce to a simmer and cook for 10 minutes without a lid, stirring a couple of times.",
+      "2 Meanwhile, heat a paella pan or large frying pan over a low– medium heat and add a glug of olive oil. Sauté the onion for 8–10 minutes until softened. Increase the heat to medium and stir in the rice, paprika and saffron. Cook for around 1 minute to start toasting the rice, then add the white wine. Reduce by about half before stirring in two-thirds of the stock. Reduce to a simmer and cook for 10 minutes without a lid, stirring a couple of times.",
       "3 Stir in the peas, add some seasoning, then gently mix in the roasted veg. Pour over the remaining stock, arrange the lemon wedges on top and cover with a lid or some aluminium foil. Cook for a further 10 minutes.",
       "4 To ensure you get the classic layer of toasted rice at the bottom of the pan, increase the heat to high until you hear a slight crackle. Remove from the heat and sit for 5 minutes before sprinkling over the parsley and serving."
     ],
@@ -1770,14 +1420,7 @@
     "originalSourceUrl": "https://www.homestylemag.co.uk/recipe/517/main-courses/roast-fennel-and-aubergine-paella",
     "videoUrl": "https://www.youtube.com/watch?v=H5SmjR-fxUs",
     "externalId": "themealdb:52942",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "0d76b2cb-3676-4f86-95ef-3c82cc0d28c9",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:23.998Z",
-    "updatedAt": "2026-10-02T01:57:23.998Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Beetroot pancakes",
@@ -1813,14 +1456,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/beetroot-pancakes",
     "videoUrl": "https://www.youtube.com/watch?v=HzQT0rHKCWM",
     "externalId": "themealdb:53316",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "275b1e3c-7e78-44e9-9d29-011957c17c54",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.000Z",
-    "updatedAt": "2026-10-02T01:57:24.000Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Split Pea Soup",
@@ -1842,7 +1478,7 @@
       "2 Bay Leaves",
       "1 chopped Celery",
       "300g Frozen Peas",
-      "To serve Bread"
+      "to serve Bread"
     ],
     "steps": [
       "Put the gammon in a very large pan with 2 litres water and bring to the boil. Remove from the heat and drain off the water – this helps to get rid of some of the saltiness. Recover with 2 litres cold water and bring to the boil again. Put everything but the frozen peas into the pan and bring to the boil. Reduce to a simmer and cook for 1½-2½ hrs, topping up the water as and when you need to, to a similar level it started at. As the ham cooks and softens, you can halve it if you want, so it is all submerged under the liquid. When the ham is tender enough to pull into shreds, it is ready.",
@@ -1856,14 +1492,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/1022639/split-pea-and-green-pea-smoked-ham-soup",
     "videoUrl": "https://www.youtube.com/watch?v=qdhWz7qAaCU",
     "externalId": "themealdb:52925",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "97583e94-052a-4632-a766-6815cf74116e",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.001Z",
-    "updatedAt": "2026-10-02T01:57:24.001Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Warm roast asparagus salad",
@@ -1888,9 +1517,9 @@
       "100g Rocket"
     ],
     "steps": [
-      "Preheat the oven to 200C/Gas 6/fan 180C. Snap off the woody ends of the asparagus and discard. Arrange the asparagus in a single layer in a baking tray with sides. Cut the tomatoes in 1/2 widthways, nestle them in with the asparagus, season with sea salt and pepper and drizzle with olive oil. Roll each bacon rasher into a tight roll (if large, first cut in 1/2 crosswise), and arrange in the tray. Drizzle the bacon rolls with the honey and bake for 20 minutes until the tomatoes are soft and the bacon is crisp.",
-      "In the meantime, boil the potatoes until tender. Whisk the vinegar, olive oil, mustard, some sea salt and pepper in a large bowl until blended. Toss the rocket or spinach leaves in 1/2 of the dressing, and arrange on a large serving platter.",
-      "Drain the potatoes and cut in 1/2. Gently toss them in the rest of the dressing, and arrange on the platter with the asparagus. Tuck in the tomatoes and bacon."
+      "Preheat the oven to 200C/Gas 6/fan 180C. Snap off the woody ends of the asparagus and discard. Arrange the asparagus in a single layer in a baking tray with sides. Cut the tomatoes in half widthways, nestle them in with the asparagus, season with sea salt and pepper and drizzle with olive oil. Roll each bacon rasher into a tight roll (if large, first cut in half crosswise), and arrange in the tray. Drizzle the bacon rolls with the honey and bake for 20 minutes until the tomatoes are soft and the bacon is crisp.",
+      "In the meantime, boil the potatoes until tender. Whisk the vinegar, olive oil, mustard, some sea salt and pepper in a large bowl until blended. Toss the rocket or spinach leaves in half of the dressing, and arrange on a large serving platter.",
+      "Drain the potatoes and cut in half. Gently toss them in the rest of the dressing, and arrange on the platter with the asparagus. Tuck in the tomatoes and bacon."
     ],
     "source": {
       "name": "TheMealDB",
@@ -1899,14 +1528,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/warm-roast-asparagus-salad",
     "videoUrl": "https://www.youtube.com/watch?v=pR_ZfbTxwms",
     "externalId": "themealdb:53106",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "243c22ad-21e6-40e3-9105-fbe37c99c551",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.003Z",
-    "updatedAt": "2026-10-02T01:57:24.003Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Black Bean soup",
@@ -1949,14 +1571,7 @@
     "originalSourceUrl": "https://www.delish.com/cooking/recipe-ideas/a55504/easy-black-bean-soup-recipe/",
     "videoUrl": null,
     "externalId": "themealdb:53546",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "8030dfe9-52b8-453c-8f25-b2fa17db0b9e",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.006Z",
-    "updatedAt": "2026-10-02T01:57:24.006Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Chilli prawn linguine",
@@ -1978,7 +1593,7 @@
       "12 Cherry Tomatoes",
       "Handful Basil Leaves",
       "Leaves Lettuce",
-      "To serve Bread",
+      "to serve Bread",
       "2 tbsp Fromage Frais",
       "Grated Zest of 2 Lime",
       "2 tsp Caster Sugar"
@@ -1997,14 +1612,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/1269/chilli-prawn-linguine",
     "videoUrl": "https://www.youtube.com/watch?v=SC17Mc70Db0",
     "externalId": "themealdb:52839",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "f2c67beb-80ee-4f45-94a3-d0f9c832f523",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.008Z",
-    "updatedAt": "2026-10-02T01:57:24.008Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Lamb and Potato pie",
@@ -2035,7 +1643,7 @@
       "Bring to the boil, cover and reduce the heat to a simmer. Simmer for at least an hour or until the meat is tender. Take your time cooking the meat, the longer you leave it to cook, the better the flavour will be.",
       "Preheat the oven to 180C/350F/Gas 4.",
       "Add the drained potato cubes to the lamb.",
-      "Turn the mixture into a pie dish or casserole and cover with the shortcrust pastry. Make 3 slits in the top of the pastry to release any steam while cooking.",
+      "Turn the mixture into a pie dish or casserole and cover with the shortcrust pastry. Make three slits in the top of the pastry to release any steam while cooking.",
       "Brush with beaten egg and bake for about 40 minutes, until the pastry is golden brown.",
       "Serve."
     ],
@@ -2046,14 +1654,7 @@
     "originalSourceUrl": "https://www.bbc.co.uk/food/recipes/lambandpotatopie_83913",
     "videoUrl": "https://www.youtube.com/watch?v=NCyPaaUNYUk",
     "externalId": "themealdb:52877",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "f37748ca-7854-4433-beba-767ac4d1f35c",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.010Z",
-    "updatedAt": "2026-10-02T01:57:24.010Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Cajun spiced fish tacos",
@@ -2095,14 +1696,7 @@
     "originalSourceUrl": "https://realfood.tesco.com/recipes/cajun-spiced-fish-tacos.html",
     "videoUrl": "https://www.youtube.com/watch?v=N4EdUt0Ou48",
     "externalId": "themealdb:52819",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "7ba4356d-165f-439a-ab36-2dc4f61402bf",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.011Z",
-    "updatedAt": "2026-10-02T01:57:24.011Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Polskie Nalesniki (Polish Pancakes)",
@@ -2137,14 +1731,7 @@
     "originalSourceUrl": "https://www.tasteatlas.com/nalesniki/recipe",
     "videoUrl": "https://www.youtube.com/watch?v=EZS4ev2crHc",
     "externalId": "themealdb:53022",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "554d62f7-496f-4a6d-a1df-34a8e03e6b72",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.013Z",
-    "updatedAt": "2026-10-02T01:57:24.014Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Lamb Tzatziki Burgers",
@@ -2181,14 +1768,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/lamb-burgers-tzatziki",
     "videoUrl": "https://www.youtube.com/watch?v=s7_TF4ZHjPc",
     "externalId": "themealdb:53010",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "b507a68f-efd9-40bd-b49e-85cd9d4bf9b9",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.016Z",
-    "updatedAt": "2026-10-02T01:57:24.016Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Yemeni Lahsa (Elite Shakshuka)",
@@ -2220,14 +1800,7 @@
     "originalSourceUrl": "https://cookpad.com/eng/recipes/24629321?ref=search&search_term=saudi+arabia",
     "videoUrl": "https://www.youtube.com/shorts/1QX-KBX6tmM",
     "externalId": "themealdb:53225",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "69583c4c-8a9c-445e-a954-b0062884b84f",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.018Z",
-    "updatedAt": "2026-10-02T01:57:24.018Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Beef Asado",
@@ -2263,7 +1836,7 @@
       "4.\tHeat oil in a pan. Fry the potato until it browns. Turn over and continue frying the opposite side. Remove from the pan and place on a clean plate. Do the same with the carrots.",
       "5.\tSave 3 tablespoons of cooking oil from the pan where the potato was fried. Saute onion and garlic until onion softens.",
       "6.\tPour-in the sauce from the beef stew. Let boil. Add the beef. Cook for 2 minutes.",
-      "7.\tAdd butter and let it melt. Continue cooking until the sauce reduces to 1/2."
+      "7.\tAdd butter and let it melt. Continue cooking until the sauce reduces to half."
     ],
     "source": {
       "name": "TheMealDB",
@@ -2272,14 +1845,7 @@
     "originalSourceUrl": "https://panlasangpinoy.com/beef-asado/",
     "videoUrl": "https://www.youtube.com/watch?v=lNlK8DVhXXA",
     "externalId": "themealdb:53071",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "bfa694c8-419e-4779-bbf3-17e2468b9feb",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.020Z",
-    "updatedAt": "2026-10-02T01:57:24.020Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Blini Pancakes",
@@ -2312,7 +1878,7 @@
       "Cover the bowl and let the batter stand 20 minutes.",
       "Pan-Fry the Blini",
       "Heat butter in a large nonstick skillet over medium heat.",
-      "Drop 1/4-sized dollops of batter into the pan, being careful not to overcrowd the pan. Cook for about 1 minute or until bubbles form.",
+      "Drop quarter-sized dollops of batter into the pan, being careful not to overcrowd the pan. Cook for about 1 minute or until bubbles form.",
       "Turn and cook for about 30 additional seconds.",
       "Remove the finished blini onto a plate and cover them with a clean kitchen towel to keep warm. Add more butter to the pan and repeat the frying process with the remaining batter."
     ],
@@ -2323,14 +1889,7 @@
     "originalSourceUrl": "https://www.thespruceeats.com/russian-blini-recipe-buckwheat-pancakes-1136797",
     "videoUrl": "https://www.youtube.com/watch?v=GsB8ZI5vREA",
     "externalId": "themealdb:53080",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "4e4a9c0e-9236-43c6-b70b-9bfd946dbb22",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.022Z",
-    "updatedAt": "2026-10-02T01:57:24.022Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Vietnamese pork salad",
@@ -2364,7 +1923,7 @@
     ],
     "steps": [
       "The day before: make the dressing. Put the sugar and lime juice in a pan with 1 tbsp water and bring to the boil to dissolve the sugar. Add the chilli and coriander and stir well, then pulse in a blender until smooth. Tip into a bowl, then stir in the sesame oil, fish sauce, soy sauce and sesame seeds to make a dressing. Cover and chill until needed.",
-      "2 hours before serving: heat a griddle pan. Preheat the oven to 200C/gas 6/fan 180C. Brush the pork with oil and griddle on all sides for a few minutes until seared. Transfer to a baking tray and put in the oven for about 10-12 minutes until cooked through. Cool, thinly slice against the grain of the meat. Tip into a bowl and pour over 1/2 the dressing.",
+      "Two hours before serving: heat a griddle pan. Preheat the oven to 200C/gas 6/fan 180C. Brush the pork with oil and griddle on all sides for a few minutes until seared. Transfer to a baking tray and put in the oven for about 10-12 minutes until cooked through. Cool, thinly slice against the grain of the meat. Tip into a bowl and pour over half the dressing.",
       "To serve: toss the remaining salad ingredients in a bowl with the remaining dressing. Pile on to a platter, top with the pork slices and spoon over any juices."
     ],
     "source": {
@@ -2374,14 +1933,7 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/vietnamese-pork-salad",
     "videoUrl": "https://www.youtube.com/watch?v=_DCJNrNTTB4",
     "externalId": "themealdb:53237",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "a93c4447-f9d8-4dfc-a93f-c131726df0b9",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.024Z",
-    "updatedAt": "2026-10-02T01:57:24.024Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Beef Empanadas",
@@ -2414,9 +1966,9 @@
       "Drizzle Chimichurri sauce"
     ],
     "steps": [
-      "For the dough place lard, warm water and salt in a large kneading bowl and stir. Add flour and oregano and either knead 5 miutes by hand or with the kneading function of your machine. Let rest covered for at least 1/2 an hour or overnight in the fridge.",
+      "For the dough place lard, warm water and salt in a large kneading bowl and stir. Add flour and oregano and either knead five miutes by hand or with the kneading function of your machine. Let rest covered for at least half an hour or overnight in the fridge.",
       "For the filling place tomatoes for about 30 seconds in boiling water, then cool with cold water and peel of skin and cut into cubes. Press garlic through garlic press, cut onions into cubes. Simmer garlic and onions in some olive oil until translucent. Take out onions and garlic and brown the meat at high heat from all sides. Season with all herbs and add the onions, garlic and tomatoes. Let simmer for a few minutes, add salt, pepper and additional spices to taste. You can prepare the meat the night before, chill in fridge if doing so. Boil eggs and also cut into cubes and mix with prepared meat.",
-      "Cut dough into 1/2 and roll out 1 1/2 thinnly on floured surface. Cut out circles about 12-15cm in diameter. Mine have a diameter of 12.5 cm. Place about 2-4 teaspoons of filling on 1 circle, put a bit of water all around the edges and fold over the other 1/2 so that you get 1/2 moons. Be sure to seal the edges with a fork. Repeat until you have no dough and filling left.",
+      "Cut dough into half and roll out one half thinnly on floured surface. Cut out circles about 12-15cm in diameter. Mine have a diameter of 12.5 cm. Place about 2-4 teaspoons of filling on one circle, put a bit of water all around the edges and fold over the other half so that you get half moons. Be sure to seal the edges with a fork. Repeat until you have no dough and filling left.",
       "Meanwhile preheat oven to 200 degrees Celsius. Brush empanadas with egg wash and bake about 8 empanadas on a baking sheet lined with parchment paper for about 25min or until golden. Serve warm with chimichurri sauce."
     ],
     "source": {
@@ -2426,14 +1978,7 @@
     "originalSourceUrl": "https://jennyisbaking.com/2019/10/25/traditionelle-uruguayische-empanadas/#recipe",
     "videoUrl": "https://www.youtube.com/watch?v=RRNVLC6IAv4",
     "externalId": "themealdb:53317",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "db0a1644-18cf-4cea-8af1-d39bd9a225f7",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.027Z",
-    "updatedAt": "2026-10-02T01:57:24.027Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   },
   {
     "title": "Creamy Tomato Soup",
@@ -2462,7 +2007,7 @@
       "400ml Whole Milk"
     ],
     "steps": [
-      "Put the oil, onions, celery, carrots, potatoes and bay leaves in a big casserole dish, or 2 saucepans. Fry gently until the onions are softened – about 10-15 mins. Fill the kettle and boil it.",
+      "Put the oil, onions, celery, carrots, potatoes and bay leaves in a big casserole dish, or two saucepans. Fry gently until the onions are softened – about 10-15 mins. Fill the kettle and boil it.",
       "Stir in the tomato purée, sugar, vinegar, chopped tomatoes and passata, then crumble in the stock cubes. Add 1 litre boiling water and bring to a simmer. Cover and simmer for 15 mins until the potato is tender, then remove the bay leaves. Purée with a stick blender (or ladle into a blender in batches) until very smooth. Season to taste and add a pinch more sugar if it needs it. The soup can now be cooled and chilled for up to 2 days, or frozen for up to 3 months.",
       "To serve, reheat the soup, stirring in the milk – try not to let it boil. Serve in small bowls with cheesy sausage rolls."
     ],
@@ -2473,13 +2018,6 @@
     "originalSourceUrl": "https://www.bbcgoodfood.com/recipes/2604646/creamy-tomato-soup",
     "videoUrl": "https://www.youtube.com/watch?v=lBhwjjUiFk4",
     "externalId": "themealdb:52841",
-    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source.",
-    "id": "1dbce31a-dcc8-4c59-82bc-830931445eaa",
-    "servings": null,
-    "prepTimeMinutes": null,
-    "cookTimeMinutes": null,
-    "createdBy": "21bc74e0-b1c8-498b-ad36-92ad8b40a5ee",
-    "createdAt": "2026-10-02T01:57:24.029Z",
-    "updatedAt": "2026-10-02T01:57:24.029Z"
+    "notes": "Imported from TheMealDB. Serving yield and preparation/cooking times are not supplied by this source."
   }
 ]
