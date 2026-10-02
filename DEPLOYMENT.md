@@ -113,10 +113,10 @@ Keep this string for Step 2. **Don't commit it.**
    `/pantry` back to the app instead of 404ing, stops the service worker from
    being cached (so updates actually reach installed phones), and forces
    `npm ci` for the install step. `frontend/package.json` also pins
-   `engines.node` to `20.x`. Both exist because Vercel's default Node version
+   `engines.node` to `24.x`. Both exist because Vercel's default Node version
    has occasionally shipped internal Vite files that came up missing at build
    time — if that ever recurs, check Project Settings → General → Node.js
-   Version matches `20.x` too, since the dashboard setting can override the
+   Version matches `24.x` too, since the dashboard setting can override the
    `engines` field.
 
 3. Add environment variables:
