@@ -1566,9 +1566,19 @@ code {
   margin-top: 16px;
 }
 
+.detail-columns > section + section {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
 @media (min-width: 700px) {
   .detail-columns {
     grid-template-columns: 1fr 2fr;
+  }
+
+  .detail-columns > section + section {
+    border-top: 0;
+    padding-top: 0;
   }
 }
 
@@ -1577,6 +1587,38 @@ code {
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
+}
+
+.list-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.list-collapse-toggle {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  flex-shrink: 0;
+}
+
+.list-collapse-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.15s ease;
+}
+
+.list-collapse-toggle.expanded svg {
+  transform: rotate(180deg);
 }
 
 .check-list {

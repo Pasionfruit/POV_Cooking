@@ -46,6 +46,8 @@ export default function RecipeDetail() {
   const [error, setError] = useState(null)
   const [checked, setChecked] = useState(() => loadChecklist(id))
   const [mediaIndex, setMediaIndex] = useState(0)
+  const [ingredientsExpanded, setIngredientsExpanded] = useState(true)
+  const [stepsExpanded, setStepsExpanded] = useState(true)
 
   useEffect(() => {
     api
@@ -53,6 +55,8 @@ export default function RecipeDetail() {
       .then(({ recipe }) => {
         setRecipe(recipe)
         setMediaIndex(0)
+        setIngredientsExpanded(true)
+        setStepsExpanded(true)
       })
       .catch((err) => setError(err.message))
     setChecked(loadChecklist(id))
@@ -69,8 +73,8 @@ export default function RecipeDetail() {
     })
   }
 
-  function resetChecklist() {
-    setChecked({ ingredients: [], steps: [] })
+  function resetChecklist(kind) {
+    setChecked((previous) => ({ ...previous, [kind]: [] }))
   }
 
   async function handleDelete() {
@@ -96,7 +100,6 @@ export default function RecipeDetail() {
     ...(videoEmbedUrl ? [{ type: 'video', src: videoEmbedUrl }] : []),
   ]
   const activeMedia = mediaItems[mediaIndex] || mediaItems[0]
-  const anyChecked = checked.ingredients.length > 0 || checked.steps.length > 0
   const timerPresets = [
     recipe.cookTimeMinutes ? { label: 'Cook', minutes: recipe.cookTimeMinutes } : null,
     recipe.prepTimeMinutes ? { label: 'Prep', minutes: recipe.prepTimeMinutes } : null,
@@ -244,7 +247,7 @@ export default function RecipeDetail() {
       <Timer presets={timerPresets} />
 
       <div className="detail-columns">
-        <section>
+        <section className="ingredients-section">
           <div className="list-header">
             <h2>
               Ingredients{' '}
@@ -252,8 +255,34 @@ export default function RecipeDetail() {
                 {checked.ingredients.length}/{ingredients.length}
               </span>
             </h2>
+            <div className="list-header-actions">
+              {checked.ingredients.length > 0 && (
+                <button
+                  type="button"
+                  className="link-button small"
+                  onClick={() => resetChecklist('ingredients')}
+                  aria-label="Reset ingredients checklist"
+                  title="Reset ingredients checklist"
+                >
+                  Reset
+                </button>
+              )}
+              <button
+                type="button"
+                className={`list-collapse-toggle ${ingredientsExpanded ? 'expanded' : ''}`}
+                onClick={() => setIngredientsExpanded((expanded) => !expanded)}
+                aria-label={`${ingredientsExpanded ? 'Collapse' : 'Expand'} ingredients`}
+                aria-expanded={ingredientsExpanded}
+                aria-controls="recipe-ingredients-list"
+                title={`${ingredientsExpanded ? 'Collapse' : 'Expand'} ingredients`}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <ul className="check-list">
+          <ul id="recipe-ingredients-list" className="check-list" hidden={!ingredientsExpanded}>
             {ingredients.map((ing, i) => (
               <li key={i}>
                 <label className={checked.ingredients.includes(i) ? 'checked' : ''}>
@@ -276,13 +305,34 @@ export default function RecipeDetail() {
                 {checked.steps.length}/{steps.length}
               </span>
             </h2>
-            {anyChecked && (
-              <button type="button" className="link-button small" onClick={resetChecklist}>
-                Reset checklist
+            <div className="list-header-actions">
+              {checked.steps.length > 0 && (
+                <button
+                  type="button"
+                  className="link-button small"
+                  onClick={() => resetChecklist('steps')}
+                  aria-label="Reset steps checklist"
+                  title="Reset steps checklist"
+                >
+                  Reset
+                </button>
+              )}
+              <button
+                type="button"
+                className={`list-collapse-toggle ${stepsExpanded ? 'expanded' : ''}`}
+                onClick={() => setStepsExpanded((expanded) => !expanded)}
+                aria-label={`${stepsExpanded ? 'Collapse' : 'Expand'} steps`}
+                aria-expanded={stepsExpanded}
+                aria-controls="recipe-steps-list"
+                title={`${stepsExpanded ? 'Collapse' : 'Expand'} steps`}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
               </button>
-            )}
+            </div>
           </div>
-          <ol className="check-list steps">
+          <ol id="recipe-steps-list" className="check-list steps" hidden={!stepsExpanded}>
             {steps.map((step, i) => (
               <li key={i}>
                 <label className={checked.steps.includes(i) ? 'checked' : ''}>
