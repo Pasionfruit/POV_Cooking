@@ -98,7 +98,7 @@ export default function RecipeDetail() {
         })
 
       const target = mobileNavigationOverride || visibleSections[0]?.target || null
-      const disabled = visibleSections.length > 1 && !mobileNavigationOverride
+      const disabled = visibleSections.length > 1 && ingredientsExpanded && stepsExpanded && !mobileNavigationOverride
       setMobileSectionTarget((current) => (current === target ? current : target))
       setMobileSectionNavigationDisabled((current) => (current === disabled ? current : disabled))
     }
@@ -121,7 +121,7 @@ export default function RecipeDetail() {
       window.removeEventListener('touchmove', clearNavigationOverride)
       window.removeEventListener('keydown', clearNavigationOverride)
     }
-  }, [recipe?.id, mobileNavigationOverride])
+  }, [recipe?.id, mobileNavigationOverride, ingredientsExpanded, stepsExpanded])
 
   function toggleItem(kind, index) {
     setChecked((prev) => {
@@ -141,11 +141,12 @@ export default function RecipeDetail() {
   function jumpToOtherChecklist() {
     const destination = mobileSectionTarget === 'ingredients' ? 'recipe-ingredients-section' : 'recipe-steps-section'
     const returnTarget = mobileSectionTarget === 'ingredients' ? 'steps' : 'ingredients'
+    if (mobileSectionTarget === 'ingredients') setIngredientsExpanded(true)
+    else setStepsExpanded(true)
     setMobileNavigationOverride(returnTarget)
     setMobileSectionTarget(returnTarget)
     setMobileSectionNavigationDisabled(false)
-    const target = destination
-    jumpToSection(target)
+    jumpToSection(destination)
   }
 
   async function handleDelete() {
