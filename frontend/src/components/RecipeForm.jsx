@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { MEAL_TYPES, ingredientToText } from '../lib/recipeUtils'
+import { parseYouTubeVideoId } from '../lib/youtube'
 
 // Turns whatever the user pasted into a source object, guessing the site name
 // from the hostname the way the URL importer does. Returns null if unusable.
@@ -29,6 +30,7 @@ function parseSourceUrl(input) {
 export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLabel, cancelLabel, context }) {
   const isSuggestion = context === 'suggest'
   const isPersonal = context === 'personal'
+  const isAdmin = context === 'admin'
   const [mode, setMode] = useState('form')
   const [error, setError] = useState(null)
   const [fields, setFields] = useState(() => ({
@@ -36,6 +38,7 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
     description: initial?.description || '',
     image: initial?.image || '',
     videoUrl: initial?.videoUrl || '',
+    galleryImages: (initial?.galleryImages || []).join('\n'),
     sourceUrl: initial?.source?.url || '',
     cuisine: initial?.cuisine || '',
     mealType: initial?.mealType || '',
@@ -61,6 +64,9 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
       ...(base || {}),
       ...(f.sourceUrl.trim() ? { source } : {}),
       ...(!isSuggestion && !isPersonal ? { videoUrl: parseWebUrl(f.videoUrl)?.href || null } : {}),
+      ...(isAdmin
+        ? { galleryImages: lines(f.galleryImages).map((url) => parseWebUrl(url)?.href || url) }
+        : {}),
       title: f.title.trim(),
       description: f.description.trim(),
       image: f.image.trim() || null,
@@ -98,8 +104,18 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
         setError('That website link does not look like a valid URL')
         return
       }
-      if (!isSuggestion && !isPersonal && fields.videoUrl.trim() && !parseWebUrl(fields.videoUrl)) {
-        setError('That video link does not look like a valid web URL')
+      if (!isSuggestion && !isPersonal) {
+        if (isAdmin && fields.videoUrl.trim() && !parseYouTubeVideoId(fields.videoUrl)) {
+          setError('Enter a valid YouTube video link for Cook with me')
+          return
+        }
+        if (!isAdmin && fields.videoUrl.trim() && !parseWebUrl(fields.videoUrl)) {
+          setError('That video link does not look like a valid web URL')
+          return
+        }
+      }
+      if (isAdmin && fields.galleryImages.split('\n').some((url) => url.trim() && !parseWebUrl(url))) {
+        setError('Each screenshot must have a valid image URL')
         return
       }
       recipe = buildRecipe(fields, initial)
@@ -148,18 +164,29 @@ export default function RecipeForm({ initial, onSubmit, onCancel, busy, submitLa
             </label>
           ) : isPersonal ? null : (
             <label>
-              Image URL
+              Cover image URL
               <input value={fields.image} onChange={(e) => set('image', e.target.value)} placeholder="https://…" />
+            </label>
+          )}
+          {isAdmin && (
+            <label>
+              Recipe screenshots (image URLs, one per line)
+              <textarea
+                rows={4}
+                value={fields.galleryImages}
+                onChange={(e) => set('galleryImages', e.target.value)}
+                placeholder="https://…"
+              />
             </label>
           )}
           {!isSuggestion && !isPersonal && (
             <label>
-              Video link (optional)
+              {isAdmin ? 'Cook with me YouTube video (optional)' : 'Video link (optional)'}
               <input
                 value={fields.videoUrl}
                 onChange={(e) => set('videoUrl', e.target.value)}
                 inputMode="url"
-                placeholder="https://youtu.be/…"
+                placeholder={isAdmin ? 'https://youtube.com/shorts/…' : 'https://youtu.be/…'}
               />
             </label>
           )}

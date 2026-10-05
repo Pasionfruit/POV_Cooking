@@ -1337,6 +1337,32 @@ code {
   padding: 8px;
 }
 
+.video-icon-button {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.video-icon-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.video-icon-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
 /* Recipe actions float over the top-right of the card image */
 .card-top-actions {
   position: absolute;
@@ -1444,6 +1470,93 @@ code {
   object-fit: cover;
   border-radius: var(--radius);
   margin: 12px 0;
+}
+
+.recipe-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin: 12px 0;
+  border-radius: var(--radius);
+  background: #211f1c;
+}
+
+.recipe-media .detail-image,
+.recipe-media iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.media-arrow {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.72);
+  color: #fff;
+}
+
+.media-arrow:hover {
+  border-color: #fff;
+  background: rgba(20, 20, 20, 0.9);
+}
+
+.media-arrow svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.media-arrow-previous {
+  left: 10px;
+}
+
+.media-arrow-next {
+  right: 10px;
+}
+
+.media-pagination {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  display: flex;
+  gap: 8px;
+  padding: 7px 10px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.72);
+}
+
+.media-dot {
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  padding: 0;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.media-dot.active {
+  background: #fff;
 }
 
 .detail-columns {

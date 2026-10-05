@@ -7,8 +7,18 @@ import { useAuth } from '../contexts/AuthContext'
 import { ingredientToText } from '../lib/recipeUtils'
 import { useSaved } from '../lib/useSaved'
 import { useTried } from '../lib/useTried'
+import { getYouTubeEmbedUrl } from '../lib/youtube'
 
 function safeVideoUrl(value) {
+  try {
+    const url = new URL(value)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null
+  } catch {
+    return null
+  }
+}
+
+function safeImageUrl(value) {
   try {
     const url = new URL(value)
     return ['http:', 'https:'].includes(url.protocol) ? url.href : null
@@ -35,11 +45,15 @@ export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null)
   const [error, setError] = useState(null)
   const [checked, setChecked] = useState(() => loadChecklist(id))
+  const [mediaIndex, setMediaIndex] = useState(0)
 
   useEffect(() => {
     api
       .getRecipe(id, token)
-      .then(({ recipe }) => setRecipe(recipe))
+      .then(({ recipe }) => {
+        setRecipe(recipe)
+        setMediaIndex(0)
+      })
       .catch((err) => setError(err.message))
     setChecked(loadChecklist(id))
   }, [id, token])
@@ -73,11 +87,24 @@ export default function RecipeDetail() {
   const ingredients = recipe.ingredients || []
   const steps = recipe.steps || []
   const videoUrl = safeVideoUrl(recipe.videoUrl)
+  const videoEmbedUrl = getYouTubeEmbedUrl(recipe.videoUrl)
+  const imageUrls = [recipe.image, ...(Array.isArray(recipe.galleryImages) ? recipe.galleryImages : [])]
+    .map(safeImageUrl)
+    .filter(Boolean)
+  const mediaItems = [
+    ...imageUrls.map((src) => ({ type: 'image', src })),
+    ...(videoEmbedUrl ? [{ type: 'video', src: videoEmbedUrl }] : []),
+  ]
+  const activeMedia = mediaItems[mediaIndex] || mediaItems[0]
   const anyChecked = checked.ingredients.length > 0 || checked.steps.length > 0
   const timerPresets = [
     recipe.cookTimeMinutes ? { label: 'Cook', minutes: recipe.cookTimeMinutes } : null,
     recipe.prepTimeMinutes ? { label: 'Prep', minutes: recipe.prepTimeMinutes } : null,
   ].filter(Boolean)
+
+  function moveMedia(offset) {
+    setMediaIndex((index) => (index + offset + mediaItems.length) % mediaItems.length)
+  }
 
   return (
     <article className="detail">
@@ -87,6 +114,20 @@ export default function RecipeDetail() {
       <div className="detail-header">
         <h1>{recipe.title}</h1>
         <div className="detail-actions">
+          {videoUrl && (
+            <a
+              className="video-icon-button"
+              href={videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Watch recipe video"
+              aria-label="Watch recipe video"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15 10l5-3v10l-5-3v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2z" />
+              </svg>
+            </a>
+          )}
           {user && (
             <>
               <button
@@ -148,13 +189,56 @@ export default function RecipeDetail() {
         </div>
       )}
 
-      {recipe.image && <img className="detail-image" src={recipe.image} alt={recipe.title} />}
-      {videoUrl && (
-        <p>
-          <a className="button" href={videoUrl} target="_blank" rel="noopener noreferrer">
-            Watch recipe video
-          </a>
-        </p>
+      {activeMedia && (
+        <section className="recipe-media" aria-label={`${recipe.title} photos and video`}>
+          {activeMedia.type === 'image' ? (
+            <img className="detail-image" src={activeMedia.src} alt={`${recipe.title} photo`} />
+          ) : (
+            <iframe
+              src={activeMedia.src}
+              title={`Cook with me: ${recipe.title}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          )}
+          {mediaItems.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="media-arrow media-arrow-previous"
+                onClick={() => moveMedia(-1)}
+                aria-label="Previous recipe media"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="media-arrow media-arrow-next"
+                onClick={() => moveMedia(1)}
+                aria-label="Next recipe media"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+              <div className="media-pagination" aria-label="Choose recipe media">
+                {mediaItems.map((media, index) => (
+                  <button
+                    key={`${media.type}-${media.src}`}
+                    type="button"
+                    className={`media-dot ${index === mediaIndex ? 'active' : ''}`}
+                    onClick={() => setMediaIndex(index)}
+                    aria-label={`Show ${media.type === 'video' ? 'video' : `photo ${index + 1}`}`}
+                    aria-pressed={index === mediaIndex}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
       )}
 
       <Timer presets={timerPresets} />
