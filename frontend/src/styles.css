@@ -1337,13 +1337,42 @@ code {
   padding: 8px;
 }
 
-/* Save toggle floats over the top-right of the card image */
-.heart-button.card-save {
-  border-radius: var(--radius);
+/* Recipe actions float over the top-right of the card image */
+.card-top-actions {
   position: absolute;
   top: 6px;
   right: 6px;
   z-index: 1;
+  display: flex;
+  gap: 6px;
+}
+
+.card-video-link {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+.card-video-link:hover {
+  color: var(--accent);
+}
+
+.card-video-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.heart-button.card-save {
+  border-radius: var(--radius);
+  width: 32px;
+  height: 32px;
   border-color: transparent;
   background: var(--surface);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
