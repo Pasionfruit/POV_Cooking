@@ -12,7 +12,8 @@ store) later.
 - **Cooked tracking** — logged-in users can mark recipes cooked; the
   "Never cooked" filter shows only what you haven't made yet
 - **Recipe pages** — checkable ingredients/steps (remembered per device), a dial
-  kitchen timer (drag to set minutes and seconds, prep/cook presets), tags, notes, source
+  kitchen timer (drag to set minutes and seconds, prep/cook presets), tags, notes, source,
+  and a media carousel for recipe photos and embedded YouTube videos
 - **Saved** — logged-in users can save/unsave recipes
 - **Meal Plan** — plan recipes per day, week by week, with two randomizers: a
   spinning wheel of your recipes, and a build-a-meal roller that picks a
@@ -25,8 +26,9 @@ store) later.
 - **Light/dark mode** — follows your system by default, toggle in the navbar
 - **Suggest a recipe** — any logged-in user can submit a recipe for review and
   track its status; admins approve (optionally editing first), reject, or remove
-- **Admin** — create, edit (form or raw JSON), and delete recipes; review
-  suggestions; pick which recipe shows as the latest attempt on the home page
+- **Admin** — create, edit (form or raw JSON), and delete recipes; add screenshot
+  image URLs and a YouTube “Cook with me” video; review suggestions; pick which
+  recipe shows as the latest attempt on the home page
 - **Import from a link** — paste a recipe URL; the server reads the page's
   schema.org data and shows a preview to check and correct before anything is
   saved. Links to private/loopback addresses are refused
@@ -127,6 +129,9 @@ Only `title` is required; unknown fields are preserved (semi-structured).
   "cuisine": "Italian",
   "mealType": "Dinner",
   "tags": ["side"],
+  "image": "https://example.com/garlic-bread.jpg",
+  "galleryImages": ["https://example.com/garlic-bread-step-1.jpg"],
+  "videoUrl": "https://www.youtube.com/shorts/VIDEO_ID",
   "ingredients": ["1 baguette", { "item": "butter", "quantity": 50, "unit": "g" }],
   "steps": ["…"],
   "notes": "…",
