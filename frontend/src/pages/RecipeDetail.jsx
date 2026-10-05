@@ -48,6 +48,9 @@ export default function RecipeDetail() {
   const [mediaIndex, setMediaIndex] = useState(0)
   const [ingredientsExpanded, setIngredientsExpanded] = useState(true)
   const [stepsExpanded, setStepsExpanded] = useState(true)
+  const [mobileSectionTarget, setMobileSectionTarget] = useState(null)
+  const [mobileSectionNavigationDisabled, setMobileSectionNavigationDisabled] = useState(false)
+  const [mobileNavigationOverride, setMobileNavigationOverride] = useState(null)
 
   useEffect(() => {
     api
@@ -57,6 +60,7 @@ export default function RecipeDetail() {
         setMediaIndex(0)
         setIngredientsExpanded(true)
         setStepsExpanded(true)
+        setMobileNavigationOverride(null)
       })
       .catch((err) => setError(err.message))
     setChecked(loadChecklist(id))
@@ -65,6 +69,59 @@ export default function RecipeDetail() {
   useEffect(() => {
     localStorage.setItem(`pov_checklist_${id}`, JSON.stringify(checked))
   }, [id, checked])
+
+  useEffect(() => {
+    if (!recipe) return
+
+    function updateMobileSectionTarget() {
+      if (window.innerWidth >= 700) {
+        setMobileSectionTarget(null)
+        setMobileSectionNavigationDisabled(false)
+        setMobileNavigationOverride(null)
+        return
+      }
+
+      const viewportCenter = window.innerHeight / 2
+      const visibleSections = [
+        { id: 'recipe-ingredients-section', target: 'steps' },
+        { id: 'recipe-steps-section', target: 'ingredients' },
+      ]
+        .map((section) => ({
+          ...section,
+          bounds: document.getElementById(section.id)?.getBoundingClientRect(),
+        }))
+        .filter(({ bounds }) => bounds && bounds.bottom > 80 && bounds.top < window.innerHeight - 80)
+        .sort((first, second) => {
+          const firstCenter = (first.bounds.top + first.bounds.bottom) / 2
+          const secondCenter = (second.bounds.top + second.bounds.bottom) / 2
+          return Math.abs(firstCenter - viewportCenter) - Math.abs(secondCenter - viewportCenter)
+        })
+
+      const target = mobileNavigationOverride || visibleSections[0]?.target || null
+      const disabled = visibleSections.length > 1 && !mobileNavigationOverride
+      setMobileSectionTarget((current) => (current === target ? current : target))
+      setMobileSectionNavigationDisabled((current) => (current === disabled ? current : disabled))
+    }
+
+    function clearNavigationOverride(event) {
+      const scrollKeys = ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ']
+      if (event.type !== 'keydown' || scrollKeys.includes(event.key)) setMobileNavigationOverride(null)
+    }
+
+    updateMobileSectionTarget()
+    window.addEventListener('scroll', updateMobileSectionTarget, { passive: true })
+    window.addEventListener('resize', updateMobileSectionTarget)
+    window.addEventListener('wheel', clearNavigationOverride, { passive: true })
+    window.addEventListener('touchmove', clearNavigationOverride, { passive: true })
+    window.addEventListener('keydown', clearNavigationOverride)
+    return () => {
+      window.removeEventListener('scroll', updateMobileSectionTarget)
+      window.removeEventListener('resize', updateMobileSectionTarget)
+      window.removeEventListener('wheel', clearNavigationOverride)
+      window.removeEventListener('touchmove', clearNavigationOverride)
+      window.removeEventListener('keydown', clearNavigationOverride)
+    }
+  }, [recipe?.id, mobileNavigationOverride])
 
   function toggleItem(kind, index) {
     setChecked((prev) => {
@@ -75,6 +132,20 @@ export default function RecipeDetail() {
 
   function resetChecklist(kind) {
     setChecked((previous) => ({ ...previous, [kind]: [] }))
+  }
+
+  function jumpToSection(sectionId) {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  function jumpToOtherChecklist() {
+    const destination = mobileSectionTarget === 'ingredients' ? 'recipe-ingredients-section' : 'recipe-steps-section'
+    const returnTarget = mobileSectionTarget === 'ingredients' ? 'steps' : 'ingredients'
+    setMobileNavigationOverride(returnTarget)
+    setMobileSectionTarget(returnTarget)
+    setMobileSectionNavigationDisabled(false)
+    const target = destination
+    jumpToSection(target)
   }
 
   async function handleDelete() {
@@ -247,7 +318,7 @@ export default function RecipeDetail() {
       <Timer presets={timerPresets} />
 
       <div className="detail-columns">
-        <section className="ingredients-section">
+        <section id="recipe-ingredients-section" className="ingredients-section">
           <div className="list-header">
             <h2>
               Ingredients{' '}
@@ -297,7 +368,7 @@ export default function RecipeDetail() {
             ))}
           </ul>
         </section>
-        <section>
+        <section id="recipe-steps-section">
           <div className="list-header">
             <h2>
               Steps{' '}
@@ -344,6 +415,26 @@ export default function RecipeDetail() {
           </ol>
         </section>
       </div>
+
+      {mobileSectionTarget && (
+        <button
+          type="button"
+          className="mobile-checklist-jump"
+          onClick={jumpToOtherChecklist}
+          disabled={mobileSectionNavigationDisabled}
+          aria-label={mobileSectionTarget === 'ingredients' ? 'See ingredients' : 'Return to steps'}
+          title={mobileSectionNavigationDisabled ? 'Ingredients and steps are both visible' : undefined}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            {mobileSectionTarget === 'ingredients' ? (
+              <path d="M12 19V5m-7 7 7-7 7 7" />
+            ) : (
+              <path d="M12 5v14m-7-7 7 7 7-7" />
+            )}
+          </svg>
+          {mobileSectionTarget === 'ingredients' ? 'See ingredients' : 'Return to steps'}
+        </button>
+      )}
 
       {recipe.notes && (
         <section>

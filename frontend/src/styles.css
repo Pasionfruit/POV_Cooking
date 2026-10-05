@@ -1596,6 +1596,52 @@ code {
   flex-shrink: 0;
 }
 
+.mobile-checklist-jump {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-color: var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+.mobile-checklist-jump:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.mobile-checklist-jump:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.mobile-checklist-jump svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ingredients-section,
+#recipe-steps-section {
+  scroll-margin-top: 84px;
+}
+
 .list-collapse-toggle {
   display: inline-flex;
   width: 36px;
@@ -1619,6 +1665,12 @@ code {
 
 .list-collapse-toggle.expanded svg {
   transform: rotate(180deg);
+}
+
+@media (max-width: 699px) {
+  .mobile-checklist-jump {
+    display: inline-flex;
+  }
 }
 
 .check-list {
