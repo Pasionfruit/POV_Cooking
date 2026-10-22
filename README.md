@@ -97,6 +97,15 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for a step-by-step walkthrough of hosting
 the whole thing free (MongoDB Atlas + Render + Vercel), enabling Google Sign-In,
 and verifying the PWA installs on desktop and phone.
 
+### On the homelab PC (private)
+
+`docker compose up -d --build` runs a separate, private copy: Caddy serves the
+built frontend and proxies `/api` to the API, on `127.0.0.1:8380` only, and the
+homelab's Tailscale sidecar publishes it as https://recipes.tail48163e.ts.net
+(tailnet devices only). Data is JSON files in a Docker volume; secrets are in
+`deploy/homelab/.env` (gitignored, see `deploy/homelab/env.example`). Details:
+`D:\homelab\documentation\services\pov-cooking.md`.
+
 ## Data & storage
 
 [backend/store.js](backend/store.js) is the only module that touches storage,

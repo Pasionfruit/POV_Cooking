@@ -1,0 +1,8 @@
+# Build context for deploy/homelab/*.Dockerfile
+.git
+**/node_modules
+frontend/dist
+**/.env
+# local dev data stays out of the image - only the seed cookbook goes in
+backend/data/*
+!backend/data/recipes.json

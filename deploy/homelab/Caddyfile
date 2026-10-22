@@ -1,0 +1,24 @@
+# One address for the whole app: /api/* goes to the API (prefix stripped, its routes are /auth,
+# /recipes, ...), everything else is the built frontend with the SPA fallback (like vercel.json).
+# Plain HTTP: HTTPS is done in front of it by the Tailscale sidecar on the homelab.
+{
+	admin off
+}
+
+:80 {
+	encode gzip
+
+	handle_path /api/* {
+		reverse_proxy api:5001
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	# the service worker and manifest must always be fresh, or the installed app never updates
+	@fresh path /sw.js /manifest.webmanifest
+	header @fresh Cache-Control "public, max-age=0, must-revalidate"
+}

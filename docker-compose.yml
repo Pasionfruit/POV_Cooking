@@ -1,0 +1,38 @@
+# POV Cooking on the homelab PC - the private, always-on copy of the app.
+# (The public copy is Render + Vercel + MongoDB Atlas, see DEPLOYMENT.md; this one is separate.)
+#
+#   https://recipes.tail48163e.ts.net  - from your devices on Tailscale (sidecar in D:\homelab\docker\tailscale)
+#   http://localhost:8380              - on this PC
+#
+# web = the built frontend + /api proxy (Caddy), bound to 127.0.0.1 so nothing on the LAN reaches it;
+# api = the Express server, only reachable from web. Data: JSON files in the volume pov-data
+# (seeded from backend/data/recipes.json on first start). Secrets: deploy/homelab/.env (gitignored,
+# see deploy/homelab/env.example).
+#
+# After code changes:  docker compose up -d --build
+
+name: pov-cooking
+
+services:
+  api:
+    container_name: pov-cooking-api
+    build: { context: ., dockerfile: deploy/homelab/api.Dockerfile }
+    image: pov-cooking-api:local
+    restart: always
+    env_file: deploy/homelab/.env
+    environment:
+      CORS_ORIGIN: https://recipes.tail48163e.ts.net,http://localhost:8380
+    volumes:
+      - pov-data:/app/data
+
+  web:
+    container_name: pov-cooking-web
+    build: { context: ., dockerfile: deploy/homelab/web.Dockerfile }
+    image: pov-cooking-web:local
+    restart: always
+    ports:
+      - '127.0.0.1:8380:80'
+    depends_on: [api]
+
+volumes:
+  pov-data:
