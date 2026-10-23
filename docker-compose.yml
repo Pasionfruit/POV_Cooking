@@ -6,7 +6,7 @@
 #
 # web = the built frontend + /api proxy (Caddy), bound to 127.0.0.1 so nothing on the LAN reaches it;
 # api = the Express server, only reachable from web. Data: JSON files in the volume pov-data
-# (seeded from backend/data/recipes.json on first start). Secrets: deploy/homelab/.env (gitignored,
+# (starts empty - the seed cookbook isn't in the image). Secrets: deploy/homelab/.env (gitignored,
 # see deploy/homelab/env.example).
 #
 # After code changes:  docker compose up -d --build

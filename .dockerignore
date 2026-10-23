@@ -3,6 +3,6 @@
 **/node_modules
 frontend/dist
 **/.env
-# local dev data stays out of the image - only the seed cookbook goes in
-backend/data/*
-!backend/data/recipes.json
+# no data in the image: the homelab copy starts with an empty cookbook (the seed recipes.json is
+# for local dev and the Render/Atlas copy), and local dev data stays out too
+backend/data
