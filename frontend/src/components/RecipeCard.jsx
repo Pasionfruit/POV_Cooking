@@ -44,7 +44,7 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
         </div>
         {recipe.tags?.length > 0 && (
           <div className="tag-row">
-            {recipe.tags.map((tag) => (
+            {recipe.tags.slice(0, 3).map((tag) => (
               <span key={tag} className="tag">
                 {tag}
               </span>
