@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import * as api from '../api'
 import HeartIcon from '../components/HeartIcon'
@@ -134,19 +135,32 @@ export default function RecipeDetail() {
     setChecked((previous) => ({ ...previous, [kind]: [] }))
   }
 
-  function jumpToSection(sectionId) {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  function jumpToSection(sectionId, block = 'start') {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block })
   }
 
   function jumpToOtherChecklist() {
-    const destination = mobileSectionTarget === 'ingredients' ? 'recipe-ingredients-section' : 'recipe-steps-section'
-    const returnTarget = mobileSectionTarget === 'ingredients' ? 'steps' : 'ingredients'
-    if (mobileSectionTarget === 'ingredients') setIngredientsExpanded(true)
-    else setStepsExpanded(true)
+    const toIngredients = mobileSectionTarget === 'ingredients'
+    const returnTarget = toIngredients ? 'steps' : 'ingredients'
+    // Expand first (flushed so a collapsed list is laid out before we scroll to
+    // something inside it).
+    flushSync(() => {
+      if (toIngredients) setIngredientsExpanded(true)
+      else setStepsExpanded(true)
+    })
     setMobileNavigationOverride(returnTarget)
     setMobileSectionTarget(returnTarget)
     setMobileSectionNavigationDisabled(false)
-    jumpToSection(destination)
+
+    if (toIngredients) {
+      jumpToSection('recipe-ingredients-section')
+      return
+    }
+    // Back to the steps: land on the first one not checked off yet. With nothing
+    // done (or everything done) show the top of the section instead.
+    const firstOpen = steps.findIndex((_, i) => !checked.steps.includes(i))
+    if (firstOpen > 0) jumpToSection(`recipe-step-${firstOpen}`, 'center')
+    else jumpToSection('recipe-steps-section')
   }
 
   async function handleDelete() {
@@ -406,7 +420,7 @@ export default function RecipeDetail() {
           </div>
           <ol id="recipe-steps-list" className="check-list steps" hidden={!stepsExpanded}>
             {steps.map((step, i) => (
-              <li key={i}>
+              <li key={i} id={`recipe-step-${i}`}>
                 <label className={checked.steps.includes(i) ? 'checked' : ''}>
                   <input type="checkbox" checked={checked.steps.includes(i)} onChange={() => toggleItem('steps', i)} />
                   <span>{step}</span>
