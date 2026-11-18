@@ -426,8 +426,25 @@ function standardizeText(value) {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
+// Recipe text (title, description, notes, steps, ingredients): a number word becomes a digit only when it
+// is an amount: at the start of an ingredient ("two eggs" -> "2 eggs") or right before a measure or time
+// ("two cups" -> "2 cups", "cook for ten minutes" -> "10 minutes"). Everything else stays as written:
+// "cut in half", "half and half", "the mild one" and "One-Pan" are not amounts.
+const AMOUNT_WORDS = Object.keys(NUMBER_WORDS).filter((w) => w !== 'half' && w !== 'quarter')
+const MEASURE_WORD =
+  '(?:tsp|tbsp|teaspoons?|tablespoons?|cups?|ounces?|oz|pounds?|lbs?|lb|grams?|kilograms?|kg|g|ml|milliliters?|liters?|litres?|' +
+  'inch(?:es)?|cm|minutes?|mins?|hours?|hrs?|seconds?|secs?|days?|degrees|cloves?|slices?|pieces?|cans?|sticks?|eggs?|sprigs?|heads?|bunch(?:es)?)'
+const AMOUNT_BEFORE_MEASURE_RE = new RegExp(`\\b(${AMOUNT_WORDS.join('|')})\\b(?=\\s+${MEASURE_WORD}\\b)`, 'gi')
+const LEADING_AMOUNT_RE = new RegExp(`^(${AMOUNT_WORDS.join('|')})(?=\\s+(?!and\\b|or\\b|of\\b))`, 'i')
+
+function standardizeRecipeText(value, { leading = false } = {}) {
+  let text = String(value).trim().replace(AMOUNT_BEFORE_MEASURE_RE, (word) => NUMBER_WORDS[word.toLowerCase()])
+  if (leading) text = text.replace(LEADING_AMOUNT_RE, (word) => NUMBER_WORDS[word.toLowerCase()])
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
 function standardizeIngredient(ing) {
-  if (typeof ing === 'string') return standardizeText(ing)
+  if (typeof ing === 'string') return standardizeRecipeText(ing, { leading: true })
   if (ing && typeof ing === 'object') {
     const out = { ...ing }
     if (typeof out.item === 'string') out.item = out.item.trim().toLowerCase()
@@ -472,9 +489,9 @@ function normalizeRecipe(input, userId, existing) {
     ...(existing || {}),
     ...input,
     id: existing ? existing.id : crypto.randomUUID(),
-    title: standardizeText(title),
-    description: description ? standardizeText(description) : '',
-    ...(typeof notes === 'string' && notes ? { notes: standardizeText(notes) } : {}),
+    title: standardizeRecipeText(title),
+    description: description ? standardizeRecipeText(description) : '',
+    ...(typeof notes === 'string' && notes ? { notes: standardizeRecipeText(notes) } : {}),
     image: input.image ? String(input.image) : null,
     servings: asNumberOrNull(input.servings),
     prepTimeMinutes: asNumberOrNull(input.prepTimeMinutes),
@@ -483,7 +500,7 @@ function normalizeRecipe(input, userId, existing) {
     mealType: normalizeMealType(input.mealType, asStringArray(input.tags).map(String)),
     tags: asStringArray(input.tags).map((t) => String(t).toLowerCase()),
     ingredients: asStringArray(input.ingredients).map(standardizeIngredient),
-    steps: asStringArray(input.steps).map(standardizeText),
+    steps: asStringArray(input.steps).map((step) => standardizeRecipeText(step)),
     createdBy: existing ? existing.createdBy : userId,
     createdAt: existing ? existing.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),

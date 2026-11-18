@@ -34,7 +34,7 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
         </div>
       )}
       <div className="card-body">
-        <Link to={`/recipes/${recipe.id}`} className="card-title">
+        <Link to={`/recipes/${recipe.id}`} className="card-title" title={recipe.title}>
           {recipe.title}
         </Link>
         <div className="card-meta">
@@ -42,15 +42,14 @@ export default function RecipeCard({ recipe, isSaved, onToggleSave, isTried, onT
           {time && <span>{time}</span>}
           {recipe.cuisine && <span>{recipe.cuisine}</span>}
         </div>
-        {recipe.tags?.length > 0 && (
-          <div className="tag-row">
-            {recipe.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="tag">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Always rendered (empty without tags) so every card keeps the same height */}
+        <div className="tag-row">
+          {(recipe.tags || []).slice(0, 3).map((tag) => (
+            <span key={tag} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
         {user && onToggleTried && (
           <div className="card-actions">
             <button className={`pill ${isTried ? 'active' : ''}`} onClick={() => onToggleTried(recipe)}>

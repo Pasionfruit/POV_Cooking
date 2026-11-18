@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import * as api from '../api'
 import HeartIcon from '../components/HeartIcon'
 import DiceIcon from '../components/DiceIcon'
@@ -101,21 +101,25 @@ function FeaturedBanner({ recipe }) {
 
 export default function Home() {
   const { user, token } = useAuth()
+  // Search, filters and page live in the address (?q=…&page=3), so coming Back from a recipe, or
+  // reloading, shows the same list instead of a fresh one.
+  const [params, setParams] = useSearchParams()
   const [recipes, setRecipes] = useState(null)
   const [featured, setFeatured] = useState(null)
   const [error, setError] = useState(null)
-  const [query, setQuery] = useState('')
-  const [cuisine, setCuisine] = useState('')
-  const [mealType, setMealType] = useState('')
-  const [maxTime, setMaxTime] = useState('')
-  const [tags, setTags] = useState([])
-  const [savedOnly, setSavedOnly] = useState(false)
-  const [neverCooked, setNeverCooked] = useState(false)
-  const [personalOnly, setPersonalOnly] = useState(false)
-  const [quickCollection, setQuickCollection] = useState('')
+  const [query, setQuery] = useState(() => params.get('q') || '')
+  const [cuisine, setCuisine] = useState(() => params.get('cuisine') || '')
+  const [mealType, setMealType] = useState(() => params.get('meal') || '')
+  const [maxTime, setMaxTime] = useState(() => params.get('time') || '')
+  const [tags, setTags] = useState(() => (params.get('tags') || '').split(',').filter(Boolean))
+  const [savedOnly, setSavedOnly] = useState(() => params.get('saved') === '1')
+  const [neverCooked, setNeverCooked] = useState(() => params.get('new') === '1')
+  const [personalOnly, setPersonalOnly] = useState(() => params.get('mine') === '1')
+  const [quickCollection, setQuickCollection] = useState(() => params.get('collection') || '')
   const [ideasOpen, setIdeasOpen] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(() => Math.max(1, Number(params.get('page')) || 1))
+  const filtersMounted = useRef(false)
   const pageSize = usePageSize()
   const { savedIds, toggleSave } = useSaved()
   const { triedIds, toggleTried } = useTried()
@@ -132,8 +136,29 @@ export default function Home() {
   }, [token])
 
   useEffect(() => {
+    // A changed filter starts at page 1 again, but not the first time (that would undo the page
+    // restored from the address).
+    if (!filtersMounted.current) {
+      filtersMounted.current = true
+      return
+    }
     setPage(1)
   }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, personalOnly, quickCollection, pageSize])
+
+  useEffect(() => {
+    const next = new URLSearchParams()
+    if (query) next.set('q', query)
+    if (cuisine) next.set('cuisine', cuisine)
+    if (mealType) next.set('meal', mealType)
+    if (maxTime) next.set('time', maxTime)
+    if (tags.length) next.set('tags', tags.join(','))
+    if (savedOnly) next.set('saved', '1')
+    if (neverCooked) next.set('new', '1')
+    if (personalOnly) next.set('mine', '1')
+    if (quickCollection) next.set('collection', quickCollection)
+    if (page > 1) next.set('page', String(page))
+    if (next.toString() !== params.toString()) setParams(next, { replace: true })
+  }, [query, cuisine, mealType, maxTime, tags, savedOnly, neverCooked, personalOnly, quickCollection, page]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (error) return <p className="error">Could not load recipes: {error}. Is the backend running?</p>
   if (!recipes) return <p className="muted">Loading recipes…</p>

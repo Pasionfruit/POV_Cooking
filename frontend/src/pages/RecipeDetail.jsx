@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import * as api from '../api'
 import HeartIcon from '../components/HeartIcon'
 import Timer from '../components/Timer'
 import { useAuth } from '../contexts/AuthContext'
 import { ingredientToText } from '../lib/recipeUtils'
+import { convertUnits } from '../lib/units'
+import { useUnits } from '../lib/useUnits'
+import UnitToggle from '../components/UnitToggle'
 import { useSaved } from '../lib/useSaved'
 import { useTried } from '../lib/useTried'
 import { getYouTubeEmbedUrl } from '../lib/youtube'
@@ -42,9 +45,13 @@ function loadChecklist(recipeId) {
 export default function RecipeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  // 'default' is the first page of this tab: nothing in the app to go back to (a link or bookmark).
+  const cameFromApp = location.key !== 'default'
   const { user, isAdmin, token } = useAuth()
   const { savedIds, toggleSave } = useSaved()
   const { triedIds, toggleTried } = useTried()
+  const [units, setUnits] = useUnits()
   const [recipe, setRecipe] = useState(null)
   const [error, setError] = useState(null)
   const [checked, setChecked] = useState(() => loadChecklist(id))
@@ -199,8 +206,17 @@ export default function RecipeDetail() {
 
   return (
     <article className="detail">
-      <Link to="/" className="muted">
-        ← All recipes
+      {/* Back goes to the page you were on (a filtered list, the meal plan, the pantry...), not always the home list */}
+      <Link
+        to="/"
+        className="muted"
+        onClick={(e) => {
+          if (!cameFromApp || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+          e.preventDefault()
+          navigate(-1)
+        }}
+      >
+        {cameFromApp ? '← Back' : '← All recipes'}
       </Link>
       <div className="detail-header">
         <h1>{recipe.title}</h1>
@@ -261,7 +277,7 @@ export default function RecipeDetail() {
         </div>
       </div>
 
-      {recipe.description && <p className="detail-description">{recipe.description}</p>}
+      {recipe.description && <p className="detail-description">{convertUnits(recipe.description, units)}</p>}
 
       <div className="detail-meta">
         {recipe.mealType && <span>{recipe.mealType}</span>}
@@ -344,6 +360,7 @@ export default function RecipeDetail() {
               </span>
             </h2>
             <div className="list-header-actions">
+              <UnitToggle units={units} onChange={setUnits} />
               {checked.ingredients.length > 0 && (
                 <button
                   type="button"
@@ -379,7 +396,7 @@ export default function RecipeDetail() {
                     checked={checked.ingredients.includes(i)}
                     onChange={() => toggleItem('ingredients', i)}
                   />
-                  <span>{ingredientToText(ing)}</span>
+                  <span>{convertUnits(ingredientToText(ing), units)}</span>
                 </label>
               </li>
             ))}
@@ -425,7 +442,7 @@ export default function RecipeDetail() {
               <li key={i} id={`recipe-step-${i}`}>
                 <label className={checked.steps.includes(i) ? 'checked' : ''}>
                   <input type="checkbox" checked={checked.steps.includes(i)} onChange={() => toggleItem('steps', i)} />
-                  <span>{step}</span>
+                  <span>{convertUnits(step, units)}</span>
                 </label>
               </li>
             ))}
@@ -456,7 +473,7 @@ export default function RecipeDetail() {
       {recipe.notes && (
         <section>
           <h2>Notes</h2>
-          <p>{recipe.notes}</p>
+          <p>{convertUnits(recipe.notes, units)}</p>
         </section>
       )}
       {recipe.source?.url && (

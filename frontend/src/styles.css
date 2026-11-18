@@ -1261,6 +1261,54 @@ code {
   color: var(--muted);
 }
 
+/* Every recipe card is the same height, whatever the recipe: the title takes two lines (cut with …
+   when longer), the details one line (the last one is cut with …), and the tags one row (a tag that
+   doesn't fit is left out). The grid also makes every row as tall as the tallest, as a safety net.
+   Pantry cards have their own layout. */
+.card-grid:not(.pantry-grid) {
+  grid-auto-rows: 1fr;
+}
+
+.card:not(.pantry-card) .card-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.3;
+  min-height: 2.6em;
+  overflow-wrap: anywhere;
+}
+
+.card:not(.pantry-card) .card-meta {
+  flex-wrap: nowrap;
+  min-height: 1.3em;
+  line-height: 1.3;
+}
+
+.card:not(.pantry-card) .card-meta > span {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.card:not(.pantry-card) .card-meta > span:last-child {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card:not(.pantry-card) .tag-row {
+  /* one row: the height of a tag, so tags that wrap onto a second row are hidden */
+  height: calc(0.78rem * 1.4 + 4px);
+  overflow: hidden;
+}
+
+.card:not(.pantry-card) .tag-row .tag {
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 .pill {
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -1572,6 +1620,34 @@ code {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* US | Metric switch on the recipe page */
+.unit-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.unit-toggle button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 3px 11px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.unit-toggle button:hover {
+  color: var(--accent);
+}
+
+.unit-toggle button.active {
+  background: var(--accent);
+  color: #fff;
 }
 
 .mobile-checklist-jump {

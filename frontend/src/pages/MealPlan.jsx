@@ -8,6 +8,8 @@ import ItemCombobox from '../components/ItemCombobox'
 import { useAuth } from '../contexts/AuthContext'
 import { copyText, mealPlanToText } from '../lib/mealPlanText'
 import { ingredientToText } from '../lib/recipeUtils'
+import { convertUnits } from '../lib/units'
+import { useUnits } from '../lib/useUnits'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
@@ -28,7 +30,7 @@ function sundayOf(date) {
 // Ingredient lines (as displayed on the recipe page) for every recipe planned
 // this week, deduped case-insensitively. Free-text plan entries (typed
 // leftovers, etc.) have no ingredient list, so they're skipped.
-function mealPlanIngredients(days, recipeById) {
+function mealPlanIngredients(days, recipeById, units) {
   const seen = new Set()
   const result = []
   Object.values(days).forEach((entries) => {
@@ -37,7 +39,7 @@ function mealPlanIngredients(days, recipeById) {
       const recipe = recipeById[entry]
       if (!recipe) return
       ;(recipe.ingredients || []).forEach((ingredient) => {
-        const text = ingredientToText(ingredient).trim()
+        const text = convertUnits(ingredientToText(ingredient).trim(), units)
         const key = text.toLowerCase()
         if (!text || seen.has(key)) return
         seen.add(key)
@@ -60,6 +62,7 @@ function shortDate(date) {
 
 export default function MealPlan() {
   const { token } = useAuth()
+  const [units] = useUnits()
   const [weekStart, setWeekStart] = useState(() => sundayOf(new Date()))
   const [days, setDays] = useState({})
   const [recipes, setRecipes] = useState([])
@@ -271,7 +274,7 @@ export default function MealPlan() {
         </CollapsibleSection>
       </div>
 
-      {!loading && <GroceryListSection mealPlanIngredients={mealPlanIngredients(days, recipeById)} />}
+      {!loading && <GroceryListSection mealPlanIngredients={mealPlanIngredients(days, recipeById, units)} />}
     </section>
   )
 }

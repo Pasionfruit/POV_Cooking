@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import NavBar from './components/NavBar'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollMemory from './components/ScrollMemory'
 import Home from './pages/Home'
 import RecipeDetail from './pages/RecipeDetail'
 import MealPlan from './pages/MealPlan'
@@ -17,6 +18,7 @@ import MyRecipes from './pages/MyRecipes'
 export default function App() {
   return (
     <div className="app">
+      <ScrollMemory />
       <NavBar />
       <main className="page">
         <Routes>
