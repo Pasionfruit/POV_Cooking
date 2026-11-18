@@ -68,6 +68,12 @@ app.use((req, res, next) => {
 
 app.use(cors(CORS_ORIGINS.length ? { origin: CORS_ORIGINS } : {}))
 
+// Photos that live on this server instead of at some other website: recipe.image can be
+// "/api/media/<name>.jpg" (the homelab proxies /api, so it is the same origin as the app). The
+// folder sits in the data volume next to the JSON files; the reel-recipes tool on the homelab
+// fills it. Public, like every other recipe image. Missing files are a plain 404.
+app.use('/media', express.static(require('path').join(__dirname, 'data', 'media'), { maxAge: '1d', index: false }))
+
 // ---------------------------------------------------------------- auth helpers
 
 function publicUser(user) {

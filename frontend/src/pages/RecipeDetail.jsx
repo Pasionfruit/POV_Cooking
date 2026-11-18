@@ -20,6 +20,8 @@ function safeVideoUrl(value) {
 }
 
 function safeImageUrl(value) {
+  // Photos kept on this server (the homelab proxies /api next to the app), e.g. /api/media/<reel>.jpg
+  if (typeof value === 'string' && /^\/api\/media\/[\w.-]+$/.test(value)) return value
   try {
     const url = new URL(value)
     return ['http:', 'https:'].includes(url.protocol) ? url.href : null
